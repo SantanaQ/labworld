@@ -1,2 +1,2 @@
-rootProject.name = "flow_simulation"
+rootProject.name = "labworld"
 
