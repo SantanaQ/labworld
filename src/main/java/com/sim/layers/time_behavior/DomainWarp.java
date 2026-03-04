@@ -8,6 +8,8 @@ public class DomainWarp implements TimeBehavior {
     private final SignalSource warpY;
     private final float strength;
 
+    private boolean active = true;
+
     public DomainWarp(
             SignalSource warpX,
             SignalSource warpY,
@@ -19,10 +21,16 @@ public class DomainWarp implements TimeBehavior {
 
     @Override
     public float sample(SignalSource src, float x, float y, float time) {
-
-        float dx = warpX.sample(x + time, y + time) * strength;
-        float dy = warpY.sample(x + time, y + time) * strength;
-
+        if(!active) {
+            return src.sample(x, y);
+        }
+        float dx = warpX.sample(x, y) * strength;
+        float dy = warpY.sample(x, y) * strength;
         return src.sample(x + dx, y + dy);
+    }
+
+    @Override
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

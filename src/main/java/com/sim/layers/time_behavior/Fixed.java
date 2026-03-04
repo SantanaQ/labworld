@@ -10,4 +10,9 @@ public class Fixed implements TimeBehavior {
         return source.sample(x, y);
     }
 
+    @Override
+    public void setActive(boolean active) {
+        // should not affect sampling
+    }
+
 }

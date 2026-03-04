@@ -23,7 +23,7 @@ public class App extends Application {
     @Override
     public void start(Stage stage) {
 
-        stage.setTitle("Flow Simulation");
+        stage.setTitle("Labworld");
 
         World world = new World(200, 200);
         JFXWorldView worldView = new JFXWorldView();
@@ -42,24 +42,17 @@ public class App extends Application {
         controller.start();
     }
 
-    // -----------------------------
-    // World-Container (nur Layout!)
-    // -----------------------------
     private Parent createWorldContainer(JFXWorldView view) {
 
         StackPane container = new StackPane();
         container.setPadding(new Insets(20));
         container.setStyle("-fx-background-color: #202020;");
 
-        // ✅ nur noch Root der View einhängen
         container.getChildren().add(view.root());
 
         return container;
     }
 
-    // -----------------------------
-    // Settings Panel (unverändert)
-    // -----------------------------
     private Parent createSettingsPanel() {
 
         VBox panel = new VBox(10);

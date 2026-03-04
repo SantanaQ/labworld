@@ -1,5 +1,6 @@
 package com.sim.world;
 
+import com.sim.config.WorldConfig;
 import com.sim.layers.*;
 import com.sim.layers.step.Normalize;
 import com.sim.layers.step.SuitabilityMask;
@@ -19,13 +20,13 @@ import java.util.Random;
 
 public class World {
 
-    int width;
-    int height;
+    /*final*/ int width;
+    /*final*/ int height;
 
-    int seed = 9992221;
+     int seed = 9992221;
     Random rand;
 
-    int agentCount = 50;
+    int agentCount = 5;
     List<Agent> agents;
     OccupancyGrid occupancy;
 
@@ -38,6 +39,13 @@ public class World {
 
     float time = 1;
 
+    /*final*/ WorldConfig config;
+
+    public World(WorldConfig config) {
+        this.config = config;
+        this.temperature = config.temperatureConfig.buildLayer();
+    }
+
     public World(int width, int height) {
         this.width = width;
         this.height = height;
@@ -47,12 +55,12 @@ public class World {
 
         rand = new Random(seed);
 
-        TimeBehavior drift = new Drifting(0.02f);
+        TimeBehavior drift = new Drifting(0.1f, 2.1415f);
 
         TimeBehavior warp = new DomainWarp(
                 new FractalNoise(new ValueNoise(seed+1, 64), 3, 0.6f),
                 new FractalNoise(new ValueNoise(seed+2, 64), 3, 0.6f),
-                4f
+                50f
         );
 
         TimeBehavior time = new Composite(
@@ -60,19 +68,14 @@ public class World {
         );
 
         temperature = new LayerBuilder(width, height)
-                .withSignalSource(new FractalNoise(
-                        new ValueNoise(seed+3, 50),
-                        2,5))
+                .withSignalSource(new FractalNoise(seed+3, 50, 2,5))
                 .withTimeBehaviour(time)
                 .step(new SoftThreshold(0.2f, 0.1f))
                 .step(new Normalize(0, 1))
                 .buildProceduralLayer();
 
         food = new LayerBuilder(width, height)
-                .withSignalSource(new FractalNoise(
-                        new ValueNoise(555666, 70),
-                        2,5
-                ))
+                .withSignalSource(new FractalNoise(seed+100, 70, 2,5))
                 .withTimeBehaviour(drift)
                 .step(new SoftThreshold(0.7f, 0.1f))
                 .step(new SuitabilityMask(temperature, 0.5f, 0.7f))
@@ -114,23 +117,23 @@ public class World {
     }
 
     public float tempAt(Coordinate coord) {
-        return temperature.accessableAt(coord);
+        return temperature.accessibleAt(coord);
     }
 
     public float slopeAt(Coordinate coord) {
-        return slope.accessableAt(coord);
+        return slope.accessibleAt(coord);
     }
 
     public float foodAt(Coordinate coord) {
-        return food.accessableAt(coord);
+        return food.accessibleAt(coord);
     }
 
     public float stressAt(Coordinate coord) {
-        return stress.accessableAt(coord);
+        return stress.accessibleAt(coord);
     }
 
     public float scentAt(Coordinate coord) {
-        return scent.accessableAt(coord);
+        return scent.accessibleAt(coord);
     }
 
     public List<Agent> agentsAt(Coordinate coord) {

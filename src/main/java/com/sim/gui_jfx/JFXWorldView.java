@@ -19,12 +19,12 @@ public class JFXWorldView implements WorldView {
 
     private final StackPane root;
 
-    // Layer
+
     private final List<RenderLayer> layers = new ArrayList<>();
 
     private final WorldAgents agents;
 
-    private int worldWidth = 200;  // default, kann später aus Snapshot gesetzt werden
+    private int worldWidth = 200;
     private int worldHeight = 200;
 
     private volatile WorldSnapshot latestSnapshot;
@@ -34,7 +34,7 @@ public class JFXWorldView implements WorldView {
         root = new StackPane();
         root.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, null, null)));
 
-        // Layer erstellen
+
         WorldTemperature temperature = new WorldTemperature();
         WorldFood food = new WorldFood();
         agents = new WorldAgents();
@@ -43,10 +43,8 @@ public class JFXWorldView implements WorldView {
         layers.add(food);
         layers.add(agents);
 
-        // Layer stapeln
         root.getChildren().addAll(temperature.canvas(), food.canvas(), agents.canvas());
 
-        // Größe an Root binden
         DoubleBinding sizeBinding = Bindings.createDoubleBinding(
                 () -> Math.min(root.getWidth(), root.getHeight()),
                 root.widthProperty(), root.heightProperty()
@@ -56,13 +54,10 @@ public class JFXWorldView implements WorldView {
             layer.canvas().heightProperty().bind(sizeBinding);
         }
 
-        // CELL_SIZE dynamisch aktualisieren
         root.layoutBoundsProperty().addListener((obs, old, bounds) -> updateCellSize());
 
-        // initial
         Platform.runLater(this::updateCellSize);
 
-        // AnimationTimer für kontinuierliches Rendern
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
@@ -79,23 +74,16 @@ public class JFXWorldView implements WorldView {
         return root;
     }
 
-    // -----------------------------
-    // Update Snapshot
-    // -----------------------------
     @Override
     public void updateSnapshot(WorldSnapshot snapshot) {
         this.latestSnapshot = snapshot;
 
-        // Weltgröße aus Snapshot
         this.worldWidth = snapshot.width();
         this.worldHeight = snapshot.height();
 
         updateCellSize();
     }
 
-    // -----------------------------
-    // Render-Methode
-    // -----------------------------
     @Override
     public void render(WorldSnapshot worldSnap) {
 
@@ -115,9 +103,6 @@ public class JFXWorldView implements WorldView {
 
     }
 
-    // -----------------------------
-    // CELL_SIZE berechnen
-    // -----------------------------
     private void updateCellSize() {
         /*double canvasW = layers.getFirst().canvas().getWidth();
         double canvasH = layers.getFirst().canvas().getHeight();

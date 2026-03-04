@@ -30,12 +30,10 @@ public class WorldController {
     public void start() {
         running = true;
 
-        // Simulations-Thread
         Thread simThread = new Thread(this::runSimulation, "SimulationThread");
         simThread.setDaemon(true);
         simThread.start();
 
-        // Rendering auf dem JavaFX-Thread starten
         threadScheduler.schedule(this::startRendering);
     }
 
@@ -59,13 +57,11 @@ public class WorldController {
                 ticked = true;
             }
 
-            // Snapshot nur erzeugen, wenn sich die Welt geändert hat
             if (ticked) {
                 latestSnapshot = new WorldSnapshot(world);
                 view.updateSnapshot(latestSnapshot);
             }
 
-            // CPU schonen (kein Busy-Wait)
             try {
                 Thread.sleep(1);
             } catch (InterruptedException ignored) {
@@ -73,9 +69,6 @@ public class WorldController {
         }
     }
 
-    // -----------------------------
-    // Rendering (JavaFX-Thread)
-    // -----------------------------
     private void startRendering() {
         renderTimer = new AnimationTimer() {
 
@@ -83,7 +76,6 @@ public class WorldController {
 
             @Override
             public void handle(long now) {
-                // ~60 FPS Limit
                 if (now - last < 16_000_000) return;
                 last = now;
 
@@ -97,7 +89,6 @@ public class WorldController {
         renderTimer.start();
     }
 
-    // Optional: sauber stoppen
     public void stop() {
         running = false;
 

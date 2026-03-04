@@ -13,7 +13,7 @@ public interface WorldLayer {
     TimeBehavior timeBehavior();
     List<LayerStep> compositingSteps();
     float potentialAt(Coordinate coord);
-    float accessableAt(Coordinate coord);
+    float accessibleAt(Coordinate coord);
 
 
     default void updatePotential(float time) {

@@ -24,4 +24,11 @@ public final class Composite implements TimeBehavior {
 
         return current.sample(x, y);
     }
+
+    @Override
+    public void setActive(boolean active) {
+        for (TimeBehavior b : behaviors) {
+            b.setActive(active);
+        }
+    }
 }

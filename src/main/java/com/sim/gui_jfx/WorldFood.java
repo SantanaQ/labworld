@@ -15,8 +15,6 @@ public class WorldFood implements RenderLayer {
 
     public WorldFood() {
         this.canvas = new Canvas();
-
-        //canvas.setBlendMode(BlendMode.SRC_OVER);
         this.gc = canvas.getGraphicsContext2D();
     }
 

@@ -12,6 +12,10 @@ public class FractalNoise implements SignalSource {
         this.persistence = persistence;
     }
 
+    public FractalNoise(int seed, int cellSize, int octaves, float persistence) {
+        this(new ValueNoise(seed, cellSize), octaves, persistence);
+    }
+
     @Override
     public float sample(float x, float y) {
         float value = 0f;

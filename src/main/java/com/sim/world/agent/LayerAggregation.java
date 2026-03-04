@@ -12,7 +12,7 @@ public class LayerAggregation {
         List<Coordinate> neighbors = world.neighbors(origin, windowSize);
         float total = 0;
         for(Coordinate neighbor : neighbors) {
-            total += source.accessableAt(neighbor);
+            total += source.accessibleAt(neighbor);
         }
         return total / neighbors.size();
     }
@@ -21,25 +21,25 @@ public class LayerAggregation {
         List<Coordinate> neighbors = world.neighbors(origin, windowSize);
         float total = 0;
         for(Coordinate neighbor : neighbors) {
-            total += source.accessableAt(neighbor);
+            total += source.accessibleAt(neighbor);
         }
         return total;
     }
 
     public static float min(World world, Coordinate origin, WorldLayer source, int windowSize) {
         List<Coordinate> neighbors = world.neighbors(origin, windowSize);
-        float min = source.accessableAt(origin);
+        float min = source.accessibleAt(origin);
         for(Coordinate neighbor : neighbors) {
-            min = Math.min(min, source.accessableAt(neighbor));
+            min = Math.min(min, source.accessibleAt(neighbor));
         }
         return min;
     }
 
     public static float max(World world, Coordinate origin, WorldLayer source, int windowSize) {
         List<Coordinate> neighbors = world.neighbors(origin, windowSize);
-        float max = source.accessableAt(origin);
+        float max = source.accessibleAt(origin);
         for(Coordinate neighbor : neighbors) {
-            max = Math.max(max, source.accessableAt(neighbor));
+            max = Math.max(max, source.accessibleAt(neighbor));
         }
         return max;
     }
@@ -50,8 +50,8 @@ public class LayerAggregation {
         float prodX = 0;
         float prodY = 0;
         for (Coordinate neighbor : neighbors) {
-            prodX += neighbor.x() * source.accessableAt(neighbor);
-            prodY += neighbor.y() * source.accessableAt(neighbor);
+            prodX += neighbor.x() * source.accessibleAt(neighbor);
+            prodY += neighbor.y() * source.accessibleAt(neighbor);
         }
         int cX = (int) ((int) prodX / sum);
         int cY = (int) ((int) prodY / sum);

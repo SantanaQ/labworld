@@ -128,7 +128,7 @@ public class InteractiveLayer implements StatefulLayer, AgentAffectable, Rendera
     }
 
     @Override
-    public float accessableAt(Coordinate coord) {
+    public float accessibleAt(Coordinate coord) {
         return state[coord.x()][coord.y()];
     }
 
