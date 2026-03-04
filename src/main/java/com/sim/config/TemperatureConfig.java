@@ -1,7 +1,9 @@
 package com.sim.config;
 
 import com.sim.layers.LayerBuilder;
+import com.sim.layers.LayerContext;
 import com.sim.layers.ProceduralLayer;
+import com.sim.layers.WorldLayer;
 import com.sim.layers.step.Normalize;
 import com.sim.layers.step.SoftThreshold;
 import com.sim.layers.time_behavior.Composite;
@@ -13,29 +15,29 @@ import com.sim.noise.ValueNoise;
 
 import java.util.List;
 
-public class TemperatureConfig {
+public class TemperatureConfig extends BaseLayerConfig {
 
     private final int width;
     private final int height;
     private final int worldSeed;
 
-    public boolean driftActive = true;
-    public boolean warpActive = true;
+    public boolean driftActive;
+    public boolean warpActive;
 
-    public float driftSpeed = 0.02f;
-    public float driftAngle = 3.1415f;
+    public float driftSpeed;
+    public float driftAngle;
 
-    public float threshold = 0.2f;
-    public float softness = 0.1f;
+    public float threshold;
+    public float softness;
 
-    public int warpCellSize = 64;
-    public int warpOctaves = 3;
-    public float warpPersistence = 0.6f;
-    public float warpStrength = 4;
+    public int warpCellSize;
+    public int warpOctaves;
+    public float warpPersistence;
+    public float warpStrength;
 
-    public int signalCellSize = 50;
-    public int signalOctaves = 2;
-    public int signalPersistence = 5;
+    public int signalCellSize;
+    public int signalOctaves;
+    public int signalPersistence;
 
     public TemperatureConfig(int width, int height, int worldSeed) {
         this.width = width;
@@ -64,7 +66,8 @@ public class TemperatureConfig {
         return warp;
     }
 
-    public ProceduralLayer buildLayer()
+    @Override
+    public ProceduralLayer buildLayer(LayerContext ctx)
     {
         TimeBehavior warpingDrift = new Composite(List.of(drift(), warp()));
 
@@ -79,6 +82,28 @@ public class TemperatureConfig {
                 .buildProceduralLayer();
     }
 
+    public static TemperatureConfig defaultConfig(int width, int height, int seed) {
+        TemperatureConfig c = new TemperatureConfig(width, height, seed);
+
+        c.driftActive = true;
+        c.warpActive = true;
+
+        c.driftSpeed = 0.02f;
+        c.driftAngle = 3.1415f;
+
+        c.threshold = 0.2f;
+        c.softness = 0.1f;
+
+        c.warpCellSize = 64;
+        c.warpOctaves = 3;
+        c.warpPersistence = 0.6f;
+        c.warpStrength = 4;
+
+        c.signalCellSize = 50;
+        c.signalOctaves = 2;
+        c.signalPersistence = 5;
+        return c;
+    }
 
 
 

@@ -1,5 +1,6 @@
 package com.sim.world.agent;
 
+import com.sim.layers.LayerID;
 import com.sim.layers.WorldLayer;
 import com.sim.world.Coordinate;
 import com.sim.world.World;
@@ -38,8 +39,8 @@ public class Agent {
     }
 
     private void perceive(World world) {
-        Velocity toFood = perceiveWeightedCenter(world, world.food(), needs.hunger());
-        Velocity toTemperature = perceiveBestFittingCenter(world, world.temperature(), needs.needForTemperature(), Needs.TEMP_OPTIMUM);
+        Velocity toFood = perceiveWeightedCenter(world, world.layer(LayerID.FOOD), needs.hunger());
+        Velocity toTemperature = perceiveBestFittingCenter(world, world.layer(LayerID.TEMPERATURE), needs.needForTemperature(), Needs.TEMP_OPTIMUM);
         this.velocity = this.velocity
                 .add(toFood)
                 .add(toTemperature);
@@ -82,8 +83,8 @@ public class Agent {
         float pY = (float) (pos.y() + velocity().vy() * speed);
         this.pos = new Position(pX,pY);
         needs.applyHunger();
-        needs.applySaturation(world.foodAt(pos.nearestCoordinate(world)));
-        needs.applyTemperature(world.tempAt(pos.nearestCoordinate(world)));
+        needs.applySaturation(world.layerAt(LayerID.FOOD, pos.nearestCoordinate(world)));
+        needs.applyTemperature(world.layerAt(LayerID.TEMPERATURE, pos.nearestCoordinate(world)));
     }
 
 }

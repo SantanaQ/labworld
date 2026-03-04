@@ -11,9 +11,14 @@ public class WorldConfig {
     public int agentCount = 50;
 
     public TemperatureConfig temperatureConfig;
+    public FoodConfig foodConfig;
 
     public WorldConfig() {
-        this.temperatureConfig = new TemperatureConfig(width, height, seed);
+        this.temperatureConfig = TemperatureConfig.defaultConfig(width, height, seed);
+        this.foodConfig = FoodConfig.defaultConfig(width, height, seed);
     }
+
+
+
 
 }

@@ -1,6 +1,7 @@
 package com.sim.snapshot;
 
-import com.sim.world.Coordinate;
+import com.sim.layers.LayerID;
+import com.sim.layers.Renderable;
 import com.sim.world.World;
 import com.sim.world.agent.Agent;
 
@@ -23,9 +24,10 @@ public class WorldSnapshot {
         this.width = world.width();
         this.height = world.height();
 
-        LayerSnapshot temperature = new LayerSnapshot(world.temperature());
+        LayerSnapshot temperature
+                = new LayerSnapshot((Renderable) world.layer(LayerID.TEMPERATURE));
         this.tempSnap = temperature.values();
-        LayerSnapshot food = new LayerSnapshot(world.food());
+        LayerSnapshot food = new LayerSnapshot((Renderable) world.layer(LayerID.FOOD));
         this.foodSnap = food.values();
 
         OccupancySnapshot occupancy = new OccupancySnapshot(world.occupancy(), width, height);

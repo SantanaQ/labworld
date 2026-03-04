@@ -1,111 +1,80 @@
 package com.sim.world;
 
+import com.sim.config.BaseLayerConfig;
+import com.sim.layers.LayerContext;
 import com.sim.config.WorldConfig;
 import com.sim.layers.*;
-import com.sim.layers.step.Normalize;
-import com.sim.layers.step.SuitabilityMask;
-import com.sim.layers.time_behavior.Composite;
-import com.sim.layers.time_behavior.DomainWarp;
-import com.sim.layers.time_behavior.TimeBehavior;
-import com.sim.noise.FractalNoise;
-import com.sim.noise.ValueNoise;
-import com.sim.layers.step.SoftThreshold;
-import com.sim.layers.time_behavior.Drifting;
 import com.sim.world.agent.Agent;
 import com.sim.world.agent.Position;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class World {
 
-    /*final*/ int width;
-    /*final*/ int height;
+    final WorldConfig config;
+    final LayerContext ctx;
+    final Map<LayerID, LayerRuntime> runtimes;
 
-     int seed = 9992221;
-    Random rand;
-
-    int agentCount = 5;
-    List<Agent> agents;
-    OccupancyGrid occupancy;
-
-    WorldLayer slope;
-    ProceduralLayer temperature;
-    InteractiveLayer food;
-    WorldLayer stress;
-    WorldLayer scent;
-    List<WorldLayer> layers;
-
-    float time = 1;
-
-    /*final*/ WorldConfig config;
+    final Random rand;
+    final List<Agent> agents;
+    final OccupancyGrid occupancy;
+    private float time = 1;
 
     public World(WorldConfig config) {
+        this.ctx = new LayerContext();
         this.config = config;
-        this.temperature = config.temperatureConfig.buildLayer();
+        this.runtimes = new HashMap<>();
+
+        agents = new ArrayList<>();
+        occupancy = new OccupancyGrid(config.width, config.height);
+        rand = new Random(config.seed);
+
+        addRuntime(LayerID.TEMPERATURE, config.temperatureConfig);
+        addRuntime(LayerID.FOOD, config.temperatureConfig);
+
+        rebuildAll();
+        spawnAgents(config.agentCount);
     }
 
-    public World(int width, int height) {
-        this.width = width;
-        this.height = height;
-        agents = new ArrayList<>();
-        occupancy = new OccupancyGrid(width, height);
-        layers = new ArrayList<>();
-
-        rand = new Random(seed);
-
-        TimeBehavior drift = new Drifting(0.1f, 2.1415f);
-
-        TimeBehavior warp = new DomainWarp(
-                new FractalNoise(new ValueNoise(seed+1, 64), 3, 0.6f),
-                new FractalNoise(new ValueNoise(seed+2, 64), 3, 0.6f),
-                50f
-        );
-
-        TimeBehavior time = new Composite(
-                List.of(drift, warp)
-        );
-
-        temperature = new LayerBuilder(width, height)
-                .withSignalSource(new FractalNoise(seed+3, 50, 2,5))
-                .withTimeBehaviour(time)
-                .step(new SoftThreshold(0.2f, 0.1f))
-                .step(new Normalize(0, 1))
-                .buildProceduralLayer();
-
-        food = new LayerBuilder(width, height)
-                .withSignalSource(new FractalNoise(seed+100, 70, 2,5))
-                .withTimeBehaviour(drift)
-                .step(new SoftThreshold(0.7f, 0.1f))
-                .step(new SuitabilityMask(temperature, 0.5f, 0.7f))
-                .step(new Normalize(0, 1))
-                .buildInteractiveLayer();
-
-        layers.addAll(List.of(temperature, food));
-
-        spawnAgents();
-
+    private void addRuntime(LayerID id, BaseLayerConfig<?> config) {
+        LayerRuntime runtime = new LayerRuntime(id, config);
+        runtimes.put(id, runtime);
     }
 
     public int width() {
-        return width;
+        return config.width;
     }
 
     public int height() {
-        return height;
+        return config.height;
+    }
+
+    public void rebuildAll() {
+        ctx.clear();
+
+        for(LayerID id : LayerID.values()) {
+            rebuildLayer(id);
+        }
+    }
+
+    public void rebuildLayer(LayerID id) {
+        LayerRuntime runtime = runtimes.get(id);
+        runtime.updateLayer(runtime.config().buildLayer(ctx));
+        ctx.register(id, runtime.layer());
+        runtime.config().clearDirty();
     }
 
     public void tick() {
-        for (WorldLayer layer : layers) {
-            layer.updatePotential(time);
+        for (var entry : runtimes.entrySet()) {
+            entry.getValue().layer().updatePotential(time);
         }
 
         for (Agent agent : agents) {
             agent.actOn(this);
         }
 
-        for (WorldLayer layer : layers) {
+        for (var entry : runtimes.entrySet()) {
+            WorldLayer layer = entry.getValue().layer();
             if(layer instanceof InteractiveLayer)
             {
                 ((InteractiveLayer) layer).updateState();
@@ -114,26 +83,6 @@ public class World {
 
         rebuildOccupancy();
         time++;
-    }
-
-    public float tempAt(Coordinate coord) {
-        return temperature.accessibleAt(coord);
-    }
-
-    public float slopeAt(Coordinate coord) {
-        return slope.accessibleAt(coord);
-    }
-
-    public float foodAt(Coordinate coord) {
-        return food.accessibleAt(coord);
-    }
-
-    public float stressAt(Coordinate coord) {
-        return stress.accessibleAt(coord);
-    }
-
-    public float scentAt(Coordinate coord) {
-        return scent.accessibleAt(coord);
     }
 
     public List<Agent> agentsAt(Coordinate coord) {
@@ -148,12 +97,12 @@ public class World {
         return time;
     }
 
-    public ProceduralLayer temperature() {
-        return temperature;
+    public WorldLayer layer(LayerID id) {
+        return runtimes.get(id).layer();
     }
 
-    public InteractiveLayer food() {
-        return food;
+    public float layerAt(LayerID id, Coordinate coord) {
+        return runtimes.get(id).layer().accessibleAt(coord);
     }
 
     public OccupancyGrid occupancy() {
@@ -164,10 +113,10 @@ public class World {
         return agents;
     }
 
-    private void spawnAgents() {
+    private void spawnAgents(int agentCount) {
         for(int i = 0; i < agentCount; i++) {
-            int x = rand.nextInt(0, width);
-            int y = rand.nextInt(0, height);
+            int x = rand.nextInt(0, config.width);
+            int y = rand.nextInt(0, config.height);
             Position pos = new Position(x, y);
             Agent agent = new Agent(pos);
             agents.add(agent);
@@ -203,9 +152,9 @@ public class World {
 
     public boolean isInBounds(Coordinate coordinate) {
         return coordinate.x() >= 0
-                && coordinate.x() < width
+                && coordinate.x() < config.width
                 && coordinate.y() >= 0
-                && coordinate.y() < height;
+                && coordinate.y() < config.height;
     }
 
 

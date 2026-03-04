@@ -1,5 +1,6 @@
 package com.sim.gui_jfx;
 
+import com.sim.config.WorldConfig;
 import com.sim.controller.WorldController;
 import com.sim.gui_adapters.ThreadScheduler;
 import com.sim.world.World;
@@ -25,9 +26,11 @@ public class App extends Application {
 
         stage.setTitle("Labworld");
 
-        World world = new World(200, 200);
+        //World world = new World(200, 200);
         JFXWorldView worldView = new JFXWorldView();
         ThreadScheduler applicationThread = new JFXAppThread();
+        WorldConfig worldConfig = new WorldConfig();
+        World world = new World(worldConfig);
         WorldController controller = new WorldController(world, worldView, applicationThread);
 
         BorderPane root = new BorderPane();
