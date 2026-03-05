@@ -1,8 +1,8 @@
 package com.sim.layers;
 
-import com.sim.noise.FractalNoise;
-import com.sim.noise.SignalSource;
-import com.sim.noise.ValueNoise;
+import com.sim.signal.FractalNoise;
+import com.sim.signal.SignalSource;
+import com.sim.signal.ValueNoise;
 import com.sim.layers.step.LayerStep;
 import com.sim.layers.time_behavior.Fixed;
 import com.sim.layers.time_behavior.TimeBehavior;

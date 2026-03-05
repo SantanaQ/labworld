@@ -1,6 +1,6 @@
 package com.sim.layers.time_behavior;
 
-import com.sim.noise.SignalSource;
+import com.sim.signal.SignalSource;
 
 public class Fixed implements TimeBehavior {
 

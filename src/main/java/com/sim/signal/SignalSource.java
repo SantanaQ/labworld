@@ -1,4 +1,4 @@
-package com.sim.noise;
+package com.sim.signal;
 
 public interface SignalSource {
 

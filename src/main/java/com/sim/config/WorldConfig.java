@@ -15,7 +15,19 @@ public class WorldConfig {
         this.foodConfig = FoodConfig.defaultConfig(width, height, seed);
     }
 
+    public WorldConfig(int width, int height, int seed, int agentCount) {
+        this.width = width;
+        this.height = height;
+        this.seed = seed;
+        this.agentCount = agentCount;
+    }
 
+    public void setHeatConfig(HeatConfig heatConfig) {
+        this.heatConfig = heatConfig;
+    }
 
+    public void setFoodConfig(FoodConfig foodConfig) {
+        this.foodConfig = foodConfig;
+    }
 
 }

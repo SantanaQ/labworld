@@ -2,7 +2,7 @@ package com.sim.layers;
 
 import com.sim.layers.step.LayerStep;
 import com.sim.layers.time_behavior.TimeBehavior;
-import com.sim.noise.SignalSource;
+import com.sim.signal.SignalSource;
 import com.sim.world.Coordinate;
 
 import java.util.Arrays;

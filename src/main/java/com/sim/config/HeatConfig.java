@@ -9,8 +9,10 @@ import com.sim.layers.time_behavior.Composite;
 import com.sim.layers.time_behavior.DomainWarp;
 import com.sim.layers.time_behavior.Drifting;
 import com.sim.layers.time_behavior.TimeBehavior;
-import com.sim.noise.FractalNoise;
-import com.sim.noise.ValueNoise;
+import com.sim.signal.FractalNoise;
+import com.sim.signal.GridSignal;
+import com.sim.signal.SignalSource;
+import com.sim.signal.ValueNoise;
 
 import java.util.List;
 
@@ -19,6 +21,8 @@ public class HeatConfig extends BaseLayerConfig {
     private final int width;
     private final int height;
     private final int worldSeed;
+
+    public SignalSource signalSource;
 
     public boolean driftActive;
     public boolean warpActive;
@@ -42,6 +46,7 @@ public class HeatConfig extends BaseLayerConfig {
         this.width = width;
         this.height = height;
         this.worldSeed = worldSeed;
+        signalSource = new GridSignal(new float[width][height]);
     }
 
     private Drifting drift()
@@ -71,10 +76,7 @@ public class HeatConfig extends BaseLayerConfig {
         TimeBehavior warpingDrift = new Composite(List.of(drift(), warp()));
 
         return new LayerBuilder(width, height)
-                .withSignalSource(new FractalNoise(worldSeed+3,
-                        signalCellSize,
-                        signalOctaves,
-                        signalPersistence))
+                .withSignalSource(signalSource)
                 .withTimeBehaviour(warpingDrift)
                 .step(new SoftThreshold(threshold, softness))
                 .step(new Normalize(0, 1))
@@ -101,6 +103,12 @@ public class HeatConfig extends BaseLayerConfig {
         c.signalCellSize = 50;
         c.signalOctaves = 2;
         c.signalPersistence = 5;
+
+        c.signalSource = new FractalNoise(c.worldSeed+3,
+                c.signalCellSize,
+                c.signalOctaves,
+                c.signalPersistence);
+
         return c;
     }
 

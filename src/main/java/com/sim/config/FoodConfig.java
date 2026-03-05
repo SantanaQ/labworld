@@ -8,7 +8,9 @@ import com.sim.layers.step.Normalize;
 import com.sim.layers.step.SoftThreshold;
 import com.sim.layers.step.SuitabilityMask;
 import com.sim.layers.time_behavior.Drifting;
-import com.sim.noise.FractalNoise;
+import com.sim.signal.FractalNoise;
+import com.sim.signal.GridSignal;
+import com.sim.signal.SignalSource;
 
 public class FoodConfig extends BaseLayerConfig<InteractiveLayer>{
 
@@ -28,6 +30,7 @@ public class FoodConfig extends BaseLayerConfig<InteractiveLayer>{
     public float suitabilityMin;
     public float suitabilityMax;
 
+    public SignalSource signalSource;
     public int signalCellSize;
     public int signalOctaves;
     public int signalPersistence;
@@ -36,6 +39,7 @@ public class FoodConfig extends BaseLayerConfig<InteractiveLayer>{
         this.width = width;
         this.height = height;
         this.worldSeed = seed;
+        signalSource = new GridSignal(new float[width][height]);
     }
 
     private Drifting drift() {
@@ -54,11 +58,7 @@ public class FoodConfig extends BaseLayerConfig<InteractiveLayer>{
     @Override
     public InteractiveLayer buildLayer(LayerContext ctx) {
         return new LayerBuilder(width, height)
-                .withSignalSource(new FractalNoise(
-                        worldSeed+100,
-                        signalCellSize,
-                        signalOctaves,
-                        signalPersistence))
+                .withSignalSource(signalSource)
                 .withTimeBehaviour(drift())
                 .step(new SoftThreshold(threshold, softness))
                 .step(suitabilityMask(ctx))
@@ -82,6 +82,12 @@ public class FoodConfig extends BaseLayerConfig<InteractiveLayer>{
         c.suitabilityRef = LayerID.HEAT;
         c.suitabilityMin = 0.5f;
         c.suitabilityMax = 0.7f;
+
+        c.signalSource = new FractalNoise(
+                c.worldSeed+100,
+                c.signalCellSize,
+                c.signalOctaves,
+                c.signalPersistence);
 
         return c;
     }

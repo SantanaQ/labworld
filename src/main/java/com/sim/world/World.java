@@ -123,6 +123,10 @@ public class World {
         }
     }
 
+    public void spawnAgent(Agent agent) {
+        agents.add(agent);
+    }
+
     private void rebuildOccupancy() {
        occupancy.clear();
        for(Agent agent : agents) {
