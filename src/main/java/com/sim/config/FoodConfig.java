@@ -79,7 +79,7 @@ public class FoodConfig extends BaseLayerConfig<InteractiveLayer>{
         c.threshold = 0.7f;
         c.softness = 0.1f;
 
-        c.suitabilityRef = LayerID.TEMPERATURE;
+        c.suitabilityRef = LayerID.HEAT;
         c.suitabilityMin = 0.5f;
         c.suitabilityMax = 0.7f;
 

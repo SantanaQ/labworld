@@ -1,12 +1,11 @@
 package com.sim.layers.step;
 
-import com.sim.layers.LayerContext;
 import com.sim.layers.WorldLayer;
 import com.sim.world.Coordinate;
 
 public class SuitabilityMask implements LayerStep{
 
-    private WorldLayer referenceLayer;
+    private final WorldLayer referenceLayer;
     private final float min;
     private final float max;
 

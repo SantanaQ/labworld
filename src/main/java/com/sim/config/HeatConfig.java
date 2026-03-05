@@ -3,7 +3,6 @@ package com.sim.config;
 import com.sim.layers.LayerBuilder;
 import com.sim.layers.LayerContext;
 import com.sim.layers.ProceduralLayer;
-import com.sim.layers.WorldLayer;
 import com.sim.layers.step.Normalize;
 import com.sim.layers.step.SoftThreshold;
 import com.sim.layers.time_behavior.Composite;
@@ -15,7 +14,7 @@ import com.sim.noise.ValueNoise;
 
 import java.util.List;
 
-public class TemperatureConfig extends BaseLayerConfig {
+public class HeatConfig extends BaseLayerConfig {
 
     private final int width;
     private final int height;
@@ -39,7 +38,7 @@ public class TemperatureConfig extends BaseLayerConfig {
     public int signalOctaves;
     public int signalPersistence;
 
-    public TemperatureConfig(int width, int height, int worldSeed) {
+    public HeatConfig(int width, int height, int worldSeed) {
         this.width = width;
         this.height = height;
         this.worldSeed = worldSeed;
@@ -82,8 +81,8 @@ public class TemperatureConfig extends BaseLayerConfig {
                 .buildProceduralLayer();
     }
 
-    public static TemperatureConfig defaultConfig(int width, int height, int seed) {
-        TemperatureConfig c = new TemperatureConfig(width, height, seed);
+    public static HeatConfig defaultConfig(int width, int height, int seed) {
+        HeatConfig c = new HeatConfig(width, height, seed);
 
         c.driftActive = true;
         c.warpActive = true;

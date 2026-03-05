@@ -29,8 +29,8 @@ public class World {
         occupancy = new OccupancyGrid(config.width, config.height);
         rand = new Random(config.seed);
 
-        addRuntime(LayerID.TEMPERATURE, config.temperatureConfig);
-        addRuntime(LayerID.FOOD, config.temperatureConfig);
+        addRuntime(LayerID.HEAT, config.heatConfig);
+        addRuntime(LayerID.FOOD, config.foodConfig);
 
         rebuildAll();
         spawnAgents(config.agentCount);

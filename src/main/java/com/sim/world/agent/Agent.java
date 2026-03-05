@@ -40,10 +40,10 @@ public class Agent {
 
     private void perceive(World world) {
         Velocity toFood = perceiveWeightedCenter(world, world.layer(LayerID.FOOD), needs.hunger());
-        Velocity toTemperature = perceiveBestFittingCenter(world, world.layer(LayerID.TEMPERATURE), needs.needForTemperature(), Needs.TEMP_OPTIMUM);
+        Velocity toHeat = perceiveBestFittingCenter(world, world.layer(LayerID.HEAT), needs.needForHeat(), Needs.HEAT_OPTIMUM);
         this.velocity = this.velocity
                 .add(toFood)
-                .add(toTemperature);
+                .add(toHeat);
 
 
 
@@ -84,7 +84,7 @@ public class Agent {
         this.pos = new Position(pX,pY);
         needs.applyHunger();
         needs.applySaturation(world.layerAt(LayerID.FOOD, pos.nearestCoordinate(world)));
-        needs.applyTemperature(world.layerAt(LayerID.TEMPERATURE, pos.nearestCoordinate(world)));
+        needs.applyHeat(world.layerAt(LayerID.HEAT, pos.nearestCoordinate(world)));
     }
 
 }

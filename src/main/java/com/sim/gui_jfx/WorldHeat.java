@@ -5,14 +5,14 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-public class WorldTemperature implements RenderLayer{
+public class WorldHeat implements RenderLayer{
 
     private final Canvas canvas;
     private final GraphicsContext gc;
 
     private final Color[] colorMap = new Color[256];
 
-    public WorldTemperature() {
+    public WorldHeat() {
         this.canvas = new Canvas();
         this.gc = canvas.getGraphicsContext2D();
         for (int i = 0; i < 256; i++) {
@@ -34,7 +34,7 @@ public class WorldTemperature implements RenderLayer{
 
     @Override
     public void renderCell(WorldSnapshot worldSnap, int x, int y) {
-        float temp = worldSnap.temperature()[x][y];
+        float temp = worldSnap.heat()[x][y];
         int idx = Math.max(0, Math.min(255, Math.round(temp * 255)));
         gc.setFill(colorMap[idx]);
         gc.fillRect(

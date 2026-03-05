@@ -12,7 +12,7 @@ public class WorldSnapshot {
     private final int width;
     private final int height;
 
-    private final float[][] tempSnap;
+    private final float[][] heatSnap;
     private final float[][] foodSnap;
 
     private final int[][] occupancySnap;
@@ -24,9 +24,9 @@ public class WorldSnapshot {
         this.width = world.width();
         this.height = world.height();
 
-        LayerSnapshot temperature
-                = new LayerSnapshot((Renderable) world.layer(LayerID.TEMPERATURE));
-        this.tempSnap = temperature.values();
+        LayerSnapshot heat
+                = new LayerSnapshot((Renderable) world.layer(LayerID.HEAT));
+        this.heatSnap = heat.values();
         LayerSnapshot food = new LayerSnapshot((Renderable) world.layer(LayerID.FOOD));
         this.foodSnap = food.values();
 
@@ -49,8 +49,8 @@ public class WorldSnapshot {
         return height;
     }
 
-    public float[][] temperature() {
-        return tempSnap;
+    public float[][] heat() {
+        return heatSnap;
     }
 
     public float[][] food() {

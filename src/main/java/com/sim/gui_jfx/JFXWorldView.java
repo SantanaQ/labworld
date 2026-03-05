@@ -35,15 +35,15 @@ public class JFXWorldView implements WorldView {
         root.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, null, null)));
 
 
-        WorldTemperature temperature = new WorldTemperature();
+        WorldHeat heat = new WorldHeat();
         WorldFood food = new WorldFood();
         agents = new WorldAgents();
 
-        layers.add(temperature);
+        layers.add(heat);
         layers.add(food);
         layers.add(agents);
 
-        root.getChildren().addAll(temperature.canvas(), food.canvas(), agents.canvas());
+        root.getChildren().addAll(heat.canvas(), food.canvas(), agents.canvas());
 
         DoubleBinding sizeBinding = Bindings.createDoubleBinding(
                 () -> Math.min(root.getWidth(), root.getHeight()),

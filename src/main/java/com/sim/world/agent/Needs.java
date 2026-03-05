@@ -2,7 +2,7 @@ package com.sim.world.agent;
 
 public class Needs {
 
-    public static final float TEMP_OPTIMUM = 0.5f;
+    public static final float HEAT_OPTIMUM = 0.5f;
 
     private final float impact = 0.05f;
 
@@ -15,12 +15,12 @@ public class Needs {
     private float energy;
 
     // optimal in center
-    private float temperature;
+    private float heat;
 
     public Needs() {
         this.hunger = 0.5f;
         this.energy = 1f;
-        this.temperature = TEMP_OPTIMUM;
+        this.heat = HEAT_OPTIMUM;
         this.curiosity = 0.5f;
         this.fear = 0.5f;
     }
@@ -33,8 +33,8 @@ public class Needs {
         return energy;
     }
 
-    public float temperature() {
-        return temperature;
+    public float heat() {
+        return heat;
     }
 
     public float curiosity() {
@@ -62,17 +62,17 @@ public class Needs {
         energy = Math.max(0f, energy - impact);
     }
 
-    public void applyTemperature(float val) {
-        float diff =  val - temperature;
-        temperature = Math.clamp(temperature + diff, -1f, 2f);
+    public void applyHeat(float val) {
+        float diff =  val - heat;
+        heat = Math.clamp(heat + diff, -1f, 2f);
     }
 
-    public float needForTemperature() {
-        return Math.abs(temperature - TEMP_OPTIMUM);
+    public float needForHeat() {
+        return Math.abs(heat - HEAT_OPTIMUM);
     }
 
-    public void reduceTemperature() {
-        temperature = Math.max(0f, temperature - impact);
+    public void reduceHeat() {
+        heat = Math.max(0f, heat - impact);
     }
 
     public void applyCuriosity() {
