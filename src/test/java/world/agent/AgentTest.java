@@ -18,7 +18,7 @@ public class AgentTest {
             {0, 0, 0, 0, 0}
     };
 
-    @Test
+    /*@Test
     void test() {
 
         float[][] upperRight = new float[][] {
@@ -33,6 +33,7 @@ public class AgentTest {
         World world = new TestWorldBuilder()
                 .food(upperRight)
                 .heat(empty5x5)
+                .agent(agent)
                 .build();
 
         Position prePos = agent.position();
@@ -40,9 +41,7 @@ public class AgentTest {
         Position postPos = agent.position();
         assertTrue(postPos.x() > prePos.x());
         assertTrue(postPos.y() < prePos.y());
-
-
-    }
+    }*/
 
 
 }

@@ -1,9 +1,11 @@
 package com.sim.layers;
 
+import com.sim.layers.step.LayerReference;
 import com.sim.layers.step.LayerStep;
 import com.sim.layers.time_behavior.TimeBehavior;
 import com.sim.signal.SignalSource;
 import com.sim.world.Coordinate;
+import sun.misc.Signal;
 
 import java.util.Arrays;
 import java.util.List;
@@ -12,6 +14,7 @@ public class InteractiveLayer implements StatefulLayer, AgentAffectable, Rendera
 
     private final SignalSource source;
     private final List<LayerStep> compositingSteps;
+    private final List<LayerReference> compositingReferences;
     private final TimeBehavior timeBehavior;
 
     private final float[][] potential;
@@ -22,10 +25,15 @@ public class InteractiveLayer implements StatefulLayer, AgentAffectable, Rendera
     private final float relaxation;
 
 
-    public InteractiveLayer(SignalSource source, TimeBehavior timeBehavior,
-                List<LayerStep> compositingSteps, float[][] potential, float relaxation) {
+    public InteractiveLayer(SignalSource source,
+                            TimeBehavior timeBehavior,
+                            List<LayerStep> compositingSteps,
+                            List<LayerReference> compositingReferences,
+                            float[][] potential,
+                            float relaxation) {
         this.source = source;
         this.compositingSteps = compositingSteps;
+        this.compositingReferences = compositingReferences;
         this.timeBehavior = timeBehavior;
         this.potential = potential;
         this.relaxation = relaxation;
@@ -42,7 +50,7 @@ public class InteractiveLayer implements StatefulLayer, AgentAffectable, Rendera
 
     @Override
     public void applyAgentInfluence(Coordinate c, float value) {
-        agentFields[c.x()][c.y()] += value;
+        agentFields[c.y()][c.x()] += value;
     }
 
     @Override
@@ -65,27 +73,27 @@ public class InteractiveLayer implements StatefulLayer, AgentAffectable, Rendera
         int w = state.length;
         int h = state[0].length;
 
-        for (int x = 1; x < w - 1; x++) {
-            for (int y = 1; y < h - 1; y++) {
-                float s = state[x][y];
-                float p = potential[x][y];
+        for (int y = 1; y < h - 1; y++) {
+            for (int x = 1; x < w - 1; x++) {
+                float s = state[y][x];
+                float p = potential[y][x];
 
                 float laplace =
-                        state[x - 1][y] +
-                                state[x + 1][y] +
-                                state[x][y - 1] +
-                                state[x][y + 1];
+                        state[y - 1][x] +
+                                state[y + 1][x] +
+                                state[y][x - 1] +
+                                state[y][x + 1];
                 laplace *= 0.25f;
                 s = lerp(s, laplace, 0.2f);
 
                 s += relaxation * (p - s);
 
-                s += agentFields[x][y];
-                agentFields[x][y] = 0f; // reset
+                s += agentFields[y][x];
+                agentFields[y][x] = 0f; // reset
 
                 s *= 0.995f;
 
-                nextState[x][y] = s;
+                nextState[y][x] = s;
             }
         }
         float[][] tmp = state;
@@ -95,7 +103,7 @@ public class InteractiveLayer implements StatefulLayer, AgentAffectable, Rendera
 
     @Override
     public float stateAt(Coordinate coord) {
-        return state[coord.x()][coord.y()];
+        return state[coord.y()][coord.x()];
     }
 
     private float lerp(float a, float b, float t) {
@@ -124,12 +132,17 @@ public class InteractiveLayer implements StatefulLayer, AgentAffectable, Rendera
 
     @Override
     public float potentialAt(Coordinate coord) {
-        return potential[coord.x()][coord.y()];
+        return potential[coord.y()][coord.x()];
     }
 
     @Override
     public float accessibleAt(Coordinate coord) {
-        return state[coord.x()][coord.y()];
+        return state[coord.y()][coord.x()];
+    }
+
+    @Override
+    public List<LayerReference> layerReferences() {
+        return compositingReferences;
     }
 
 }

@@ -44,9 +44,6 @@ public class Agent {
         this.velocity = this.velocity
                 .add(toFood)
                 .add(toHeat);
-
-
-
     }
 
     private Velocity perceiveWeightedCenter(World world, WorldLayer layer, float need) {
@@ -58,7 +55,8 @@ public class Agent {
     }
 
     private Velocity perceiveBestFittingCenter(World world, WorldLayer layer, float need, float targetValue) {
-        Coordinate bestFittingCenter = LayerAggregation.bestFittingCenter(world,
+        Coordinate bestFittingCenter = LayerAggregation.bestFittingCenter(
+                world,
                 pos.nearestCoordinate(world),
                 layer,
                 8,
@@ -82,7 +80,7 @@ public class Agent {
         float pX = (float) (pos.x() + velocity().vx() * speed);
         float pY = (float) (pos.y() + velocity().vy() * speed);
         this.pos = new Position(pX,pY);
-        needs.applyHunger();
+
         needs.applySaturation(world.layerAt(LayerID.FOOD, pos.nearestCoordinate(world)));
         needs.applyHeat(world.layerAt(LayerID.HEAT, pos.nearestCoordinate(world)));
     }

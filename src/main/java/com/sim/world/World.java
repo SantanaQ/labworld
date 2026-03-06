@@ -1,6 +1,6 @@
 package com.sim.world;
 
-import com.sim.config.BaseLayerConfig;
+import com.sim.config.LayerConfig;
 import com.sim.layers.LayerContext;
 import com.sim.config.WorldConfig;
 import com.sim.layers.*;
@@ -36,10 +36,11 @@ public class World {
         spawnAgents(config.agentCount);
     }
 
-    private void addRuntime(LayerID id, BaseLayerConfig<?> config) {
+    private void addRuntime(LayerID id, LayerConfig config) {
         LayerRuntime runtime = new LayerRuntime(id, config);
         runtimes.put(id, runtime);
     }
+
 
     public int width() {
         return config.width;
@@ -55,12 +56,18 @@ public class World {
         for(LayerID id : LayerID.values()) {
             rebuildLayer(id);
         }
+
+
     }
 
     public void rebuildLayer(LayerID id) {
         LayerRuntime runtime = runtimes.get(id);
-        runtime.updateLayer(runtime.config().buildLayer(ctx));
-        ctx.register(id, runtime.layer());
+        runtime.updateLayer(runtime.config().build());
+        WorldLayer layer = runtime.layer();
+        ctx.register(id, layer);
+        for(var ref : layer.layerReferences()) {
+            ref.resolve(ctx);
+        }
         runtime.config().clearDirty();
     }
 
@@ -111,6 +118,10 @@ public class World {
 
     public List<Agent> agents() {
         return agents;
+    }
+
+    public LayerContext layerContext() {
+        return ctx;
     }
 
     private void spawnAgents(int agentCount) {

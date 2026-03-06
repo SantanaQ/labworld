@@ -1,14 +1,14 @@
 package com.sim.layers;
 
-import com.sim.config.BaseLayerConfig;
+import com.sim.config.LayerConfig;
 
 public class LayerRuntime {
 
     private final LayerID id;
-    private final BaseLayerConfig<?> cfg;
+    private final LayerConfig cfg;
     private WorldLayer layer;
 
-    public LayerRuntime(LayerID id, BaseLayerConfig<?> cfg) {
+    public LayerRuntime(LayerID id, LayerConfig cfg) {
         this.id = id;
         this.cfg = cfg;
     }
@@ -25,7 +25,7 @@ public class LayerRuntime {
         return layer;
     }
 
-    public BaseLayerConfig<?> config() {
+    public LayerConfig config() {
         return cfg;
     }
 

@@ -19,11 +19,11 @@ public class LayerAggregation {
 
     public static float sum(World world, Coordinate origin, WorldLayer source, int windowSize) {
         List<Coordinate> neighbors = world.neighbors(origin, windowSize);
-        float total = 0;
+        float sum = 0;
         for(Coordinate neighbor : neighbors) {
-            total += source.accessibleAt(neighbor);
+            sum += source.accessibleAt(neighbor);
         }
-        return total;
+        return sum;
     }
 
     public static float min(World world, Coordinate origin, WorldLayer source, int windowSize) {
@@ -50,11 +50,12 @@ public class LayerAggregation {
         float prodX = 0;
         float prodY = 0;
         for (Coordinate neighbor : neighbors) {
-            prodX += neighbor.x() * source.accessibleAt(neighbor);
-            prodY += neighbor.y() * source.accessibleAt(neighbor);
+            float val = source.accessibleAt(neighbor);
+            prodX += neighbor.x() * val;
+            prodY += neighbor.y() * val;
         }
-        int cX = (int) ((int) prodX / sum);
-        int cY = (int) ((int) prodY / sum);
+        int cX = (int) (prodX / sum);
+        int cY = (int) (prodY / sum);
         return new Coordinate(cX, cY);
     }
 

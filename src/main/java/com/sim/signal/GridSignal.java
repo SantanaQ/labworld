@@ -13,8 +13,9 @@ public class GridSignal implements SignalSource {
         int ix = Math.round(x);
         int iy = Math.round(y);
 
-        if(ix < 0 || iy < 0 || iy >= grid.length || ix >= grid[0].length)
+        if(ix < 0 || iy < 0 || iy >= grid.length || ix >= grid[0].length) {
             return 0;
+        }
 
         return grid[iy][ix];
     }
