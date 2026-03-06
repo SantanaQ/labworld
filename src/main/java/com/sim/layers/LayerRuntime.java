@@ -1,6 +1,10 @@
 package com.sim.layers;
 
 import com.sim.config.LayerConfig;
+import com.sim.layers.step.LayerReferenceStep;
+import com.sim.layers.step.LayerStep;
+
+import java.util.List;
 
 public class LayerRuntime {
 
@@ -29,5 +33,9 @@ public class LayerRuntime {
         return cfg;
     }
 
+    public List<LayerStep> layerSteps()
+    {
+        return cfg.layerSteps();
+    }
 
 }

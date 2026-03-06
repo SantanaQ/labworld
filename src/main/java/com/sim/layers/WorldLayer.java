@@ -1,6 +1,5 @@
 package com.sim.layers;
 
-import com.sim.layers.step.LayerReference;
 import com.sim.layers.step.LayerStep;
 import com.sim.layers.time_behavior.TimeBehavior;
 import com.sim.signal.SignalSource;
@@ -16,7 +15,6 @@ public interface WorldLayer {
     List<LayerStep> compositingSteps();
     float potentialAt(Coordinate coord);
     float accessibleAt(Coordinate coord);
-    List<LayerReference> layerReferences();
 
     default void updatePotential(float time) {
         float[][] potential = potential();

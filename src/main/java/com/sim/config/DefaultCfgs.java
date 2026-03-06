@@ -48,16 +48,16 @@ public final class DefaultCfgs {
                         new ValueNoise(seed+2, 64),
                         3,
                         0.6f),
-                4);
+                20);
 
-        Composite warpingDrift = new Composite(List.of(warp, defaultDrift()));
+        Composite warpingDrift = new Composite(List.of(defaultDrift(), warp));
         c.setTimeBehavior(warpingDrift);
         c.addLayerStep(new SoftThreshold(0.2f, 0.1f));
         return c;
     }
 
     private static Drifting defaultDrift() {
-        return new Drifting(0.2f, 0);
+        return new Drifting(0.1f, 0);
     }
 
 

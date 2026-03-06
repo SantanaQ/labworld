@@ -1,6 +1,6 @@
 package com.sim.layers;
 
-import com.sim.layers.step.LayerReference;
+import com.sim.layers.step.LayerReferenceStep;
 import com.sim.layers.step.LayerStep;
 import com.sim.layers.time_behavior.TimeBehavior;
 import com.sim.signal.SignalSource;
@@ -12,7 +12,7 @@ public class ProceduralLayer implements WorldLayer, Renderable {
 
     private final SignalSource source;
     private final List<LayerStep> compositingSteps;
-    private final List<LayerReference> compositingReferences;
+    private final List<LayerReferenceStep> compositingReferences;
     private final TimeBehavior timeBehavior;
 
     private final float[][] potential;
@@ -20,7 +20,7 @@ public class ProceduralLayer implements WorldLayer, Renderable {
     public ProceduralLayer(SignalSource source,
                            TimeBehavior timeBehavior,
                            List<LayerStep> compositingSteps,
-                           List<LayerReference> compositingReferences,
+                           List<LayerReferenceStep> compositingReferences,
                            float[][] potential) {
         this.source = source;
         this.compositingSteps = compositingSteps;
@@ -62,11 +62,6 @@ public class ProceduralLayer implements WorldLayer, Renderable {
     @Override
     public float accessibleAt(Coordinate coord) {
         return potential[coord.y()][coord.x()];
-    }
-
-    @Override
-    public List<LayerReference> layerReferences() {
-        return compositingReferences;
     }
 
 }

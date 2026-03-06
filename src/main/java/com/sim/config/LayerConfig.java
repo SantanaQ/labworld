@@ -1,9 +1,8 @@
 package com.sim.config;
 
-import com.sim.layers.LayerBuilder;
 import com.sim.layers.WorldLayer;
+import com.sim.layers.step.LayerReferenceStep;
 import com.sim.layers.step.LayerStep;
-import com.sim.layers.step.Normalize;
 import com.sim.layers.time_behavior.TimeBehavior;
 import com.sim.signal.SignalSource;
 
@@ -12,10 +11,6 @@ import java.util.List;
 
 public abstract class LayerConfig {
     private boolean dirty = true;
-
-    public void markDirty() { dirty = true; }
-    public boolean isDirty() { return dirty; }
-    public void clearDirty() { dirty = false; }
 
     SignalSource signalSource;
     TimeBehavior timeBehavior;
@@ -45,5 +40,13 @@ public abstract class LayerConfig {
     }
 
     public abstract WorldLayer build();
+
+    public void markDirty() { dirty = true; }
+
+    public boolean isDirty() { return dirty; }
+
+    public void clearDirty() { dirty = false; }
+
+    public List<LayerStep> layerSteps() { return compositing; }
 
 }

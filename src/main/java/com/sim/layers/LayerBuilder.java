@@ -1,6 +1,6 @@
 package com.sim.layers;
 
-import com.sim.layers.step.LayerReference;
+import com.sim.layers.step.LayerReferenceStep;
 import com.sim.signal.FractalNoise;
 import com.sim.signal.SignalSource;
 import com.sim.signal.ValueNoise;
@@ -23,7 +23,7 @@ public class LayerBuilder {
     private TimeBehavior timeBehavior = new Fixed();
 
     private final List<LayerStep> compositingSteps = new ArrayList<>();
-    private final List<LayerReference> compositingReferences = new ArrayList<>();
+    private final List<LayerReferenceStep> compositingReferences = new ArrayList<>();
 
     private float relaxation = 0.05f;
 
@@ -43,8 +43,8 @@ public class LayerBuilder {
 
     public LayerBuilder step(LayerStep step) {
         this.compositingSteps.add(step);
-        if(step instanceof LayerReference) {
-            compositingReferences.add((LayerReference) step);
+        if(step instanceof LayerReferenceStep) {
+            compositingReferences.add((LayerReferenceStep) step);
         }
         return this;
     }

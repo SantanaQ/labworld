@@ -1,11 +1,10 @@
 package com.sim.layers;
 
-import com.sim.layers.step.LayerReference;
+import com.sim.layers.step.LayerReferenceStep;
 import com.sim.layers.step.LayerStep;
 import com.sim.layers.time_behavior.TimeBehavior;
 import com.sim.signal.SignalSource;
 import com.sim.world.Coordinate;
-import sun.misc.Signal;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,7 +13,7 @@ public class InteractiveLayer implements StatefulLayer, AgentAffectable, Rendera
 
     private final SignalSource source;
     private final List<LayerStep> compositingSteps;
-    private final List<LayerReference> compositingReferences;
+    private final List<LayerReferenceStep> compositingReferences;
     private final TimeBehavior timeBehavior;
 
     private final float[][] potential;
@@ -28,7 +27,7 @@ public class InteractiveLayer implements StatefulLayer, AgentAffectable, Rendera
     public InteractiveLayer(SignalSource source,
                             TimeBehavior timeBehavior,
                             List<LayerStep> compositingSteps,
-                            List<LayerReference> compositingReferences,
+                            List<LayerReferenceStep> compositingReferences,
                             float[][] potential,
                             float relaxation) {
         this.source = source;
@@ -138,11 +137,6 @@ public class InteractiveLayer implements StatefulLayer, AgentAffectable, Rendera
     @Override
     public float accessibleAt(Coordinate coord) {
         return state[coord.y()][coord.x()];
-    }
-
-    @Override
-    public List<LayerReference> layerReferences() {
-        return compositingReferences;
     }
 
 }

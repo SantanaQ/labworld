@@ -5,7 +5,7 @@ import com.sim.layers.LayerID;
 import com.sim.layers.WorldLayer;
 import com.sim.world.Coordinate;
 
-public class SuitabilityMask implements LayerStep, LayerReference {
+public class SuitabilityMask implements LayerReferenceStep {
 
     private final LayerID refId;
     private WorldLayer referenceLayer;
@@ -30,4 +30,10 @@ public class SuitabilityMask implements LayerStep, LayerReference {
         float suitability = smoothstep(min, max, ref);
         return value * suitability;
     }
+
+    @Override
+    public LayerID dependencyId() {
+        return refId;
+    }
+
 }

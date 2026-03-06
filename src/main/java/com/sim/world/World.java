@@ -4,6 +4,7 @@ import com.sim.config.LayerConfig;
 import com.sim.layers.LayerContext;
 import com.sim.config.WorldConfig;
 import com.sim.layers.*;
+import com.sim.layers.step.LayerReferenceStep;
 import com.sim.world.agent.Agent;
 import com.sim.world.agent.Position;
 
@@ -53,21 +54,24 @@ public class World {
     public void rebuildAll() {
         ctx.clear();
 
-        for(LayerID id : LayerID.values()) {
+        LayerDependencyGraph graph = new LayerDependencyGraph(runtimes);
+        List<LayerID> order = graph.topologicalSort();
+        for (LayerID id : order) {
             rebuildLayer(id);
         }
-
-
     }
 
     public void rebuildLayer(LayerID id) {
         LayerRuntime runtime = runtimes.get(id);
+        for(var ref : runtime.layerSteps()) {
+            if(ref instanceof LayerReferenceStep) {
+                ((LayerReferenceStep) ref).resolve(ctx);
+            }
+        }
         runtime.updateLayer(runtime.config().build());
         WorldLayer layer = runtime.layer();
         ctx.register(id, layer);
-        for(var ref : layer.layerReferences()) {
-            ref.resolve(ctx);
-        }
+
         runtime.config().clearDirty();
     }
 
