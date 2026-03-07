@@ -14,7 +14,7 @@ public interface WorldLayer {
     TimeBehavior timeBehavior();
     List<LayerStep> compositingSteps();
     float potentialAt(Coordinate coord);
-    float accessibleAt(Coordinate coord);
+    float accessibleAt(int x, int y);
 
     default void updatePotential(float time) {
         float[][] potential = potential();
@@ -36,10 +36,18 @@ public interface WorldLayer {
     default void printValues() {
         for(int y = 0; y < potential().length; y++) {
             for(int x = 0; x < potential()[y].length; x++) {
-                System.out.print(accessibleAt(new Coordinate(x, y)) + " ");
+                System.out.print(accessibleAt(x, y) + " ");
             }
             System.out.println();
         }
+    }
+
+    default float accessibleAtSafe(int x, int y) {
+        if (x < 0 || x >= potential().length
+                || y < 0 || y >= potential().length) {
+            return 0;
+        }
+        return accessibleAt(x, y);
     }
 
 }

@@ -1,8 +1,6 @@
 package com.sim.world.agent;
 
 import com.sim.layers.LayerID;
-import com.sim.layers.WorldLayer;
-import com.sim.world.Coordinate;
 import com.sim.world.World;
 
 public class Agent {
@@ -46,40 +44,26 @@ public class Agent {
     }
 
     private void perceive(World world) {
-        Velocity toFood = perceiveWeightedCenter(world, world.layer(LayerID.FOOD), needs.hunger());
-        //Velocity toHeat = perceiveBestFittingCenter(world, world.layer(LayerID.HEAT), needs.needForHeat(), Needs.HEAT_OPTIMUM);
-        this.velocity = this.velocity
-                .add(toFood);
-                //.add(toHeat);
-    }
+        Velocity toFood = Navigation.towardsTargetValue(
+                world.layer(LayerID.FOOD),
+                pos,
+                needs.hunger()
+        ).multiply(needs.hunger());
+        Velocity toHeat = Navigation.towardsTargetValue(
+                world.layer(LayerID.HEAT),
+                pos,
+                Needs.HEAT_OPTIMUM
+        ).multiply(needs.needForHeat());
+        this.velocity
+                .add(toFood)
+                .add(toHeat);
 
-    private Velocity perceiveWeightedCenter(World world, WorldLayer layer, float need) {
-        Coordinate weightedCenter = LayerAggregation.weightedCenter(
-                world,
-                pos.nearestCoordinate(world),
-                layer,
-                8);
-        return applyDirectionAndNeed(weightedCenter, need);
-    }
+        if(velocity.length() < 0.025) {
+            this.velocity = this.velocity.add(Navigation
+                            .randomVector(world.random())
+                            .multiply(0.1f));
+        }
 
-    private Velocity perceiveBestFittingCenter(World world, WorldLayer layer, float need, float targetValue) {
-        Coordinate bestFittingCenter = LayerAggregation.bestFittingCenter(
-                world,
-                pos.nearestCoordinate(world),
-                layer,
-                8,
-                3,
-                targetValue
-                );
-        return applyDirectionAndNeed(bestFittingCenter, need);
-    }
-
-    private Velocity applyDirectionAndNeed(Coordinate target, float need) {
-        float dirX = Math.clamp(target.x() - pos.x(), -1, 1);
-        float dirY = Math.clamp(target.y() - pos.y(), -1, 1);
-        float vX = dirX * need;
-        float vY = dirY * need;
-        return new Velocity(vX,vY);
     }
 
 

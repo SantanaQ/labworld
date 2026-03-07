@@ -57,8 +57,8 @@ public class ProceduralLayer implements WorldLayer, Renderable {
     }
 
     @Override
-    public float accessibleAt(Coordinate coord) {
-        return potential[coord.y()][coord.x()];
+    public float accessibleAt(int x, int y) {
+        return potential[y][x];
     }
 
 }

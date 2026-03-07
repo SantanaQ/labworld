@@ -13,22 +13,15 @@ import com.sim.world.agent.Agent;
 
 public class TestWorldBuilder {
 
-    int width = 5;
-    int height = 5;
+    int width = 3;
+    int height = 3;
     int seed = 1;
 
     float[][] heat;
     float[][] food;
 
-    Agent agent;
-
     public TestWorldBuilder heat(float[][] grid) {
         this.heat = grid;
-        return this;
-    }
-
-    public TestWorldBuilder agent(Agent agent) {
-        this.agent = agent;
         return this;
     }
 
@@ -40,6 +33,7 @@ public class TestWorldBuilder {
     public World build() {
 
         WorldConfig config = new WorldConfig(width, height, seed, 0);
+
         LayerConfig foodCfg = new InteractiveLayerConfig(width, height, seed);
         foodCfg.setSignalSource(new GridSignal(food));
         foodCfg.setTimeBehavior(new Fixed());
@@ -50,21 +44,14 @@ public class TestWorldBuilder {
         heatCfg.setTimeBehavior(new Fixed());
         config.setHeatConfig(heatCfg);
 
-        World world = new World(config);
-        world.agents().clear();
-
-        //world.layer(LayerID.FOOD).printValues();
-
-        return world;
+        return new World(config);
     }
 
-    public static float[][] empty5x5() {
+    public static float[][] empty3x3() {
         return new float[][] {
-                {0, 0, 0, 0, 0},
-                {0, 0, 0, 0, 0},
-                {0, 0, 0, 0, 0},
-                {0, 0, 0, 0, 0},
-                {0, 0, 0, 0, 0}
+                {0, 0, 0},
+                {0, 0, 0},
+                {0, 0, 0}
         };
     }
 }

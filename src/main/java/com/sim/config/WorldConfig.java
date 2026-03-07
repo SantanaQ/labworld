@@ -9,10 +9,12 @@ public class WorldConfig {
 
     public LayerConfig heatConfig;
     public LayerConfig foodConfig;
+    public LayerConfig scentConfig;
 
     public WorldConfig() {
         this.heatConfig = DefaultCfgs.defaultHeat(width, height, seed);
         this.foodConfig = DefaultCfgs.defaultFood(width, height, seed);
+        this.scentConfig = DefaultCfgs.defaultScent(width, height, seed);
     }
 
     public WorldConfig(int width, int height, int seed, int agentCount) {
@@ -28,6 +30,10 @@ public class WorldConfig {
 
     public void setFoodConfig(LayerConfig foodConfig) {
         this.foodConfig = foodConfig;
+    }
+
+    public void setScentConfig(LayerConfig scentConfig) {
+        this.scentConfig = scentConfig;
     }
 
 }

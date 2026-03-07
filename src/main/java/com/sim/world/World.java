@@ -113,7 +113,7 @@ public class World {
     }
 
     public float layerAt(LayerID id, Coordinate coord) {
-        return runtimes.get(id).layer().accessibleAt(coord);
+        return runtimes.get(id).layer().accessibleAt(coord.x(), coord.y());
     }
 
     public OccupancyGrid occupancy() {
@@ -126,6 +126,10 @@ public class World {
 
     public LayerContext layerContext() {
         return ctx;
+    }
+
+    public Random random() {
+        return rand;
     }
 
     private void spawnAgents(int agentCount) {

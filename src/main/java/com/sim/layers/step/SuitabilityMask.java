@@ -26,7 +26,7 @@ public class SuitabilityMask implements LayerReferenceStep {
 
     @Override
     public float apply(float value, Coordinate coordinate) {
-        float ref = referenceLayer.accessibleAt(coordinate);
+        float ref = referenceLayer.accessibleAt(coordinate.x(), coordinate.y());
         float suitability = smoothstep(min, max, ref);
         return value * suitability;
     }

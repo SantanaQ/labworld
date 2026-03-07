@@ -68,20 +68,20 @@ public class InteractiveLayer implements StatefulLayer, AgentAffectable, Rendera
         int w = state[0].length;
         int h = state.length;
 
-        for (int y = 1; y < h - 1; y++) {
-            for (int x = 1; x < w - 1; x++) {
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
 
                 float s = state[y][x];
                 float p = potential[y][x];
 
-                float laplace = state[y - 1][x - 1] * 0.05f +
-                                state[y - 1][x]     * 0.20f +
-                                state[y - 1][x + 1] * 0.05f +
-                                state[y][x - 1]     * 0.20f +
-                                state[y][x + 1]     * 0.20f +
-                                state[y + 1][x - 1] * 0.05f +
-                                state[y + 1][x]     * 0.20f +
-                                state[y + 1][x + 1] * 0.05f;
+                float laplace = accessibleAtSafe(x-1, y-1)   * 0.05f +
+                                accessibleAtSafe(x, y-1)     * 0.20f +
+                                accessibleAtSafe(x+1, y-1)   * 0.05f +
+                                accessibleAtSafe(x-1, y)     * 0.20f +
+                                accessibleAtSafe(x+1, y)     * 0.20f +
+                                accessibleAtSafe(x-1, y+1)   * 0.05f +
+                                accessibleAtSafe(x, y+1)     * 0.20f +
+                                accessibleAtSafe(x+1, y+1)   * 0.05f;
 
 
                 // diffusion
@@ -141,8 +141,8 @@ public class InteractiveLayer implements StatefulLayer, AgentAffectable, Rendera
     }
 
     @Override
-    public float accessibleAt(Coordinate coord) {
-        return state[coord.y()][coord.x()];
+    public float accessibleAt(int x, int y) {
+        return state[y][x];
     }
 
 }

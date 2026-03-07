@@ -6,7 +6,9 @@ import com.sim.layers.step.SuitabilityMask;
 import com.sim.layers.time_behavior.Composite;
 import com.sim.layers.time_behavior.DomainWarp;
 import com.sim.layers.time_behavior.Drifting;
+import com.sim.layers.time_behavior.Fixed;
 import com.sim.signal.FractalNoise;
+import com.sim.signal.GridSignal;
 import com.sim.signal.ValueNoise;
 
 import java.util.List;
@@ -28,6 +30,13 @@ public final class DefaultCfgs {
                 LayerID.HEAT,
                 0.5f,
                 0.7f));
+        return c;
+    }
+
+    public static LayerConfig defaultScent(int width, int height, int seed) {
+        LayerConfig c = new InteractiveLayerConfig(width, height, seed);
+        c.setSignalSource(new GridSignal(new float[height][width]));
+        c.setTimeBehavior(new Fixed());
         return c;
     }
 
