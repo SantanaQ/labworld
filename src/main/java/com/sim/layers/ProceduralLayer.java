@@ -12,7 +12,6 @@ public class ProceduralLayer implements WorldLayer, Renderable {
 
     private final SignalSource source;
     private final List<LayerStep> compositingSteps;
-    private final List<LayerReferenceStep> compositingReferences;
     private final TimeBehavior timeBehavior;
 
     private final float[][] potential;
@@ -20,11 +19,9 @@ public class ProceduralLayer implements WorldLayer, Renderable {
     public ProceduralLayer(SignalSource source,
                            TimeBehavior timeBehavior,
                            List<LayerStep> compositingSteps,
-                           List<LayerReferenceStep> compositingReferences,
                            float[][] potential) {
         this.source = source;
         this.compositingSteps = compositingSteps;
-        this.compositingReferences = compositingReferences;
         this.timeBehavior = timeBehavior;
         this.potential = potential;
     }

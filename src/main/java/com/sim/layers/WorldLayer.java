@@ -33,4 +33,13 @@ public interface WorldLayer {
         }
     }
 
+    default void printValues() {
+        for(int y = 0; y < potential().length; y++) {
+            for(int x = 0; x < potential()[y].length; x++) {
+                System.out.print(accessibleAt(new Coordinate(x, y)) + " ");
+            }
+            System.out.println();
+        }
+    }
+
 }

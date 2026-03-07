@@ -33,7 +33,7 @@ public class WorldFood implements RenderLayer {
 
         float val = worldSnap.food()[y][x];
         gc.setFill(color(val));
-        gc.fillOval(x * App.CELL_SIZE, y * App.CELL_SIZE, App.CELL_SIZE * 0.5, App.CELL_SIZE * 0.5);
+        gc.fillOval(x * App.CELL_SIZE, y * App.CELL_SIZE, App.CELL_SIZE, App.CELL_SIZE);
 
     }
 

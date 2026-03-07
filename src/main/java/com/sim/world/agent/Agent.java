@@ -20,6 +20,13 @@ public class Agent {
         this.needs = new Needs();
     }
 
+    public Agent(Position pos, Needs needs) {
+        this.pos = pos;
+        this.velocity = new Velocity(0,0);
+        this.speed = 0.001;
+        this.needs = needs;
+    }
+
     public Position position() {
         return pos;
     }
@@ -40,14 +47,15 @@ public class Agent {
 
     private void perceive(World world) {
         Velocity toFood = perceiveWeightedCenter(world, world.layer(LayerID.FOOD), needs.hunger());
-        Velocity toHeat = perceiveBestFittingCenter(world, world.layer(LayerID.HEAT), needs.needForHeat(), Needs.HEAT_OPTIMUM);
+        //Velocity toHeat = perceiveBestFittingCenter(world, world.layer(LayerID.HEAT), needs.needForHeat(), Needs.HEAT_OPTIMUM);
         this.velocity = this.velocity
-                .add(toFood)
-                .add(toHeat);
+                .add(toFood);
+                //.add(toHeat);
     }
 
     private Velocity perceiveWeightedCenter(World world, WorldLayer layer, float need) {
-        Coordinate weightedCenter = LayerAggregation.weightedCenter(world,
+        Coordinate weightedCenter = LayerAggregation.weightedCenter(
+                world,
                 pos.nearestCoordinate(world),
                 layer,
                 8);

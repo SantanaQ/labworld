@@ -17,6 +17,18 @@ public class Needs {
     // optimal in center
     private float heat;
 
+    public Needs(float hunger,
+                 float curiosity,
+                 float fear,
+                 float energy,
+                 float heat) {
+        this.hunger = hunger;
+        this.energy = energy;
+        this.heat = heat;
+        this.curiosity = curiosity;
+        this.fear = fear;
+    }
+
     public Needs() {
         this.hunger = 0.5f;
         this.energy = 1f;

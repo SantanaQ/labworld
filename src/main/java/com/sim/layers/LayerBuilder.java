@@ -64,15 +64,16 @@ public class LayerBuilder {
     public InteractiveLayer buildInteractiveLayer()
     {
         InteractiveLayer layer = new InteractiveLayer(source, timeBehavior,
-                compositingSteps, compositingReferences , potential, relaxation);
+                compositingSteps , potential, relaxation);
         layer.updatePotential(1);
+        layer.updateState();
         return layer;
     }
 
     public ProceduralLayer buildProceduralLayer()
     {
         ProceduralLayer layer = new ProceduralLayer(source, timeBehavior,
-                compositingSteps, compositingReferences, potential);
+                compositingSteps, potential);
         layer.updatePotential(1);
         return layer;
     }

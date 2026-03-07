@@ -13,7 +13,6 @@ public class InteractiveLayer implements StatefulLayer, AgentAffectable, Rendera
 
     private final SignalSource source;
     private final List<LayerStep> compositingSteps;
-    private final List<LayerReferenceStep> compositingReferences;
     private final TimeBehavior timeBehavior;
 
     private final float[][] potential;
@@ -27,12 +26,10 @@ public class InteractiveLayer implements StatefulLayer, AgentAffectable, Rendera
     public InteractiveLayer(SignalSource source,
                             TimeBehavior timeBehavior,
                             List<LayerStep> compositingSteps,
-                            List<LayerReferenceStep> compositingReferences,
                             float[][] potential,
                             float relaxation) {
         this.source = source;
         this.compositingSteps = compositingSteps;
-        this.compositingReferences = compositingReferences;
         this.timeBehavior = timeBehavior;
         this.potential = potential;
         this.relaxation = relaxation;
@@ -67,34 +64,43 @@ public class InteractiveLayer implements StatefulLayer, AgentAffectable, Rendera
         return agentFields;
     }
 
-    @Override
     public void updateState() {
-        int w = state.length;
-        int h = state[0].length;
+        int w = state[0].length;
+        int h = state.length;
 
         for (int y = 1; y < h - 1; y++) {
             for (int x = 1; x < w - 1; x++) {
+
                 float s = state[y][x];
                 float p = potential[y][x];
 
-                float laplace =
-                        state[y - 1][x] +
-                                state[y + 1][x] +
-                                state[y][x - 1] +
-                                state[y][x + 1];
-                laplace *= 0.25f;
+                float laplace = state[y - 1][x - 1] * 0.05f +
+                                state[y - 1][x]     * 0.20f +
+                                state[y - 1][x + 1] * 0.05f +
+                                state[y][x - 1]     * 0.20f +
+                                state[y][x + 1]     * 0.20f +
+                                state[y + 1][x - 1] * 0.05f +
+                                state[y + 1][x]     * 0.20f +
+                                state[y + 1][x + 1] * 0.05f;
+
+
+                // diffusion
                 s = lerp(s, laplace, 0.2f);
 
+                // relaxation towards procedural potential
                 s += relaxation * (p - s);
 
+                // agent influence
                 s += agentFields[y][x];
-                agentFields[y][x] = 0f; // reset
+                agentFields[y][x] = 0f;
 
+                // decay
                 s *= 0.995f;
 
                 nextState[y][x] = s;
             }
         }
+
         float[][] tmp = state;
         state = nextState;
         nextState = tmp;
