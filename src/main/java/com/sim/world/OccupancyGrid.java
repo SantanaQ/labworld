@@ -1,6 +1,6 @@
 package com.sim.world;
 
-import com.sim.world.agent.Agent;
+import com.sim.agent.Agent;
 
 import java.util.ArrayList;
 import java.util.List;

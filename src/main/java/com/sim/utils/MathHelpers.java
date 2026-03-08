@@ -1,4 +1,4 @@
-package com.sim.world;
+package com.sim.utils;
 
 public class MathHelpers {
 

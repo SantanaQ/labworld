@@ -40,7 +40,7 @@ public class JFXWorldView implements WorldView {
         WorldScent scent = new WorldScent();
         agents = new WorldAgents();
 
-        //layers.add(heat);
+        layers.add(heat);
         layers.add(food);
         layers.add(scent);
         layers.add(agents);

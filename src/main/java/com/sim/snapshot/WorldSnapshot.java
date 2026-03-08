@@ -3,7 +3,7 @@ package com.sim.snapshot;
 import com.sim.layers.LayerID;
 import com.sim.layers.Renderable;
 import com.sim.world.World;
-import com.sim.world.agent.Agent;
+import com.sim.agent.Agent;
 
 import java.util.*;
 

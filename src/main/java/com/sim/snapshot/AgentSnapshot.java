@@ -1,7 +1,7 @@
 package com.sim.snapshot;
 
-import com.sim.world.agent.Position;
-import com.sim.world.agent.Velocity;
+import com.sim.agent.Position;
+import com.sim.agent.Velocity;
 
 public class AgentSnapshot {
 

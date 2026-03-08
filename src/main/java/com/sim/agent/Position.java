@@ -1,4 +1,4 @@
-package com.sim.world.agent;
+package com.sim.agent;
 
 import com.sim.world.Coordinate;
 import com.sim.world.World;

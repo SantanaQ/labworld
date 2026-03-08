@@ -4,12 +4,9 @@ import com.sim.config.InteractiveLayerConfig;
 import com.sim.config.LayerConfig;
 import com.sim.config.ProceduralLayerConfig;
 import com.sim.config.WorldConfig;
-import com.sim.layers.LayerID;
-import com.sim.layers.LayerRuntime;
 import com.sim.layers.time_behavior.Fixed;
 import com.sim.signal.GridSignal;
 import com.sim.world.World;
-import com.sim.world.agent.Agent;
 
 public class TestWorldBuilder {
 
@@ -17,9 +14,9 @@ public class TestWorldBuilder {
     int height = 3;
     int seed = 1;
 
-    float[][] heat;
-    float[][] food;
-    float[][] scent;
+    float[][] heat = empty3x3();
+    float[][] food = empty3x3();
+    float[][] scent = empty3x3();
 
     public TestWorldBuilder heat(float[][] grid) {
         this.heat = grid;
@@ -58,7 +55,7 @@ public class TestWorldBuilder {
         return new World(config);
     }
 
-    public static float[][] empty3x3() {
+    private static float[][] empty3x3() {
         return new float[][] {
                 {0, 0, 0},
                 {0, 0, 0},

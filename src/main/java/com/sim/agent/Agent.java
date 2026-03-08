@@ -1,14 +1,11 @@
-package com.sim.world.agent;
+package com.sim.agent;
 
 import com.sim.layers.InteractiveLayer;
 import com.sim.layers.LayerID;
-import com.sim.layers.LayerRuntime;
-import com.sim.layers.WorldLayer;
 import com.sim.world.Coordinate;
 import com.sim.world.World;
 
 public class Agent {
-
 
     Position pos;
     Velocity velocity;
@@ -19,7 +16,7 @@ public class Agent {
     public Agent(Position pos) {
         this.pos = pos;
         this.velocity = new Velocity(0,0);
-        this.speed = 0.02;
+        this.speed = 0.2;
         this.needs = new Needs();
     }
 
@@ -78,6 +75,10 @@ public class Agent {
                 .add(vCuriosity)
                 .add(vFear);
 
+        if(velocity.length() > 1f) {
+            this.velocity.normalize();
+        }
+
         if(velocity.length() < 0.02) {
             this.velocity.add(Navigation
                             .randomVector(world.random())
@@ -110,7 +111,9 @@ public class Agent {
 
     private void interact(World world) {
         applyScent(world);
-        applyFood(world);
+        if(velocity.length() < 0.05f) {
+            applyFood(world);
+        }
     }
 
     private void applyScent(World world) {
@@ -120,7 +123,6 @@ public class Agent {
 
     private void applyFood(World world) {
         Coordinate cell = pos.nearestCoordinate(world);
-        float val = world.layerAt(LayerID.FOOD, cell);
         ((InteractiveLayer) world.layer(LayerID.FOOD))
                 .applyAgentInfluence(cell, -needs.foodConsumption);
     }

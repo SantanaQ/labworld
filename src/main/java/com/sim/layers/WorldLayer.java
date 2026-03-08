@@ -28,9 +28,6 @@ public interface WorldLayer {
                 for (LayerStep step : compositingSteps()) {
                     val = step.apply(val, c);
                 }
-                if(val >= 1) {
-                    System.out.println(this.timeBehavior());
-                }
                 potential[y][x] = val;
             }
         }

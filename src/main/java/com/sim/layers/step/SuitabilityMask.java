@@ -4,7 +4,7 @@ import com.sim.layers.LayerContext;
 import com.sim.layers.LayerID;
 import com.sim.layers.WorldLayer;
 import com.sim.world.Coordinate;
-import com.sim.world.MathHelpers;
+import com.sim.utils.MathHelpers;
 
 public class SuitabilityMask implements LayerReferenceStep {
 

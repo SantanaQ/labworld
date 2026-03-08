@@ -1,4 +1,4 @@
-package com.sim.world.agent;
+package com.sim.agent;
 
 public class Needs {
 

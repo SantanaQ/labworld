@@ -5,8 +5,8 @@ import com.sim.layers.LayerContext;
 import com.sim.config.WorldConfig;
 import com.sim.layers.*;
 import com.sim.layers.step.LayerReferenceStep;
-import com.sim.world.agent.Agent;
-import com.sim.world.agent.Position;
+import com.sim.agent.Agent;
+import com.sim.agent.Position;
 
 import java.util.*;
 

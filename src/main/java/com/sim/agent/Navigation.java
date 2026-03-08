@@ -1,9 +1,7 @@
-package com.sim.world.agent;
+package com.sim.agent;
 
-import com.sim.layers.LayerID;
 import com.sim.layers.WorldLayer;
-import com.sim.world.MathHelpers;
-import com.sim.world.World;
+import com.sim.utils.MathHelpers;
 
 import java.util.Random;
 
