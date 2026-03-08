@@ -20,7 +20,12 @@ public class AgentTest {
                 {0, 0, 0}
         };
 
-        Needs onlyHunger = new Needs(1, 0, 0, 1, 0.5f);
+        Needs onlyHunger = new Needs(
+                Needs.MAX,
+                Needs.MIN,
+                Needs.MIN,
+                Needs.MAX,
+                Needs.HEAT_OPTIMUM);
         Agent agent = new Agent(new Position(1,1), onlyHunger);
         World world = new TestWorldBuilder()
                 .food(upperRight)
@@ -44,7 +49,12 @@ public class AgentTest {
                 {1, 1, 0}
         };
 
-        Needs lowHeat = new Needs(0, 0, 0, 1, 0);
+        Needs lowHeat = new Needs(
+                Needs.MIN,
+                Needs.MIN,
+                Needs.MIN,
+                Needs.MAX,
+                Needs.MIN);
         Agent agent = new Agent(new Position(1,1), lowHeat);
         World world = new TestWorldBuilder()
                 .food(TestWorldBuilder.empty3x3())
@@ -60,16 +70,21 @@ public class AgentTest {
     }
 
     @Test
-    void agent_adjusts_positioning_towards_heat_if_low_temperature() {
+    void agent_adjusts_positioning_towards_heat_if_high_temperature() {
 
         float[][] bottomLeft = new float[][] {
-                {0, 0, 0},
-                {1, 0, 0},
-                {1, 1, 0}
+                {1, 1, 1},
+                {0, 1, 1},
+                {0, 0, 1}
         };
 
-        Needs lowHeat = new Needs(0, 0, 0, 1, 0);
-        Agent agent = new Agent(new Position(1,1), lowHeat);
+        Needs highHeat = new Needs(
+                Needs.MIN,
+                Needs.MIN,
+                Needs.MIN,
+                Needs.MAX,
+                Needs.MAX);
+        Agent agent = new Agent(new Position(1,1), highHeat);
         World world = new TestWorldBuilder()
                 .food(TestWorldBuilder.empty3x3())
                 .heat(bottomLeft)
@@ -79,6 +94,37 @@ public class AgentTest {
         agent.actOn(world);
         Position postPos = agent.position();
 
+        assertTrue(postPos.x() < prePos.x());
+        assertTrue(postPos.y() > prePos.y());
+    }
+
+
+    @Test
+    void agent_adjusts_positioning_towards_scent_if_high_curiosity() {
+
+        float[][] bottomLeft = new float[][] {
+                {0, 0, 0},
+                {1, 0, 0},
+                {1, 1, 0}
+        };
+
+        Needs onlyCurious = new Needs(
+                Needs.MIN,
+                Needs.MAX,
+                Needs.MIN,
+                Needs.MAX,
+                Needs.HEAT_OPTIMUM);
+        Agent agent = new Agent(new Position(1,1), onlyCurious);
+        World world = new TestWorldBuilder()
+                .food(TestWorldBuilder.empty3x3())
+                .heat(TestWorldBuilder.empty3x3())
+                .scent(bottomLeft)
+                .build();
+
+        Position prePos = agent.position();
+        agent.actOn(world);
+        Position postPos = agent.position();
+        System.out.println(prePos + " " + postPos);
         assertTrue(postPos.x() < prePos.x());
         assertTrue(postPos.y() > prePos.y());
     }

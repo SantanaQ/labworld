@@ -32,6 +32,7 @@ public class World {
 
         addRuntime(LayerID.HEAT, config.heatConfig);
         addRuntime(LayerID.FOOD, config.foodConfig);
+        addRuntime(LayerID.SCENT, config.scentConfig);
 
         rebuildAll();
         spawnAgents(config.agentCount);
@@ -130,6 +131,10 @@ public class World {
 
     public Random random() {
         return rand;
+    }
+
+    public Map<LayerID, LayerRuntime>  runtimes() {
+        return runtimes;
     }
 
     private void spawnAgents(int agentCount) {

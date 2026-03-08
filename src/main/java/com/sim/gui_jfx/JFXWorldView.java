@@ -37,10 +37,12 @@ public class JFXWorldView implements WorldView {
 
         WorldHeat heat = new WorldHeat();
         WorldFood food = new WorldFood();
+        WorldScent scent = new WorldScent();
         agents = new WorldAgents();
 
-        layers.add(heat);
+        //layers.add(heat);
         layers.add(food);
+        layers.add(scent);
         layers.add(agents);
 
         root.getChildren().addAll(heat.canvas(), food.canvas(), agents.canvas());

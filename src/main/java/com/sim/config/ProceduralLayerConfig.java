@@ -2,6 +2,7 @@ package com.sim.config;
 
 import com.sim.layers.LayerBuilder;
 import com.sim.layers.WorldLayer;
+import com.sim.layers.step.Clamp;
 import com.sim.layers.step.Normalize;
 
 public class ProceduralLayerConfig extends LayerConfig {
@@ -17,6 +18,7 @@ public class ProceduralLayerConfig extends LayerConfig {
                 .withTimeBehaviour(timeBehavior)
                 .withSteps(compositing)
                 .step(new Normalize(0,1))
+                .step(new Clamp(0, 1))
                 .buildProceduralLayer();
     }
 }

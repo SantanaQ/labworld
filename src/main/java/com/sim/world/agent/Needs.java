@@ -2,9 +2,15 @@ package com.sim.world.agent;
 
 public class Needs {
 
+    public static final float MAX = 1f;
+    public static final float MIN = 0;
     public static final float HEAT_OPTIMUM = 0.5f;
 
-    private final float impact = 0.05f;
+    private final float energyCost = 0.05f;
+    private final float curiosityFactor = 0.1f;
+    private final float fearFactor = 0.3f;
+    private final float fearThreshold = 0.7f;
+    private final float heatFactor = 0.5f;
 
     // ascending
     private float hunger;
@@ -16,6 +22,9 @@ public class Needs {
 
     // optimal in center
     private float heat;
+
+    // consumption
+    float foodConsumption;
 
     public Needs(float hunger,
                  float curiosity,
@@ -58,48 +67,56 @@ public class Needs {
     }
 
     public void applyHunger() {
-        hunger = Math.clamp(hunger + impact, 0f, 1f);
+        hunger = Math.clamp(hunger + energyCost, 0f, 1f);
     }
 
     public void applySaturation(float val) {
-        hunger = Math.clamp(hunger - val, 0f, 1f);
+        float diff = Math.clamp(hunger - val, 0f, 1f);
+        hunger -= diff;
+        foodConsumption = diff;
         applyEnergy(val);
     }
 
     public void applyEnergy(float val) {
         energy = Math.clamp(energy + val, 0f, 1f);
+        reduceEnergy();
     }
 
     public void reduceEnergy() {
-        energy = Math.max(0f, energy - impact);
+        energy = Math.max(0f, energy - energyCost);
     }
 
     public void applyHeat(float val) {
-        float diff =  val - heat;
-        heat = Math.clamp(heat + diff, -1f, 2f);
+        float influence =  (val - heat) * heatFactor;
+        heat = Math.clamp(heat + influence, 0, 1);
     }
 
     public float needForHeat() {
         return Math.abs(heat - HEAT_OPTIMUM);
     }
 
-    public void reduceHeat() {
-        heat = Math.max(0f, heat - impact);
-    }
 
     public void applyCuriosity() {
-        curiosity = Math.clamp(curiosity + impact, 0f, 1f);
+        curiosity = Math.clamp(curiosity + curiosityFactor, 0f, 1f);
+        if (fear > fearThreshold) {
+            reduceCuriosity(3 * curiosityFactor);
+        }
     }
 
-    public void reduceCuriosity() {
-        curiosity = Math.max(0f, curiosity - impact);
+    public void reduceCuriosity(float val) {
+        curiosity = Math.max(0f, curiosity - val);
     }
 
     public void applyFear(float val) {
-        fear = Math.clamp(fear + val, 0f, 1f);
+        if(val > fearThreshold) {
+            fear = Math.clamp(fear + val * fearFactor, 0f, 1f);
+        } else {
+            reduceFear();
+        }
+
     }
 
     public void reduceFear() {
-        fear = Math.max(0f, fear - impact);
+        fear = Math.max(0f, fear - fearFactor);
     }
 }

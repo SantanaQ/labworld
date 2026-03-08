@@ -4,7 +4,7 @@ public class WorldConfig {
 
     public int width = 200;
     public int height = 200;
-    public int seed = 9992221;
+    public int seed = 987654321;
     public int agentCount = 50;
 
     public LayerConfig heatConfig;

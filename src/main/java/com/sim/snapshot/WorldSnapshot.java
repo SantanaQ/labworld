@@ -14,9 +14,9 @@ public class WorldSnapshot {
 
     private final float[][] heatSnap;
     private final float[][] foodSnap;
+    private final float[][] scentSnap;
 
     private final int[][] occupancySnap;
-    //private final Map<Coordinate, AgentSnapshot> agentSnaps;
     private final List<AgentSnapshot> agentSnaps;
 
     public WorldSnapshot(World world) {
@@ -29,6 +29,8 @@ public class WorldSnapshot {
         this.heatSnap = heat.values();
         LayerSnapshot food = new LayerSnapshot((Renderable) world.layer(LayerID.FOOD));
         this.foodSnap = food.values();
+        LayerSnapshot scent = new LayerSnapshot((Renderable) world.layer(LayerID.SCENT));
+        this.scentSnap = scent.values();
 
         OccupancySnapshot occupancy = new OccupancySnapshot(world.occupancy(), width, height);
         occupancySnap = occupancy.values();
@@ -66,6 +68,7 @@ public class WorldSnapshot {
     }
 
 
-
-
+    public float[][] scent() {
+        return scentSnap;
+    }
 }

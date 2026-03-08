@@ -92,7 +92,8 @@ public class InteractiveLayer implements StatefulLayer, AgentAffectable, Rendera
 
                 // agent influence
                 s += agentFields[y][x];
-                agentFields[y][x] = 0f;
+                s = Math.clamp(s, 0f, 1f);
+                agentFields[y][x] = 0;
 
                 // decay
                 s *= 0.995f;

@@ -44,7 +44,7 @@ public final class DefaultCfgs {
         LayerConfig c = new ProceduralLayerConfig(width, height, seed);
         c.setSignalSource(new FractalNoise(
                 seed+200,
-                50,
+                100,
                 2,
                 5));
 
@@ -66,7 +66,7 @@ public final class DefaultCfgs {
     }
 
     private static Drifting defaultDrift() {
-        return new Drifting(0.1f, 0);
+        return new Drifting(0.05f, 0);
     }
 
 

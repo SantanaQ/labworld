@@ -19,6 +19,7 @@ public class TestWorldBuilder {
 
     float[][] heat;
     float[][] food;
+    float[][] scent;
 
     public TestWorldBuilder heat(float[][] grid) {
         this.heat = grid;
@@ -27,6 +28,11 @@ public class TestWorldBuilder {
 
     public TestWorldBuilder food(float[][] grid) {
         this.food = grid;
+        return this;
+    }
+
+    public TestWorldBuilder scent(float[][] grid) {
+        this.scent = grid;
         return this;
     }
 
@@ -43,6 +49,11 @@ public class TestWorldBuilder {
         heatCfg.setSignalSource(new GridSignal(heat));
         heatCfg.setTimeBehavior(new Fixed());
         config.setHeatConfig(heatCfg);
+
+        LayerConfig scentCfg = new InteractiveLayerConfig(width, height, seed);
+        scentCfg.setSignalSource(new GridSignal(scent));
+        scentCfg.setTimeBehavior(new Fixed());
+        config.setScentConfig(scentCfg);
 
         return new World(config);
     }

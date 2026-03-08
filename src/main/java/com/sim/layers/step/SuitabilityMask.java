@@ -4,6 +4,7 @@ import com.sim.layers.LayerContext;
 import com.sim.layers.LayerID;
 import com.sim.layers.WorldLayer;
 import com.sim.world.Coordinate;
+import com.sim.world.MathHelpers;
 
 public class SuitabilityMask implements LayerReferenceStep {
 
@@ -27,7 +28,7 @@ public class SuitabilityMask implements LayerReferenceStep {
     @Override
     public float apply(float value, Coordinate coordinate) {
         float ref = referenceLayer.accessibleAt(coordinate.x(), coordinate.y());
-        float suitability = smoothstep(min, max, ref);
+        float suitability = MathHelpers.smoothstep(min, max, ref);
         return value * suitability;
     }
 
