@@ -1,9 +1,8 @@
 package com.sim.config;
 
-import com.sim.layers.WorldLayer;
-import com.sim.layers.step.LayerReferenceStep;
-import com.sim.layers.step.LayerStep;
-import com.sim.layers.time_behavior.TimeBehavior;
+import com.sim.layer.WorldLayer;
+import com.sim.layer.step.LayerStep;
+import com.sim.layer.time_behavior.TimeBehavior;
 import com.sim.signal.SignalSource;
 
 import java.util.ArrayList;

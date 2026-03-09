@@ -1,9 +1,9 @@
 package com.sim.config;
 
-import com.sim.layers.LayerBuilder;
-import com.sim.layers.WorldLayer;
-import com.sim.layers.step.Clamp;
-import com.sim.layers.step.Normalize;
+import com.sim.layer.LayerBuilder;
+import com.sim.layer.WorldLayer;
+import com.sim.layer.step.Clamp;
+import com.sim.layer.step.Normalize;
 
 public class InteractiveLayerConfig extends LayerConfig {
 

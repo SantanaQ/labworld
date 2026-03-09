@@ -126,10 +126,10 @@ public class AgentTest {
     @Test
     void agent_adjusts_positioning_away_from_scent_if_high_fear() {
 
-        float[][] bottomLeft = new float[][] {
-                {0, 0, 0},
+        float[][] grid = new float[][] {
                 {1, 0, 0},
-                {1, 1, 0}
+                {1, 1, 0},
+                {1, 1, 1}
         };
 
         Needs highFear = new Needs(
@@ -140,7 +140,7 @@ public class AgentTest {
                 Needs.HEAT_OPTIMUM);
         Agent agent = new Agent(new Position(1,1), highFear);
         World world = new TestWorldBuilder()
-                .scent(bottomLeft)
+                .scent(grid)
                 .build();
 
         Position prePos = agent.position();

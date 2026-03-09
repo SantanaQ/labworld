@@ -1,4 +1,4 @@
-package com.sim.layers;
+package com.sim.layer;
 
 import com.sim.world.Coordinate;
 

@@ -1,6 +1,6 @@
 package com.sim.agent;
 
-import com.sim.layers.WorldLayer;
+import com.sim.layer.WorldLayer;
 import com.sim.utils.MathHelpers;
 
 import java.util.Random;
@@ -55,9 +55,12 @@ public class Navigation {
     }
 
     static Velocity randomVector(Random random) {
-        float vX = random.nextFloat(-1,1);
-        float vY = random.nextFloat(-1,1);
-        return new Velocity(vX, vY);
+        float angle = random.nextFloat() * MathHelpers.TWO_PI;
+
+        return new Velocity(
+                (float)Math.cos(angle),
+                (float)Math.sin(angle)
+        );
     }
 
 

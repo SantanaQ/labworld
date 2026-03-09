@@ -1,7 +1,6 @@
 package com.sim.agent;
 
-import com.sim.layers.InteractiveLayer;
-import com.sim.layers.LayerID;
+import com.sim.layer.LayerID;
 import com.sim.world.Coordinate;
 import com.sim.world.World;
 
@@ -40,29 +39,41 @@ public class Agent {
     }
 
     public void actOn(World world) {
-        perceive(world);
+        Coordinate c = pos.nearestCoordinate(world);
+        Senses s = sense(world, c);
+        decide(world);
         move(world);
-        applyNeeds(world);
-        interact(world);
-        needs.applyHunger();
+        metabolism(s);
+        interact(world, c);
     }
 
-    private void perceive(World world) {
+    private Senses sense(World world, Coordinate c) {
+        return new Senses(
+                world.layerAt(LayerID.FOOD, c),
+                world.layerAt(LayerID.HEAT, c),
+                world.layerAt(LayerID.SCENT, c)
+        );
+    }
+
+    private void decide(World world) {
         Velocity vHunger = Navigation.towardsTargetValue(
                 world.layer(LayerID.FOOD),
                 pos,
                 needs.hunger()
         ).multiply(needs.hunger());
+
         Velocity vHeat = Navigation.towardsTargetValue(
                 world.layer(LayerID.HEAT),
                 pos,
                 Needs.HEAT_OPTIMUM
         ).multiply(needs.needForHeat());
+
         Velocity vCuriosity = Navigation.towardsTargetValue(
                 world.layer(LayerID.SCENT),
                 pos,
                 needs.curiosity()
         ).multiply(needs.curiosity());
+
         Velocity vFear = Navigation.towardsTargetValue(
                 world.layer(LayerID.SCENT),
                 pos,
@@ -79,15 +90,13 @@ public class Agent {
             this.velocity.normalize();
         }
 
-        if(velocity.length() < 0.02) {
+        if(velocity.length() < 0.02f) {
             this.velocity.add(Navigation
                             .randomVector(world.random())
                             .multiply(0.1f));
         }
 
     }
-
-
 
     private void move(World world) {
         float pX = (float) (pos.x() + velocity().vx() * speed);
@@ -99,32 +108,22 @@ public class Agent {
         this.pos = new Position(pX,pY);
     }
 
-    private void applyNeeds(World world) {
-        Coordinate cell = pos.nearestCoordinate(world);
-        if(velocity.length() < 0.05f) {
-            needs.applySaturation(world.layerAt(LayerID.FOOD, cell));
-            needs.applyHeat(world.layerAt(LayerID.HEAT, cell));
-            needs.applyFear(world.layerAt(LayerID.SCENT, cell));
-            needs.applyCuriosity();
+    private void metabolism(Senses s) {
+
+        needs.applyHunger();
+        needs.applyEnergyCost();
+
+        /*needs.reactToFood(s.food());
+        needs.reactToHeat(s.heat());
+        needs.reactToScent(s.scent());
+        */
+    }
+
+    private void interact(World world, Coordinate c) {
+        world.affect(LayerID.SCENT, c, 1);
+        if(this.velocity.length() < 0.05f) {
+            world.affect(LayerID.FOOD, c, -needs.foodConsumption);
         }
-    }
-
-    private void interact(World world) {
-        applyScent(world);
-        if(velocity.length() < 0.05f) {
-            applyFood(world);
-        }
-    }
-
-    private void applyScent(World world) {
-        ((InteractiveLayer) world.layer(LayerID.SCENT))
-                .applyAgentInfluence(pos.nearestCoordinate(world), 1);
-    }
-
-    private void applyFood(World world) {
-        Coordinate cell = pos.nearestCoordinate(world);
-        ((InteractiveLayer) world.layer(LayerID.FOOD))
-                .applyAgentInfluence(cell, -needs.foodConsumption);
     }
 
 }

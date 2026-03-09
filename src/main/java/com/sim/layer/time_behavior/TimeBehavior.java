@@ -1,4 +1,4 @@
-package com.sim.layers.time_behavior;
+package com.sim.layer.time_behavior;
 
 import com.sim.signal.SignalSource;
 

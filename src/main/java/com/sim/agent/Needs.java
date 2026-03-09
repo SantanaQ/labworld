@@ -70,53 +70,16 @@ public class Needs {
         hunger = Math.clamp(hunger + energyCost, 0f, 1f);
     }
 
-    public void applySaturation(float val) {
-        float diff = Math.clamp(hunger - val, 0f, 1f);
-        hunger -= diff;
-        foodConsumption = diff;
-        applyEnergy(val);
-    }
-
-    public void applyEnergy(float val) {
-        energy = Math.clamp(energy + val, 0f, 1f);
-        reduceEnergy();
-    }
-
-    public void reduceEnergy() {
+    public void applyEnergyCost() {
         energy = Math.max(0f, energy - energyCost);
     }
 
-    public void applyHeat(float val) {
-        float influence =  (val - heat) * heatFactor;
-        heat = Math.clamp(heat + influence, 0, 1);
-    }
+
+
 
     public float needForHeat() {
         return Math.abs(heat - HEAT_OPTIMUM);
     }
 
 
-    public void applyCuriosity() {
-        curiosity = Math.clamp(curiosity + curiosityFactor, 0f, 1f);
-        if (fear > fearThreshold) {
-            reduceCuriosity(3 * curiosityFactor);
-        }
-    }
-
-    public void reduceCuriosity(float val) {
-        curiosity = Math.max(0f, curiosity - val);
-    }
-
-    public void applyFear(float val) {
-        if(val > fearThreshold) {
-            fear = Math.clamp(fear + val * fearFactor, 0f, 1f);
-        } else {
-            reduceFear();
-        }
-
-    }
-
-    public void reduceFear() {
-        fear = Math.max(0f, fear - fearFactor);
-    }
 }

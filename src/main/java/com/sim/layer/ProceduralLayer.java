@@ -1,8 +1,7 @@
-package com.sim.layers;
+package com.sim.layer;
 
-import com.sim.layers.step.LayerReferenceStep;
-import com.sim.layers.step.LayerStep;
-import com.sim.layers.time_behavior.TimeBehavior;
+import com.sim.layer.step.LayerStep;
+import com.sim.layer.time_behavior.TimeBehavior;
 import com.sim.signal.SignalSource;
 import com.sim.world.Coordinate;
 
@@ -59,6 +58,16 @@ public class ProceduralLayer implements WorldLayer, Renderable {
     @Override
     public float accessibleAt(int x, int y) {
         return potential[y][x];
+    }
+
+    @Override
+    public int width() {
+        return potential[0].length;
+    }
+
+    @Override
+    public int height() {
+        return potential.length;
     }
 
 }

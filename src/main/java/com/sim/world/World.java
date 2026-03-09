@@ -1,10 +1,10 @@
 package com.sim.world;
 
 import com.sim.config.LayerConfig;
-import com.sim.layers.LayerContext;
+import com.sim.layer.LayerContext;
 import com.sim.config.WorldConfig;
-import com.sim.layers.*;
-import com.sim.layers.step.LayerReferenceStep;
+import com.sim.layer.*;
+import com.sim.layer.step.LayerReferenceStep;
 import com.sim.agent.Agent;
 import com.sim.agent.Position;
 
@@ -147,10 +147,6 @@ public class World {
         }
     }
 
-    public void spawnAgent(Agent agent) {
-        agents.add(agent);
-    }
-
     private void rebuildOccupancy() {
        occupancy.clear();
        for(Agent agent : agents) {
@@ -183,6 +179,21 @@ public class World {
                 && coordinate.x() < config.width
                 && coordinate.y() >= 0
                 && coordinate.y() < config.height;
+    }
+
+    public void affect(LayerID layerId, Coordinate c, float amount) {
+        AgentAffectable affectable = layer(layerId).capability(AgentAffectable.class);
+        if(affectable != null) {
+            affectable.applyAgentInfluence(c, amount);
+        }
+    }
+
+
+    public Optional<InteractiveLayer> interactiveLayer(LayerID id) {
+        if(layer(id) instanceof InteractiveLayer) {
+            return Optional.of((InteractiveLayer) layer(id));
+        }
+        return Optional.empty();
     }
 
 

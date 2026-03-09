@@ -1,7 +1,7 @@
-package com.sim.layers.step;
+package com.sim.layer.step;
 
-import com.sim.layers.LayerContext;
-import com.sim.layers.LayerID;
+import com.sim.layer.LayerContext;
+import com.sim.layer.LayerID;
 
 public interface LayerReferenceStep extends LayerStep {
 

@@ -1,8 +1,8 @@
-package com.sim.layers.step;
+package com.sim.layer.step;
 
-import com.sim.layers.LayerContext;
-import com.sim.layers.LayerID;
-import com.sim.layers.WorldLayer;
+import com.sim.layer.LayerContext;
+import com.sim.layer.LayerID;
+import com.sim.layer.WorldLayer;
 import com.sim.world.Coordinate;
 import com.sim.utils.MathHelpers;
 
@@ -26,8 +26,8 @@ public class SuitabilityMask implements LayerReferenceStep {
     }
 
     @Override
-    public float apply(float value, Coordinate coordinate) {
-        float ref = referenceLayer.accessibleAt(coordinate.x(), coordinate.y());
+    public float apply(float value, int x, int y) {
+        float ref = referenceLayer.accessibleAt(x, y);
         float suitability = MathHelpers.smoothstep(min, max, ref);
         return value * suitability;
     }

@@ -1,6 +1,4 @@
-package com.sim.layers.step;
-
-import com.sim.world.Coordinate;
+package com.sim.layer.step;
 
 public final class Normalize implements LayerStep {
 
@@ -13,7 +11,7 @@ public final class Normalize implements LayerStep {
     }
 
     @Override
-    public float apply(float value, Coordinate coordinate) {
+    public float apply(float value, int x, int y) {
         return (value - min) / (max - min);
     }
 }

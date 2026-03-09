@@ -1,8 +1,7 @@
-package com.sim.layers;
+package com.sim.layer;
 
-import com.sim.layers.step.LayerReferenceStep;
-import com.sim.layers.step.LayerStep;
-import com.sim.layers.time_behavior.TimeBehavior;
+import com.sim.layer.step.LayerStep;
+import com.sim.layer.time_behavior.TimeBehavior;
 import com.sim.signal.SignalSource;
 import com.sim.world.Coordinate;
 
@@ -42,7 +41,6 @@ public class InteractiveLayer implements StatefulLayer, AgentAffectable, Rendera
             state[x] = Arrays.copyOf(potential[x], state.length);
         }
     }
-
 
     @Override
     public void applyAgentInfluence(Coordinate c, float value) {
@@ -85,7 +83,7 @@ public class InteractiveLayer implements StatefulLayer, AgentAffectable, Rendera
 
 
                 // diffusion
-                s = lerp(s, laplace, 0.2f);
+                s += 0.2f * (laplace - s);
 
                 // relaxation towards procedural potential
                 s += relaxation * (p - s);
@@ -93,7 +91,6 @@ public class InteractiveLayer implements StatefulLayer, AgentAffectable, Rendera
                 // agent influence
                 s += agentFields[y][x];
                 s = Math.clamp(s, 0f, 1f);
-                agentFields[y][x] = 0;
 
                 // decay
                 s *= 0.995f;
@@ -101,7 +98,7 @@ public class InteractiveLayer implements StatefulLayer, AgentAffectable, Rendera
                 nextState[y][x] = s;
             }
         }
-
+        clearAgentFields();
         float[][] tmp = state;
         state = nextState;
         nextState = tmp;
@@ -112,8 +109,10 @@ public class InteractiveLayer implements StatefulLayer, AgentAffectable, Rendera
         return state[coord.y()][coord.x()];
     }
 
-    private float lerp(float a, float b, float t) {
-        return a + (b - a) * t;
+    private void clearAgentFields() {
+        for(float[] row : agentFields) {
+            Arrays.fill(row, 0);
+        };
     }
 
     @Override
@@ -144,6 +143,16 @@ public class InteractiveLayer implements StatefulLayer, AgentAffectable, Rendera
     @Override
     public float accessibleAt(int x, int y) {
         return state[y][x];
+    }
+
+    @Override
+    public int width() {
+        return potential[0].length;
+    }
+
+    @Override
+    public int height() {
+        return potential.length;
     }
 
 }

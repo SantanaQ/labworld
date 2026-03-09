@@ -1,7 +1,7 @@
 package com.sim.snapshot;
 
-import com.sim.layers.LayerID;
-import com.sim.layers.Renderable;
+import com.sim.layer.LayerID;
+import com.sim.layer.Renderable;
 import com.sim.world.World;
 import com.sim.agent.Agent;
 

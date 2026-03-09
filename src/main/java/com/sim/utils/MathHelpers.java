@@ -2,6 +2,8 @@ package com.sim.utils;
 
 public class MathHelpers {
 
+    public static final float TWO_PI  = (float) ((float) 2*Math.PI);
+
     public static float lerp(float a, float b, float t) {
         return a + (b - a) * t;
     }

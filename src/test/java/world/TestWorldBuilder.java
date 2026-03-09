@@ -4,7 +4,7 @@ import com.sim.config.InteractiveLayerConfig;
 import com.sim.config.LayerConfig;
 import com.sim.config.ProceduralLayerConfig;
 import com.sim.config.WorldConfig;
-import com.sim.layers.time_behavior.Fixed;
+import com.sim.layer.time_behavior.Fixed;
 import com.sim.signal.GridSignal;
 import com.sim.world.World;
 

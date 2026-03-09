@@ -1,12 +1,12 @@
 package com.sim.config;
 
-import com.sim.layers.LayerID;
-import com.sim.layers.step.SoftThreshold;
-import com.sim.layers.step.SuitabilityMask;
-import com.sim.layers.time_behavior.Composite;
-import com.sim.layers.time_behavior.DomainWarp;
-import com.sim.layers.time_behavior.Drifting;
-import com.sim.layers.time_behavior.Fixed;
+import com.sim.layer.LayerID;
+import com.sim.layer.step.SoftThreshold;
+import com.sim.layer.step.SuitabilityMask;
+import com.sim.layer.time_behavior.Composite;
+import com.sim.layer.time_behavior.DomainWarp;
+import com.sim.layer.time_behavior.Drifting;
+import com.sim.layer.time_behavior.Fixed;
 import com.sim.signal.FractalNoise;
 import com.sim.signal.GridSignal;
 import com.sim.signal.ValueNoise;

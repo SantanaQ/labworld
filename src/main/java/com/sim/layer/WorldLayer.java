@@ -1,7 +1,7 @@
-package com.sim.layers;
+package com.sim.layer;
 
-import com.sim.layers.step.LayerStep;
-import com.sim.layers.time_behavior.TimeBehavior;
+import com.sim.layer.step.LayerStep;
+import com.sim.layer.time_behavior.TimeBehavior;
 import com.sim.signal.SignalSource;
 import com.sim.world.Coordinate;
 
@@ -16,17 +16,27 @@ public interface WorldLayer {
     float potentialAt(Coordinate coord);
     float accessibleAt(int x, int y);
 
+    int width();
+    int height();
+
+    default <T> T capability (Class<T> type) {
+        if(type.isInstance(this)) {
+            return type.cast(this);
+        }
+        return null;
+    }
+
+
     default void updatePotential(float time) {
         float[][] potential = potential();
-        int w = potential.length;
-        int h = potential[0].length;
+        int h = height();
+        int w = width();
 
         for (int y = 0; y < h; y++) {
             for (int x = 0; x < w; x++) {
-                Coordinate c = new Coordinate(x, y);
                 float val = timeBehavior().sample(source(), x, y, time);
                 for (LayerStep step : compositingSteps()) {
-                    val = step.apply(val, c);
+                    val = step.apply(val, x, y);
                 }
                 potential[y][x] = val;
             }
@@ -34,8 +44,8 @@ public interface WorldLayer {
     }
 
     default void printValues() {
-        for(int y = 0; y < potential().length; y++) {
-            for(int x = 0; x < potential()[y].length; x++) {
+        for(int y = 0; y < height(); y++) {
+            for(int x = 0; x < width(); x++) {
                 System.out.print(accessibleAt(x, y) + " ");
             }
             System.out.println();
@@ -43,8 +53,7 @@ public interface WorldLayer {
     }
 
     default float accessibleAtSafe(int x, int y) {
-        if (x < 0 || x >= potential().length
-                || y < 0 || y >= potential().length) {
+        if (x < 0 || x >= width() || y < 0 || y >= height()) {
             return 0;
         }
         return accessibleAt(x, y);

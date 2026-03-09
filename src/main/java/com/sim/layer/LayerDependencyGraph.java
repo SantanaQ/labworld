@@ -1,6 +1,6 @@
-package com.sim.layers;
-import com.sim.layers.step.LayerReferenceStep;
-import com.sim.layers.step.LayerStep;
+package com.sim.layer;
+import com.sim.layer.step.LayerReferenceStep;
+import com.sim.layer.step.LayerStep;
 
 import java.util.*;
 

@@ -1,4 +1,4 @@
-package com.sim.layers;
+package com.sim.layer;
 
 public enum LayerID {
     HEAT,

@@ -1,6 +1,6 @@
 package com.sim.snapshot;
 
-import com.sim.layers.Renderable;
+import com.sim.layer.Renderable;
 
 public class LayerSnapshot {
 
