@@ -1,83 +1,101 @@
 package com.sim.layer;
 
-import com.sim.layer.step.LayerReferenceStep;
-import com.sim.signal.FractalNoise;
-import com.sim.signal.SignalSource;
-import com.sim.signal.ValueNoise;
 import com.sim.layer.step.LayerStep;
 import com.sim.layer.time_behavior.Fixed;
 import com.sim.layer.time_behavior.TimeBehavior;
+import com.sim.layer.update.DefaultPotentialUpdater;
+import com.sim.layer.update.InactiveStateUpdater;
+import com.sim.layer.update.PotentialUpdater;
+import com.sim.layer.update.StateUpdater;
+import com.sim.signal.GridSignal;
+import com.sim.signal.SignalSource;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class LayerBuilder {
 
-    private final float[][] potential;
+    private int width;
+    private int height;
 
-    private SignalSource source = new FractalNoise(
-            new ValueNoise(123, 16),
-            4,
-            2);
+    private SignalSource signal;
+    private TimeBehavior timeBehavior;
+    private List<LayerStep> compositing;
 
-    private TimeBehavior timeBehavior = new Fixed();
-
-    private final List<LayerStep> compositingSteps = new ArrayList<>();
-    private final List<LayerReferenceStep> compositingReferences = new ArrayList<>();
-
-    private float relaxation = 0.05f;
+    private PotentialUpdater potentialUpdater;
+    private StateUpdater stateUpdater;
 
     public LayerBuilder(int width, int height) {
-        potential = new float[width][height];
+        this.width = width;
+        this.height = height;
+        initDefaults();
     }
 
-    public LayerBuilder withSignalSource(SignalSource source) {
-        this.source = source;
-        return this;
+    private void initDefaults() {
+        this.compositing = new ArrayList<>();
+        this.timeBehavior = new Fixed();
+        this.signal = new GridSignal(new float[height][width]);
+        this.potentialUpdater = new DefaultPotentialUpdater();
+        this.stateUpdater = new InactiveStateUpdater();
     }
 
-    public LayerBuilder withTimeBehaviour(TimeBehavior behavior) {
-        this.timeBehavior = behavior;
-        return this;
-    }
-
-    public LayerBuilder step(LayerStep step) {
-        this.compositingSteps.add(step);
-        if(step instanceof LayerReferenceStep) {
-            compositingReferences.add((LayerReferenceStep) step);
+    public LayerBuilder withTimeBehavior(TimeBehavior timeBehavior) {
+        if(timeBehavior != null) {
+            this.timeBehavior = timeBehavior;
         }
         return this;
     }
 
-    public LayerBuilder withSteps(List<LayerStep> steps) {
-        for(LayerStep step : steps) {
-            step(step);
+    public LayerBuilder withSignal(SignalSource signal) {
+        if(signal != null) {
+            this.signal = signal;
         }
         return this;
     }
 
-    public LayerBuilder withRelaxation(float value) {
-        this.relaxation = value;
+    public LayerBuilder withCompositing(List<LayerStep> compositing) {
+        if (compositing != null) {
+            this.compositing.addAll(compositing);
+        }
         return this;
     }
 
-    public InteractiveLayer buildInteractiveLayer()
-    {
-        InteractiveLayer layer = new InteractiveLayer(source, timeBehavior,
-                compositingSteps , potential, relaxation);
-        layer.updatePotential(1);
-        layer.updateState();
+    public LayerBuilder withCompositingStep(LayerStep step) {
+        if(step != null) {
+            this.compositing.add(step);
+        }
+        return this;
+    }
+
+    public LayerBuilder withPotentialUpdater(PotentialUpdater potentialUpdater) {
+        if(potentialUpdater != null) {
+            this.potentialUpdater = potentialUpdater;
+        }
+        return this;
+    }
+
+    public LayerBuilder withStateUpdater(StateUpdater stateUpdater) {
+        if(stateUpdater != null) {
+            this.stateUpdater = stateUpdater;
+        }
+        return this;
+    }
+
+    public PotentialLayer buildPotentialLayer() {
+        PotentialLayer layer = new PotentialLayer(width, height, signal,
+                timeBehavior, compositing, potentialUpdater);
+        potentialUpdater.update(layer, 1);
         return layer;
     }
 
-    public ProceduralLayer buildProceduralLayer()
-    {
-        ProceduralLayer layer = new ProceduralLayer(source, timeBehavior,
-                compositingSteps, potential);
-        layer.updatePotential(1);
+    public StateLayer buildStateLayer() {
+        StateLayer layer = new StateLayer(width, height,
+                signal, timeBehavior, compositing,
+                potentialUpdater, stateUpdater);
+        potentialUpdater.update(layer, 1);
+        stateUpdater.update(layer);
         return layer;
     }
-
 
 
 

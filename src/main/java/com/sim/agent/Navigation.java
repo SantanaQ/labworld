@@ -43,10 +43,10 @@ public class Navigation {
         float sx = x - x0;
         float sy = y - y0;
 
-        float v00 = layer.accessibleAtSafe(x0, y0);
-        float v10 = layer.accessibleAtSafe(x1, y0);
-        float v01 = layer.accessibleAtSafe(x0, y1);
-        float v11 = layer.accessibleAtSafe(x1, y1);
+        float v00 = layer.valueAt(x0, y0);
+        float v10 = layer.valueAt(x1, y0);
+        float v01 = layer.valueAt(x0, y1);
+        float v11 = layer.valueAt(x1, y1);
 
         float v0 = MathHelpers.lerp(v00, v10, sx);
         float v1 = MathHelpers.lerp(v01, v11, sx);

@@ -7,6 +7,8 @@ import com.sim.layer.time_behavior.Composite;
 import com.sim.layer.time_behavior.DomainWarp;
 import com.sim.layer.time_behavior.Drifting;
 import com.sim.layer.time_behavior.Fixed;
+import com.sim.layer.update.DefaultPotentialUpdater;
+import com.sim.layer.update.DiffusionStateUpdater;
 import com.sim.signal.FractalNoise;
 import com.sim.signal.GridSignal;
 import com.sim.signal.ValueNoise;
@@ -18,13 +20,15 @@ public final class DefaultCfgs {
     private DefaultCfgs() {}
 
     public static LayerConfig defaultFood(int width, int height, int seed) {
-        LayerConfig c = new InteractiveLayerConfig(width, height, seed);
+        StateLayerConfig c = new StateLayerConfig(width, height, seed);
         c.setSignalSource(new FractalNoise(
                 c.seed+100,
                 70,
                 2,
                 5));
         c.setTimeBehavior(defaultDrift());
+        c.setPotentialUpdater(new DefaultPotentialUpdater());
+        c.setStateUpdater(new DiffusionStateUpdater(0.2f, 0.05f, 0.955f));
         c.addLayerStep(new SoftThreshold(0.7f, 0.1f));
         c.addLayerStep(new SuitabilityMask(
                 LayerID.HEAT,
@@ -34,14 +38,16 @@ public final class DefaultCfgs {
     }
 
     public static LayerConfig defaultScent(int width, int height, int seed) {
-        LayerConfig c = new InteractiveLayerConfig(width, height, seed);
+        StateLayerConfig c = new StateLayerConfig(width, height, seed);
         c.setSignalSource(new GridSignal(new float[height][width]));
         c.setTimeBehavior(new Fixed());
+        c.setPotentialUpdater(new DefaultPotentialUpdater());
+        c.setStateUpdater(new DiffusionStateUpdater(0.2f, 0.05f, 0.955f));
         return c;
     }
 
     public static LayerConfig defaultHeat(int width, int height, int seed) {
-        LayerConfig c = new ProceduralLayerConfig(width, height, seed);
+        PotentialLayerConfig c = new PotentialLayerConfig(width, height, seed);
         c.setSignalSource(new FractalNoise(
                 seed+200,
                 100,
@@ -62,6 +68,7 @@ public final class DefaultCfgs {
         Composite warpingDrift = new Composite(List.of(defaultDrift(), warp));
         c.setTimeBehavior(warpingDrift);
         c.addLayerStep(new SoftThreshold(0.2f, 0.1f));
+        c.setPotentialUpdater(new DefaultPotentialUpdater());
         return c;
     }
 

@@ -3,7 +3,6 @@ package com.sim.layer.step;
 import com.sim.layer.LayerContext;
 import com.sim.layer.LayerID;
 import com.sim.layer.WorldLayer;
-import com.sim.world.Coordinate;
 import com.sim.utils.MathHelpers;
 
 public class SuitabilityMask implements LayerReferenceStep {
@@ -27,7 +26,7 @@ public class SuitabilityMask implements LayerReferenceStep {
 
     @Override
     public float apply(float value, int x, int y) {
-        float ref = referenceLayer.accessibleAt(x, y);
+        float ref = referenceLayer.valueAt(x, y);
         float suitability = MathHelpers.smoothstep(min, max, ref);
         return value * suitability;
     }

@@ -16,6 +16,8 @@ public class World {
     final LayerContext ctx;
     final Map<LayerID, LayerRuntime> runtimes;
 
+
+
     final Random rand;
     final List<Agent> agents;
     final OccupancyGrid occupancy;
@@ -78,7 +80,7 @@ public class World {
 
     public void tick() {
         for (var entry : runtimes.entrySet()) {
-            entry.getValue().layer().updatePotential(time);
+            ((PotentialLayer)entry.getValue().layer()).updatePotential(time);
         }
 
         for (Agent agent : agents) {
@@ -87,9 +89,9 @@ public class World {
 
         for (var entry : runtimes.entrySet()) {
             WorldLayer layer = entry.getValue().layer();
-            if(layer instanceof InteractiveLayer)
+            if(layer instanceof StateLayer)
             {
-                ((InteractiveLayer) layer).updateState();
+                ((StateLayer) layer).updateState();
             }
         }
 
@@ -114,7 +116,7 @@ public class World {
     }
 
     public float layerAt(LayerID id, Coordinate coord) {
-        return runtimes.get(id).layer().accessibleAt(coord.x(), coord.y());
+        return runtimes.get(id).layer().valueAt(coord.x(), coord.y());
     }
 
     public OccupancyGrid occupancy() {
@@ -182,18 +184,10 @@ public class World {
     }
 
     public void affect(LayerID layerId, Coordinate c, float amount) {
-        AgentAffectable affectable = layer(layerId).capability(AgentAffectable.class);
-        if(affectable != null) {
-            affectable.applyAgentInfluence(c, amount);
+        WorldLayer layer = layer(layerId);
+        if(layer instanceof StateLayer) {
+            ((StateLayer) layer).applyInfluence(c.x(), c.y(), amount);
         }
-    }
-
-
-    public Optional<InteractiveLayer> interactiveLayer(LayerID id) {
-        if(layer(id) instanceof InteractiveLayer) {
-            return Optional.of((InteractiveLayer) layer(id));
-        }
-        return Optional.empty();
     }
 
 

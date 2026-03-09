@@ -1,5 +1,6 @@
 package world.agent;
 
+import com.sim.layer.LayerID;
 import com.sim.world.World;
 import com.sim.agent.Agent;
 import com.sim.agent.Needs;
