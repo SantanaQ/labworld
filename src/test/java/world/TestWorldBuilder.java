@@ -4,6 +4,7 @@ import com.sim.config.*;
 import com.sim.layer.time_behavior.Fixed;
 import com.sim.layer.update.CopyStateUpdater;
 import com.sim.layer.update.DefaultPotentialUpdater;
+import com.sim.layer.update.DiffusionStateUpdater;
 import com.sim.layer.update.InactiveStateUpdater;
 import com.sim.signal.GridSignal;
 import com.sim.world.World;
@@ -50,10 +51,11 @@ public class TestWorldBuilder {
         heatCfg.setPotentialUpdater(new DefaultPotentialUpdater());
         config.setHeatConfig(heatCfg);
 
-        PotentialLayerConfig scentCfg = new PotentialLayerConfig(width, height, seed);
+        StateLayerConfig scentCfg = new StateLayerConfig(width, height, seed);
         scentCfg.setSignalSource(new GridSignal(scent));
         scentCfg.setTimeBehavior(new Fixed());
-        heatCfg.setPotentialUpdater(new DefaultPotentialUpdater());
+        scentCfg.setPotentialUpdater(new DefaultPotentialUpdater());
+        scentCfg.setStateUpdater(new DiffusionStateUpdater(0.5f, 0.3f, 1, 0.3f));
         config.setScentConfig(scentCfg);
 
         return new World(config);

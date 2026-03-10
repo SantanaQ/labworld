@@ -1,17 +1,13 @@
 package com.sim.config;
 
 import com.sim.layer.LayerID;
-import com.sim.layer.step.SoftThreshold;
-import com.sim.layer.step.SuitabilityMask;
+import com.sim.layer.step.*;
 import com.sim.layer.time_behavior.Composite;
 import com.sim.layer.time_behavior.DomainWarp;
 import com.sim.layer.time_behavior.Drifting;
 import com.sim.layer.time_behavior.Fixed;
-import com.sim.layer.update.DefaultPotentialUpdater;
-import com.sim.layer.update.DiffusionStateUpdater;
-import com.sim.signal.FractalNoise;
-import com.sim.signal.GridSignal;
-import com.sim.signal.ValueNoise;
+import com.sim.layer.update.*;
+import com.sim.signal.*;
 
 import java.util.List;
 
@@ -21,19 +17,30 @@ public final class DefaultCfgs {
 
     public static LayerConfig defaultFood(int width, int height, int seed) {
         StateLayerConfig c = new StateLayerConfig(width, height, seed);
-        c.setSignalSource(new FractalNoise(
-                c.seed+100,
-                70,
-                2,
-                5));
+
+        SignalSource base = new FractalNoise(seed, 2, 3, 0.5f);
+        SignalSource holes = new FractalNoise(seed+200, 25, 2, 0.6f);
+
+        SignalSource foodSignal = new HoleMaskNoise(
+                base,
+                holes,
+                0.65f,
+                1f);
+
+        c.setSignalSource(foodSignal);
         c.setTimeBehavior(defaultDrift());
         c.setPotentialUpdater(new DefaultPotentialUpdater());
-        c.setStateUpdater(new DiffusionStateUpdater(0.2f, 0.05f, 0.955f));
+        c.setStateUpdater(new CopyStateUpdater());
         c.addLayerStep(new SoftThreshold(0.7f, 0.1f));
         c.addLayerStep(new SuitabilityMask(
                 LayerID.HEAT,
-                0.5f,
+                0.4f,
                 0.7f));
+        c.addLayerStep(new SuitabilityDecay(
+                LayerID.HEAT,
+                0.6f,
+                0.7f,
+                0.95f));
         return c;
     }
 
@@ -42,7 +49,9 @@ public final class DefaultCfgs {
         c.setSignalSource(new GridSignal(new float[height][width]));
         c.setTimeBehavior(new Fixed());
         c.setPotentialUpdater(new DefaultPotentialUpdater());
-        c.setStateUpdater(new DiffusionStateUpdater(0.2f, 0.05f, 0.955f));
+        //c.setStateUpdater(new DiffusionStateUpdater(0.2f, 0.05f, 0.955f));
+        c.setStateUpdater(new DiffusionStateUpdater(1.0f, 0.15f, 0.998f, 0.96f));
+        //c.setStateUpdater(new DirectInfluenceStateUpdater());
         return c;
     }
 

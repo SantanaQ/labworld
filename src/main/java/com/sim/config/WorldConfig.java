@@ -4,7 +4,7 @@ public class WorldConfig {
 
     public int width = 200;
     public int height = 200;
-    public int seed = 987654321;
+    public int seed = 42069;
     public int agentCount = 50;
 
     public LayerConfig heatConfig;
@@ -12,9 +12,7 @@ public class WorldConfig {
     public LayerConfig scentConfig;
 
     public WorldConfig() {
-        this.heatConfig = DefaultCfgs.defaultHeat(width, height, seed);
-        this.foodConfig = DefaultCfgs.defaultFood(width, height, seed);
-        this.scentConfig = DefaultCfgs.defaultScent(width, height, seed);
+        setDefaults();
     }
 
     public WorldConfig(int width, int height, int seed, int agentCount) {
@@ -34,6 +32,12 @@ public class WorldConfig {
 
     public void setScentConfig(LayerConfig scentConfig) {
         this.scentConfig = scentConfig;
+    }
+
+    public void setDefaults() {
+        this.heatConfig = DefaultCfgs.defaultHeat(width, height, seed);
+        this.foodConfig = DefaultCfgs.defaultFood(width, height, seed);
+        this.scentConfig = DefaultCfgs.defaultScent(width, height, seed);
     }
 
 }

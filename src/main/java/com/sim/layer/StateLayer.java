@@ -6,7 +6,6 @@ import com.sim.layer.update.PotentialUpdater;
 import com.sim.layer.update.StateUpdater;
 import com.sim.signal.SignalSource;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class StateLayer extends PotentialLayer {
@@ -49,7 +48,11 @@ public class StateLayer extends PotentialLayer {
     }
 
     public void applyInfluence(int x, int y, float value) {
-        influence[y][x] += value;
+        if(isInBounds(x, y)) {
+            float sum = influence[y][x] + value;
+            float clamped = Math.clamp(sum, 0, 1);
+            influence[y][x] = clamped;
+        }
     }
 
     public void setState(int x, int y, float value) {
@@ -70,9 +73,11 @@ public class StateLayer extends PotentialLayer {
         next = temp;
     }
 
-    public void clearInfluence() {
-        for(float[] row : influence) {
-            Arrays.fill(row, 0);
+    public void decayInfluence(float decay) {
+        for(int h = 0; h < influence.length; h++) {
+            for(int w = 0; w < influence[0].length; w++) {
+                influence[h][w] *= decay;
+            }
         }
     }
 

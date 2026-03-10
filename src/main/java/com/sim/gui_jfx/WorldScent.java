@@ -12,7 +12,7 @@ public class WorldScent implements RenderLayer {
     private final Canvas canvas;
     private final GraphicsContext gc;
 
-    private final Color baseColor = Color.RED;
+    private final Color baseColor = Color.BLACK;
 
     public WorldScent() {
         this.canvas = new Canvas();
@@ -43,7 +43,7 @@ public class WorldScent implements RenderLayer {
                 baseColor.getRed(),
                 baseColor.getGreen(),
                 baseColor.getBlue(),
-                value);
+                value * 0.8);
     }
 }
 

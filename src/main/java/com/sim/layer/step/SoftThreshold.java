@@ -1,19 +1,12 @@
 package com.sim.layer.step;
 
-import com.sim.world.Coordinate;
 
 public final class SoftThreshold implements LayerStep{
-
-    private final float threshold;
-    private final float softness;
 
     private final float t0;
     private final float t1;
 
     public SoftThreshold(float threshold, float softness) {
-        this.threshold = threshold;
-        this.softness = softness;
-
         this.t0 = threshold - softness;
         this.t1 = threshold + softness;
     }

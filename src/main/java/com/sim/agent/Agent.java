@@ -115,8 +115,7 @@ public class Agent {
 
         /*needs.reactToFood(s.food());
         needs.reactToHeat(s.heat());
-        needs.reactToScent(s.scent());
-        */
+        needs.reactToScent(s.scent());*/
     }
 
     private void interact(World world, Coordinate c) {

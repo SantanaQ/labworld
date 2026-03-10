@@ -40,15 +40,15 @@ public class WorldAgents implements RenderLayer {
             gc.setFill(Color.BLACK);
             float fx = agent.position().x();
             float fy = agent.position().y();
-            gc.fillOval(fx * App.CELL_SIZE,
-                    fy * App.CELL_SIZE,
-                    App.CELL_SIZE*3,
-                    App.CELL_SIZE*3);
+            gc.fillOval(fx * App.CELL_SIZE -(double) 1/2 * App.CELL_SIZE,
+                    fy * App.CELL_SIZE - (double) 1/2 * App.CELL_SIZE,
+                    App.CELL_SIZE*2,
+                    App.CELL_SIZE*2);
             gc.setFill(Color.WHITE);
             gc.fillOval(fx * App.CELL_SIZE,
                     fy * App.CELL_SIZE,
-                    App.CELL_SIZE*2,
-                    App.CELL_SIZE*2);
+                    App.CELL_SIZE,
+                    App.CELL_SIZE);
         }
     }
 

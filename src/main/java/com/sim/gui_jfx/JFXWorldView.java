@@ -45,7 +45,7 @@ public class JFXWorldView implements WorldView {
         layers.add(scent);
         layers.add(agents);
 
-        root.getChildren().addAll(heat.canvas(), food.canvas(), agents.canvas());
+        root.getChildren().addAll(heat.canvas(), food.canvas(), scent.canvas(), agents.canvas());
 
         DoubleBinding sizeBinding = Bindings.createDoubleBinding(
                 () -> Math.min(root.getWidth(), root.getHeight()),

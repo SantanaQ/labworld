@@ -1,5 +1,6 @@
 package world.agent;
 
+import com.sim.config.WorldConfig;
 import com.sim.layer.LayerID;
 import com.sim.world.World;
 import com.sim.agent.Agent;
@@ -150,6 +151,5 @@ public class AgentTest {
         assertTrue(postPos.x() > prePos.x());
         assertTrue(postPos.y() < prePos.y());
     }
-
 
 }

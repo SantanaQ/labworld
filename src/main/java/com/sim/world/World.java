@@ -187,7 +187,22 @@ public class World {
         WorldLayer layer = layer(layerId);
         if(layer instanceof StateLayer) {
             ((StateLayer) layer).applyInfluence(c.x(), c.y(), amount);
+            //applyKernel(layerId, c.x(), c.y(), amount);
         }
+    }
+
+    private void applyKernel(LayerID layerID, int x, int y, float amount) {
+        StateLayer layer = (StateLayer) layer(layerID);
+
+        layer.applyInfluence(x, y-1, amount * 0.2f);
+        layer.applyInfluence(x, y+1, amount * 0.2f);
+        layer.applyInfluence(x-1, y, amount * 0.2f);
+        layer.applyInfluence(x+1, y, amount * 0.2f);
+
+        layer.applyInfluence(x-1, y-1, amount * 0.05f);
+        layer.applyInfluence(x+1, y-1, amount * 0.05f);
+        layer.applyInfluence(x-1, y+1, amount * 0.05f);
+        layer.applyInfluence(x+1, y+1, amount * 0.05f);
     }
 
 

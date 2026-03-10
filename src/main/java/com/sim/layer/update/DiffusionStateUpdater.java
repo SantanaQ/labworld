@@ -7,14 +7,17 @@ public class DiffusionStateUpdater implements StateUpdater {
     private final float crossWeight = 0.20f;
     private final float diagWeight = 0.05f;
 
-    private float diffusion; //0.2
-    private float relaxation; //0.05
-    private float decay; //0.955
+    private float diffusion;
+    private float relaxation;
+    private float stateDecay;
+    private float influenceDecay;
 
-    public DiffusionStateUpdater(float diffusion, float relaxation, float decay) {
+    public DiffusionStateUpdater(float diffusion, float relaxation,
+                                 float stateDecay, float influenceDecay) {
         this.diffusion = diffusion;
         this.relaxation = relaxation;
-        this.decay = decay;
+        this.stateDecay = stateDecay;
+        this.influenceDecay = influenceDecay;
     }
 
     @Override
@@ -41,12 +44,12 @@ public class DiffusionStateUpdater implements StateUpdater {
                 s = Math.clamp(s, 0f, 1f);
 
                 // decay
-                s *= decay;
+                s *= stateDecay;
 
                 layer.setNextState(x, y, s);
             }
         }
-        layer.clearInfluence();
+        layer.decayInfluence(influenceDecay);
         layer.swapState();
     }
 
