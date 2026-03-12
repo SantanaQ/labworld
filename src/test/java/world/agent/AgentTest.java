@@ -152,4 +152,26 @@ public class AgentTest {
         assertTrue(postPos.y() < prePos.y());
     }
 
+    @Test
+    void test() {
+        Agent agent = new Agent(new Position(125,100));
+        World world = new TestWorldBuilder()
+                .dimensions(200,200)
+                .defaultCfgs();
+        //world.tick();
+        agent.actOn(world);
+        agent.actOn(world);
+        agent.actOn(world);
+        agent.actOn(world);
+        agent.actOn(world);
+        agent.actOn(world);
+        agent.actOn(world);
+        agent.actOn(world);
+        agent.actOn(world);
+        agent.actOn(world);
+        agent.actOn(world);
+        agent.actOn(world);
+
+    }
+
 }

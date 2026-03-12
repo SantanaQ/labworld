@@ -4,8 +4,7 @@ import com.sim.config.*;
 import com.sim.layer.time_behavior.Fixed;
 import com.sim.layer.update.CopyStateUpdater;
 import com.sim.layer.update.DefaultPotentialUpdater;
-import com.sim.layer.update.DiffusionStateUpdater;
-import com.sim.layer.update.InactiveStateUpdater;
+import com.sim.layer.update.DiffusionRelaxationStateUpdater;
 import com.sim.signal.GridSignal;
 import com.sim.world.World;
 
@@ -34,6 +33,18 @@ public class TestWorldBuilder {
         return this;
     }
 
+    public TestWorldBuilder dimensions(int width, int height) {
+        this.width = width;
+        this.height = height;
+        return this;
+    }
+
+    public World defaultCfgs() {
+        WorldConfig cfg = new WorldConfig(width, height, seed, 0);
+        cfg.setDefaults();
+        return new World(cfg);
+    }
+
     public World build() {
 
         WorldConfig config = new WorldConfig(width, height, seed, 0);
@@ -55,7 +66,7 @@ public class TestWorldBuilder {
         scentCfg.setSignalSource(new GridSignal(scent));
         scentCfg.setTimeBehavior(new Fixed());
         scentCfg.setPotentialUpdater(new DefaultPotentialUpdater());
-        scentCfg.setStateUpdater(new DiffusionStateUpdater(0.5f, 0.3f, 1, 0.3f));
+        scentCfg.setStateUpdater(new DiffusionRelaxationStateUpdater(0.5f, 0.3f, 1, 0.3f));
         config.setScentConfig(scentCfg);
 
         return new World(config);

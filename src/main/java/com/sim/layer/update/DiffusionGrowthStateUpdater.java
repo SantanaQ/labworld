@@ -2,26 +2,31 @@ package com.sim.layer.update;
 
 import com.sim.layer.StateLayer;
 
-public class DiffusionStateUpdater implements StateUpdater {
+public class DiffusionGrowthStateUpdater implements StateUpdater {
 
     private final float crossWeight = 0.20f;
-    private final float diagWeight = 0.05f;
+    private final float diagWeight  = 0.05f;
 
     private float diffusion;
-    private float relaxation;
+    private float growthRate;
     private float stateDecay;
     private float influenceDecay;
 
-    public DiffusionStateUpdater(float diffusion, float relaxation,
-                                 float stateDecay, float influenceDecay) {
+    public DiffusionGrowthStateUpdater(
+            float diffusion,
+            float growthRate,
+            float stateDecay,
+            float influenceDecay) {
+
         this.diffusion = diffusion;
-        this.relaxation = relaxation;
+        this.growthRate = growthRate;
         this.stateDecay = stateDecay;
         this.influenceDecay = influenceDecay;
     }
 
     @Override
     public void update(StateLayer layer) {
+
         int w = layer.width();
         int h = layer.height();
 
@@ -33,27 +38,30 @@ public class DiffusionStateUpdater implements StateUpdater {
 
                 float kernel = applyWeightedAvg(x, y, layer);
 
-                // diffusion
                 s += diffusion * (kernel - s);
 
-                // relaxation towards procedural potential
-                s += relaxation * (p - s);
 
-                // influence
-                s += layer.influenceAt(x,y);
-                s = Math.clamp(s, 0f, 1f);
+                // slow growth only if potential allows it
+                if (p > s) {
+                    s += growthRate * p * (1 - s);
+                }
 
-                // decay
+                s += layer.influenceAt(x, y);
+
                 s *= stateDecay;
+
+                s = Math.clamp(s, 0f, 1f);
 
                 layer.setNextState(x, y, s);
             }
         }
+
         layer.decayInfluence(influenceDecay);
         layer.swapState();
     }
 
     private float applyWeightedAvg(int x, int y, StateLayer layer) {
+
         float n  = layer.valueAt(x, y-1);
         float s  = layer.valueAt(x, y+1);
         float w  = layer.valueAt(x-1, y);
@@ -65,7 +73,7 @@ public class DiffusionStateUpdater implements StateUpdater {
         float se = layer.valueAt(x+1, y+1);
 
         float cross = (n + s + w + e) * crossWeight;
-        float diag = (nw + ne + sw + se) * diagWeight;
+        float diag  = (nw + ne + sw + se) * diagWeight;
 
         return cross + diag;
     }

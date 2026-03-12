@@ -11,5 +11,8 @@ public record Position(float x, float y) {
         return new Coordinate(cX, cY);
     }
 
+    public Position add(Vector vector) {
+        return new Position(this.x + vector.vx(), this.y + vector.vy());
+    }
 
 }

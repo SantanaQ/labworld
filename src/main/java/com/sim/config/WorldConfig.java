@@ -5,7 +5,7 @@ public class WorldConfig {
     public int width = 200;
     public int height = 200;
     public int seed = 42069;
-    public int agentCount = 50;
+    public int agentCount = 250;
 
     public LayerConfig heatConfig;
     public LayerConfig foodConfig;
@@ -39,5 +39,6 @@ public class WorldConfig {
         this.foodConfig = DefaultCfgs.defaultFood(width, height, seed);
         this.scentConfig = DefaultCfgs.defaultScent(width, height, seed);
     }
+
 
 }

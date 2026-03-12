@@ -11,10 +11,11 @@ public class CopyStateUpdater implements StateUpdater{
 
         for(int y = 0; y < h; y++){
             for(int x = 0; x < w; x++){
-                layer.setNextState(x,y, layer.potentialAt(x, y));
+                float s = layer.potentialAt(x, y) + layer.influenceAt(x, y);
+                layer.setNextState(x,y, s);
             }
         }
         layer.swapState();
-
+        layer.decayInfluence(0.5f);
     }
 }

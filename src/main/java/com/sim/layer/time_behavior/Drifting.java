@@ -26,6 +26,7 @@ public class Drifting implements TimeBehavior {
                 x + dirX * speed * time,
                 y + dirY * speed * time
         );
+
     }
 
     @Override

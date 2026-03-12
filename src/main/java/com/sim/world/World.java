@@ -74,7 +74,6 @@ public class World {
         runtime.updateLayer(runtime.config().build());
         WorldLayer layer = runtime.layer();
         ctx.register(id, layer);
-
         runtime.config().clearDirty();
     }
 
@@ -187,23 +186,24 @@ public class World {
         WorldLayer layer = layer(layerId);
         if(layer instanceof StateLayer) {
             ((StateLayer) layer).applyInfluence(c.x(), c.y(), amount);
-            //applyKernel(layerId, c.x(), c.y(), amount);
+        }
+        if(layerId == LayerID.FOOD) {
+            affectKernel((StateLayer) layer, c, amount);
         }
     }
 
-    private void applyKernel(LayerID layerID, int x, int y, float amount) {
-        StateLayer layer = (StateLayer) layer(layerID);
-
-        layer.applyInfluence(x, y-1, amount * 0.2f);
-        layer.applyInfluence(x, y+1, amount * 0.2f);
-        layer.applyInfluence(x-1, y, amount * 0.2f);
-        layer.applyInfluence(x+1, y, amount * 0.2f);
-
-        layer.applyInfluence(x-1, y-1, amount * 0.05f);
-        layer.applyInfluence(x+1, y-1, amount * 0.05f);
-        layer.applyInfluence(x-1, y+1, amount * 0.05f);
-        layer.applyInfluence(x+1, y+1, amount * 0.05f);
+    public void affectKernel(StateLayer layer, Coordinate c, float amount) {
+        for(int dy = -1; dy <= 1; dy++) {
+            for(int dx = -1; dx <= 1; dx++) {
+                float val = amount * 0.2f;
+                if(dx == 0 && dy == 0) {
+                    val = amount;
+                }
+                layer.applyInfluence(c.x() + dx, c.y() + dy, val);
+            }
+        }
     }
+
 
 
 }

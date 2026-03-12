@@ -43,7 +43,7 @@ public class WorldScent implements RenderLayer {
                 baseColor.getRed(),
                 baseColor.getGreen(),
                 baseColor.getBlue(),
-                value * 0.8);
+                value);
     }
 }
 

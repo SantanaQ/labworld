@@ -16,31 +16,50 @@ public final class DefaultCfgs {
     private DefaultCfgs() {}
 
     public static LayerConfig defaultFood(int width, int height, int seed) {
+
         StateLayerConfig c = new StateLayerConfig(width, height, seed);
 
-        SignalSource base = new FractalNoise(seed, 2, 3, 0.5f);
-        SignalSource holes = new FractalNoise(seed+200, 25, 2, 0.6f);
-
-        SignalSource foodSignal = new HoleMaskNoise(
-                base,
-                holes,
-                0.65f,
-                1f);
+        // clustered habitat noise
+        SignalSource foodSignal = new ClusteredPatchNoise(seed);
 
         c.setSignalSource(foodSignal);
-        c.setTimeBehavior(defaultDrift());
+
+        // drifting biome behaviour
+        //c.setTimeBehavior(defaultDrift());
+
+        // potential simply follows signal
         c.setPotentialUpdater(new DefaultPotentialUpdater());
-        c.setStateUpdater(new CopyStateUpdater());
-        c.addLayerStep(new SoftThreshold(0.7f, 0.1f));
+
+        // food growth behaviour
+        c.setStateUpdater(
+                new DiffusionGrowthStateUpdater(
+                        0.05f,   // diffusion (food drift)
+                        0.12f,   // growthRate
+                        0.998f,  // stateDecay
+                        0.4f     // influenceDecay
+                )
+        );
+
+        // create clear habitat zones
+        c.addLayerStep(new SoftThreshold(
+                0.55f,
+                0.08f
+        ));
+
+        // heat suitability (food prefers certain temperatures)
         c.addLayerStep(new SuitabilityMask(
                 LayerID.HEAT,
-                0.4f,
-                0.7f));
+                0.15f,
+                0.35f
+        ));
+
+        // decay if temperature becomes bad
         c.addLayerStep(new SuitabilityDecay(
                 LayerID.HEAT,
-                0.6f,
-                0.7f,
-                0.95f));
+                0.15f,
+                0.65f,
+                0.03f
+        ));
         return c;
     }
 
@@ -49,9 +68,7 @@ public final class DefaultCfgs {
         c.setSignalSource(new GridSignal(new float[height][width]));
         c.setTimeBehavior(new Fixed());
         c.setPotentialUpdater(new DefaultPotentialUpdater());
-        //c.setStateUpdater(new DiffusionStateUpdater(0.2f, 0.05f, 0.955f));
-        c.setStateUpdater(new DiffusionStateUpdater(1.0f, 0.15f, 0.998f, 0.96f));
-        //c.setStateUpdater(new DirectInfluenceStateUpdater());
+        c.setStateUpdater(new DiffusionRelaxationStateUpdater(0.5f, 0, 0.995f, 0.3f));
         return c;
     }
 
@@ -59,7 +76,7 @@ public final class DefaultCfgs {
         PotentialLayerConfig c = new PotentialLayerConfig(width, height, seed);
         c.setSignalSource(new FractalNoise(
                 seed+200,
-                100,
+                30,
                 2,
                 5));
 
@@ -72,7 +89,7 @@ public final class DefaultCfgs {
                         new ValueNoise(seed+2, 64),
                         3,
                         0.6f),
-                20);
+                50);
 
         Composite warpingDrift = new Composite(List.of(defaultDrift(), warp));
         c.setTimeBehavior(warpingDrift);

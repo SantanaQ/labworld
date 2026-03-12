@@ -39,6 +39,7 @@ public class App extends Application {
         root.setCenter(createWorldContainer(worldView));
 
         Scene scene = new Scene(root, 1000, 720);
+        stage.setMaximized(true);
         stage.setScene(scene);
         stage.show();
 

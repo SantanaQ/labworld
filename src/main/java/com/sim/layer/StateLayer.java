@@ -50,7 +50,7 @@ public class StateLayer extends PotentialLayer {
     public void applyInfluence(int x, int y, float value) {
         if(isInBounds(x, y)) {
             float sum = influence[y][x] + value;
-            float clamped = Math.clamp(sum, 0, 1);
+            float clamped = Math.clamp(sum, -1, 1);
             influence[y][x] = clamped;
         }
     }

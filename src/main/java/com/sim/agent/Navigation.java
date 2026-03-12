@@ -7,9 +7,9 @@ import java.util.Random;
 
 public class Navigation {
 
-    static Velocity towardsTargetValue(WorldLayer layer,
-                                       Position position,
-                                       float targetVal) {
+    static Vector towardsTargetValue(WorldLayer layer,
+                                     Position position,
+                                     float targetVal) {
         float eps = 0.5f;
 
         float agentX = position.x();
@@ -24,7 +24,7 @@ public class Navigation {
 
         float direction = Math.signum(targetVal - h);
 
-        Velocity v = new Velocity(dx * direction, dy * direction);
+        Vector v = new Vector(dx * direction, dy * direction);
 
         if (v.length() > 1f) {
             v = v.normalize();
@@ -54,10 +54,10 @@ public class Navigation {
         return MathHelpers.lerp(v0, v1, sy);
     }
 
-    static Velocity randomVector(Random random) {
+    static Vector randomVector(Random random) {
         float angle = random.nextFloat() * MathHelpers.TWO_PI;
 
-        return new Velocity(
+        return new Vector(
                 (float)Math.cos(angle),
                 (float)Math.sin(angle)
         );
