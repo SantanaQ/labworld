@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import Flow from "./NodeEditor"
+//import NodeEditor from "./NodeEditor"
+import WorldEditorContainer from "./WorldEditorContainer.tsx";
+import {SimBridge} from "./SimBridge.tsx";
 
 const SplitScreen: React.FC = () => {
     const [leftWidth, setLeftWidth] = useState<number>(50);
@@ -47,10 +49,10 @@ const SplitScreen: React.FC = () => {
                 style={{ width: `${leftWidth}%` }}
             >
                 <div className="p-5 pt-2">
-                    <h3 className="font-bold mb-4 text-white">World-Editor</h3>
+                    <h1 className="font-bold mb-4 text-white">World-Editor</h1>
 
                 </div>
-                <Flow />
+                <WorldEditorContainer />
 
             </div>
 
@@ -67,6 +69,9 @@ const SplitScreen: React.FC = () => {
             <div className="flex-1 overflow-auto bg-slate-700">
                 <div className="p-5 pt-2">
                     <h3 className="font-bold mb-4 text-white">World-View</h3>
+                </div>
+                <div className="flex-1 overflow-hidden relative">
+                    <SimBridge/>
                 </div>
             </div>
 
