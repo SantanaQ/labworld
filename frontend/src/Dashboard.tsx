@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 //import NodeEditor from "./NodeEditor"
-import {WorldEditorContainer} from "./WorldEditorContainer.tsx";
-import {WorldSimulationContainer} from "./WorldSimulationContainer.tsx";
+import {EditorContainer} from "./EditorContainer.tsx";
+import {SimulationContainer} from "./SimulationContainer.tsx";
 
 export interface WorldConfig {
     worldId: string;
@@ -11,7 +11,7 @@ export interface WorldConfig {
 }
 
 
-const WorldDashboard: React.FC = () => {
+const Dashboard: React.FC = () => {
     const [leftWidth, setLeftWidth] = useState<number>(50);
     const [worldConfig, setWorldConfig] = useState<WorldConfig | null>(null);
     const isResizing = useRef<boolean>(false);
@@ -33,7 +33,7 @@ const WorldDashboard: React.FC = () => {
 
         const newWidth = (e.clientX / window.innerWidth) * 100;
 
-        if (newWidth > 5 && newWidth < 95) {
+        if (newWidth > 1 && newWidth < 90) {
             setLeftWidth(newWidth);
         }
     }, []);
@@ -61,7 +61,7 @@ const WorldDashboard: React.FC = () => {
                 className="overflow-auto bg-slate-800"
                 style={{ width: `${leftWidth}%` }}
             >
-                <WorldEditorContainer onGenerateSuccess={handleWorldGenerated} />
+                <EditorContainer onGenerateSuccess={handleWorldGenerated} />
             </div>
 
             {/* Divider / Resizer */}
@@ -76,7 +76,7 @@ const WorldDashboard: React.FC = () => {
             {/* Right Page */}
             <div className="flex-1 overflow-auto bg-slate-700">
                 <div className="flex-1 overflow-hidden relative">
-                    <WorldSimulationContainer config={worldConfig}/>
+                    <SimulationContainer config={worldConfig}/>
                 </div>
             </div>
 
@@ -84,4 +84,4 @@ const WorldDashboard: React.FC = () => {
     );
 };
 
-export default WorldDashboard;
+export default Dashboard;

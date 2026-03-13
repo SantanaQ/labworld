@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class SimulationService {
 
+
     private WorldConfig config;
     private World world;
 
@@ -19,8 +20,10 @@ public class SimulationService {
     private FrameEncoder encoder;
 
     private boolean running;
+    private Thread simulationThread;
 
-    private int ticksPerSecond = 30;
+    private int tickBase = 30;
+    private int ticksPerSecond = tickBase;
     private long tickNanos = 1_000_000_000L / ticksPerSecond;
 
 
@@ -28,12 +31,16 @@ public class SimulationService {
         this.broadcaster = broadcaster;
     }
 
-    public void setConfig(JsonWorldConfig config) {
-        this.config = WorldConfigHandler.translateConfig(config);
+    public void setConfig(JsonWorldConfig cfg) {
+        this.config = WorldConfigHandler.translateConfig(cfg);
+    }
+
+    public void setConfig(WorldConfig cfg) {
+        this.config = cfg;
     }
 
     public void setSpeed(double speed) {
-        this.ticksPerSecond = (int) (speed * ticksPerSecond);
+        this.ticksPerSecond = (int) (speed * tickBase);
         this.tickNanos = 1_000_000_000L / ticksPerSecond;
     }
 
@@ -50,19 +57,43 @@ public class SimulationService {
         encoder = new FrameEncoder(layout);
 
         running = true;
-        new Thread(() -> {
+        simulationThread = new Thread(() -> {
             try {
                 loop();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-        }).start();
+        });
+        simulationThread.start();
     }
 
-    public void pause() {
+    public synchronized void pause() {
+        running = false;
     }
 
-    private void loop() throws Exception {
+    public synchronized void resume() {
+        if(!running) {
+            running = true;
+            simulationThread = new Thread(() -> {
+                try {
+                    loop();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            simulationThread.start();
+        }
+    }
+
+    public synchronized void stop() {
+        running = false;
+        interruptThread();
+        clearSession();
+        cleanWorldConfig();
+        resetTick();
+    }
+
+    private void loop() {
         long lastTime = System.nanoTime();
         long accumulator = 0;
 
@@ -87,6 +118,47 @@ public class SimulationService {
                 broadcaster.broadcast(encoder.currentFrame());
             }
         }
+    }
+
+    public WorldSnapshot previewSnapshot() {
+        if(!hasConfig()) throw new IllegalStateException("No config set");
+        World tempWorld = new World(config);
+        return new WorldSnapshot(tempWorld);
+    }
+
+    public boolean hasConfig() {
+        return config != null;
+    }
+
+    public WorldConfig config() {
+        return config;
+    }
+
+    private void interruptThread() {
+        if (simulationThread != null) {
+            simulationThread.interrupt();
+            try {
+                simulationThread.join();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            simulationThread = null;
+        }
+    }
+
+    private void resetTick() {
+        ticksPerSecond = tickBase;
+        tickNanos = 1_000_000_000L / ticksPerSecond;
+    }
+
+    private void clearSession() {
+        broadcaster.clear();
+    }
+
+    private void cleanWorldConfig() {
+        encoder = null;
+        world = null;
+        config = null;
     }
 
 }

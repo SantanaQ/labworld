@@ -6,6 +6,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.4"
 }
 
+
 group = "com.sim"
 version = "1.0-SNAPSHOT"
 
@@ -29,7 +30,7 @@ dependencies {
 }
 
 application {
-    mainClass.set("com.sim.Main")
+    mainClass.set("com.api.App")
 }
 
 

@@ -15,6 +15,8 @@ public class FrameEncoder {
     public byte[] encode(WorldSnapshot snap) {
         int offset = 0;
         offset = writeIntLE(offset, snap.worldId());
+        offset = writeIntLE(offset, snap.width());
+        offset = writeIntLE(offset, snap.height());
         offset = encodeLayers(snap, offset);
         encodeAgents(snap, offset);
 

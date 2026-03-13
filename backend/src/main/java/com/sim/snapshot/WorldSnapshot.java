@@ -8,6 +8,7 @@ import java.util.*;
 
 public class WorldSnapshot {
 
+    private final int worldId;
     private final int width;
     private final int height;
 
@@ -19,6 +20,7 @@ public class WorldSnapshot {
 
     public WorldSnapshot(World world) {
 
+        this.worldId = world.id();
         this.width = world.width();
         this.height = world.height();
 
@@ -40,7 +42,7 @@ public class WorldSnapshot {
     }
 
     public int worldId() {
-        return 1;
+        return worldId;
     }
 
     public int agentCount() {

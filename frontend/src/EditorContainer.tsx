@@ -1,7 +1,7 @@
 import {useCallback, useState} from "react";
 import type {Edge} from "@xyflow/react";
-import {EditorSidebar} from "./EditorSidebar.tsx";
-import NodeEditor from "./NodeEditor.tsx";
+import {EditorSidebar} from "./node_editor/EditorSidebar.tsx";
+import NodeEditor from "./node_editor/NodeEditor.tsx";
 
 import {
     type Node
@@ -22,7 +22,7 @@ interface EditorProps {
     onGenerateSuccess: (config: any) => void
 }
 
-export const  WorldEditorContainer: React.FC<EditorProps> = ({ onGenerateSuccess }) => {
+export const  EditorContainer: React.FC<EditorProps> = ({ onGenerateSuccess }) => {
     const [nodes, setNodes] = useState<Node[]>(initialNodes);
     const [edges, setEdges] = useState<Edge[]>(initialEdges);
 
@@ -37,23 +37,20 @@ export const  WorldEditorContainer: React.FC<EditorProps> = ({ onGenerateSuccess
     }, []);
 
     const handleGenerate = async () => {
-        //const response = await fetch('/api/world/configure', { /* ... */ });
-        //const data = await response.json();
+        const response = await fetch('/api/sim/config/load-default', {
+            method: 'POST',
+        });
+        const data = await response.json();
 
-        console.log("EDITOR: Generierung gestartet...");
+        const config = {
+            worldId: data.worldId || null,
+            width: data.width || null,
+            height: data.height || null,
 
-        // Hier würde später der fetch() stehen.
-        // Wir simulieren die API-Antwort:
-        const mockConfig = {
-            worldId: "sim_" + Math.random().toString(36).substr(2, 9),
-            width: 2000,  // Teste hier mal verschiedene Werte
-            height: 2000
-        };
+        }
 
-        // Das "Kabel" zum WorldDashboard aktivieren
-        onGenerateSuccess(mockConfig);
+        onGenerateSuccess(config);
 
-        //nGenerateSuccess(data);
     };
 
     return (

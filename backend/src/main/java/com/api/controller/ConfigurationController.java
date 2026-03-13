@@ -2,13 +2,13 @@ package com.api.controller;
 
 import com.api.resource.JsonWorldConfig;
 import com.api.service.SimulationService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.sim.config.WorldConfig;
+import com.sim.snapshot.WorldSnapshot;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/config")
+@RequestMapping("/api/sim/config")
 public class ConfigurationController {
 
     private final SimulationService simulationService;
@@ -17,8 +17,19 @@ public class ConfigurationController {
         this.simulationService = simulationService;
     }
 
-    @PostMapping
-    public void configure(@RequestBody JsonWorldConfig config) {
-        simulationService.setConfig(config);
+    @PostMapping("/load")
+    public ResponseEntity<WorldSnapshot> configure(@RequestBody String json) {
+        JsonWorldConfig jsonCfg = JsonWorldConfig.fromJson(json);
+        simulationService.setConfig(jsonCfg);
+
+        WorldSnapshot snapshot = simulationService.previewSnapshot();
+        return ResponseEntity.ok(snapshot);
     }
+
+    @PostMapping("/load-default")
+    public WorldConfig loadDefault() {
+        simulationService.setConfig(new WorldConfig());
+        return simulationService.config();
+    }
+
 }

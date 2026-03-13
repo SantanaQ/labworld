@@ -1,15 +1,16 @@
 package com.sim.config;
 
 import com.sim.layer.LayerID;
-import com.sim.layer.PotentialLayer;
 
 public class WorldConfig {
 
     public int width = 200;
     public int height = 200;
-    public int seed = 42069;
-    public int agentCount = 250;
-    public int layerCount;
+    private int seed = 42069;
+    private int agentCount = 250;
+    public int worldId = 1;
+    private int layerCount;
+
 
 
     public LayerConfig heatConfig;
@@ -46,6 +47,10 @@ public class WorldConfig {
         setHeatConfig(DefaultCfgs.defaultHeat(width, height, seed));
         setFoodConfig(DefaultCfgs.defaultFood(width, height, seed));
         setScentConfig(DefaultCfgs.defaultScent(width, height, seed));
+    }
+
+    public int worldId() {
+        return worldId;
     }
 
     public int width() {

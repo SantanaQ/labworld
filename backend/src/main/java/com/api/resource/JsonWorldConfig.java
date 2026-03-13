@@ -51,8 +51,4 @@ public class JsonWorldConfig {
         return layersNode::elements;
     }
 
-
-    public JsonNode rawNode() {
-        return root;
-    }
 }

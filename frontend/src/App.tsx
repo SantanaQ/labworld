@@ -1,10 +1,10 @@
 import './App.css'
-import WorldDashboard from "./WorldDashboard.tsx";
+import Dashboard from "./Dashboard.tsx";
 
 function App() {
 
   return (
-      <WorldDashboard />
+      <Dashboard />
   )
 }
 

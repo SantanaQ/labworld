@@ -29,15 +29,15 @@ public class World {
         this.runtimes = new HashMap<>();
 
         agents = new ArrayList<>();
-        occupancy = new OccupancyGrid(config.width, config.height);
-        rand = new Random(config.seed);
+        occupancy = new OccupancyGrid(config.width(), config.height());
+        rand = new Random(config.seed());
 
         addRuntime(LayerID.HEAT, config.heatConfig);
         addRuntime(LayerID.FOOD, config.foodConfig);
         addRuntime(LayerID.SCENT, config.scentConfig);
 
         rebuildAll();
-        spawnAgents(config.agentCount);
+        spawnAgents(config.agentCount());
     }
 
     private void addRuntime(LayerID id, LayerConfig config) {
@@ -45,13 +45,16 @@ public class World {
         runtimes.put(id, runtime);
     }
 
+    public int id() {
+        return config.worldId();
+    }
 
     public int width() {
-        return config.width;
+        return config.width();
     }
 
     public int height() {
-        return config.height;
+        return config.height();
     }
 
     public void rebuildAll() {
@@ -140,8 +143,8 @@ public class World {
 
     private void spawnAgents(int agentCount) {
         for(int i = 0; i < agentCount; i++) {
-            int x = rand.nextInt(0, config.width);
-            int y = rand.nextInt(0, config.height);
+            int x = rand.nextInt(0, config.width());
+            int y = rand.nextInt(0, config.height());
             Position pos = new Position(x, y);
             Agent agent = new Agent(pos);
             agents.add(agent);
@@ -177,9 +180,9 @@ public class World {
 
     public boolean isInBounds(Coordinate coordinate) {
         return coordinate.x() >= 0
-                && coordinate.x() < config.width
+                && coordinate.x() < config.width()
                 && coordinate.y() >= 0
-                && coordinate.y() < config.height;
+                && coordinate.y() < config.height();
     }
 
     public void affect(LayerID layerId, Coordinate c, float amount) {
