@@ -1,4 +1,4 @@
-package world;
+package com.sim.world;
 
 import com.sim.config.*;
 import com.sim.layer.time_behavior.Fixed;
@@ -6,7 +6,6 @@ import com.sim.layer.update.CopyStateUpdater;
 import com.sim.layer.update.DefaultPotentialUpdater;
 import com.sim.layer.update.DiffusionRelaxationStateUpdater;
 import com.sim.signal.GridSignal;
-import com.sim.world.World;
 
 public class TestWorldBuilder {
 
@@ -49,20 +48,20 @@ public class TestWorldBuilder {
 
         WorldConfig config = new WorldConfig(width, height, seed, 0);
 
-        StateLayerConfig foodCfg = new StateLayerConfig(width, height, seed);
+        StateLayerConfig foodCfg = new StateLayerConfig(width, height);
         foodCfg.setSignalSource(new GridSignal(food));
         foodCfg.setTimeBehavior(new Fixed());
         foodCfg.setPotentialUpdater(new DefaultPotentialUpdater());
         foodCfg.setStateUpdater(new CopyStateUpdater());
         config.setFoodConfig(foodCfg);
 
-        PotentialLayerConfig heatCfg = new PotentialLayerConfig(width, height, seed);
+        PotentialLayerConfig heatCfg = new PotentialLayerConfig(width, height);
         heatCfg.setSignalSource(new GridSignal(heat));
         heatCfg.setTimeBehavior(new Fixed());
         heatCfg.setPotentialUpdater(new DefaultPotentialUpdater());
         config.setHeatConfig(heatCfg);
 
-        StateLayerConfig scentCfg = new StateLayerConfig(width, height, seed);
+        StateLayerConfig scentCfg = new StateLayerConfig(width, height);
         scentCfg.setSignalSource(new GridSignal(scent));
         scentCfg.setTimeBehavior(new Fixed());
         scentCfg.setPotentialUpdater(new DefaultPotentialUpdater());

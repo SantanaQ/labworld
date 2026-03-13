@@ -19,6 +19,15 @@ public class ClusteredPatchNoise implements SignalSource {
         this.holeStrength = 0.35f;
     }
 
+    public ClusteredPatchNoise(SignalSource base, SignalSource detail,
+                               float threshold, float softness, float holeStrength) {
+        this.base = base;
+        this.detail = detail;
+        this.threshold = threshold;
+        this.softness = softness;
+        this.holeStrength = holeStrength;
+    }
+
     @Override
     public float sample(float x, float y) {
 

@@ -10,8 +10,8 @@ public class PotentialLayerConfig extends LayerConfig {
 
     PotentialUpdater potentialUpdater;
 
-    public PotentialLayerConfig(int width, int height, int seed) {
-        super(width, height, seed);
+    public PotentialLayerConfig(int width, int height) {
+        super(width, height);
     }
 
     public void setPotentialUpdater(PotentialUpdater potentialUpdater) {

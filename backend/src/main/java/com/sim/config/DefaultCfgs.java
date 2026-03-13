@@ -17,7 +17,7 @@ public final class DefaultCfgs {
 
     public static LayerConfig defaultFood(int width, int height, int seed) {
 
-        StateLayerConfig c = new StateLayerConfig(width, height, seed);
+        StateLayerConfig c = new StateLayerConfig(width, height);
 
         // clustered habitat noise
         SignalSource foodSignal = new ClusteredPatchNoise(seed);
@@ -64,7 +64,7 @@ public final class DefaultCfgs {
     }
 
     public static LayerConfig defaultScent(int width, int height, int seed) {
-        StateLayerConfig c = new StateLayerConfig(width, height, seed);
+        StateLayerConfig c = new StateLayerConfig(width, height);
         c.setSignalSource(new GridSignal(new float[height][width]));
         c.setTimeBehavior(new Fixed());
         c.setPotentialUpdater(new DefaultPotentialUpdater());
@@ -73,7 +73,7 @@ public final class DefaultCfgs {
     }
 
     public static LayerConfig defaultHeat(int width, int height, int seed) {
-        PotentialLayerConfig c = new PotentialLayerConfig(width, height, seed);
+        PotentialLayerConfig c = new PotentialLayerConfig(width, height);
         c.setSignalSource(new FractalNoise(
                 seed+200,
                 30,

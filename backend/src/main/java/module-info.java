@@ -7,6 +7,8 @@ module com.sim {
     requires spring.web;
     requires spring.context;
     requires spring.websocket;
+    requires com.fasterxml.jackson.databind;
+    requires org.apache.tomcat.embed.core;
     requires java.desktop;
 
     exports com.sim;

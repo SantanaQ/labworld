@@ -1,5 +1,8 @@
 package com.sim.config;
 
+import com.sim.layer.LayerID;
+import com.sim.layer.PotentialLayer;
+
 public class WorldConfig {
 
     public int width = 200;
@@ -65,9 +68,30 @@ public class WorldConfig {
         return agentCount;
     }
 
-    public int agentStride() {
-        return 0;
+    public LayerConfig configOf(LayerID id) {
+        return switch (id) {
+            case HEAT -> heatConfig;
+            case FOOD -> foodConfig;
+            case SCENT -> scentConfig;
+        };
     }
+
+    public void addPotentialLayer(String id, PotentialLayerConfig potentialLayer) {
+        if (id.equals("heat")) {
+            setHeatConfig(potentialLayer);
+        } else {
+            throw new IllegalArgumentException("Potential layer " + id + " not supported");
+        }
+    }
+
+    public void addStateLayer(String id, StateLayerConfig stateLayer) {
+        switch (id) {
+            case "food": setFoodConfig(stateLayer); break;
+            case "scent": setScentConfig(stateLayer); break;
+            default: throw new IllegalArgumentException("Potential layer " + id + " not supported");
+        }
+    }
+
 
 
 }

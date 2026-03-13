@@ -26,6 +26,12 @@ public abstract class LayerConfig {
         this.compositing = new ArrayList<>();
     }
 
+    public LayerConfig(int width, int height) {
+        this.width = width;
+        this.height = height;
+        this.compositing = new ArrayList<>();
+    }
+
     public void setSignalSource(SignalSource signalSource) {
         this.signalSource = signalSource;
     }
@@ -38,6 +44,10 @@ public abstract class LayerConfig {
         compositing.add(layerStep);
     }
 
+    public void addCompositing(List<LayerStep> compositing) {
+        this.compositing.addAll(compositing);
+    }
+
     public abstract WorldLayer build();
 
     public void markDirty() { dirty = true; }
@@ -47,5 +57,9 @@ public abstract class LayerConfig {
     public void clearDirty() { dirty = false; }
 
     public List<LayerStep> layerSteps() { return compositing; }
+
+    public TimeBehavior timeBehavior() { return timeBehavior; }
+
+    public SignalSource signalSource() { return signalSource; }
 
 }

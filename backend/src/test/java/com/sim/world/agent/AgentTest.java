@@ -1,13 +1,11 @@
-package world.agent;
+package com.sim.world.agent;
 
-import com.sim.config.WorldConfig;
-import com.sim.layer.LayerID;
 import com.sim.world.World;
 import com.sim.agent.Agent;
 import com.sim.agent.Needs;
 import com.sim.agent.Position;
 import org.junit.jupiter.api.Test;
-import world.TestWorldBuilder;
+import com.sim.world.TestWorldBuilder;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

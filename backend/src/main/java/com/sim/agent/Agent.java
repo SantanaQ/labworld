@@ -9,18 +9,18 @@ public class Agent {
     Position pos;
     Vector velocity;
     Vector lastVelocity;
-    double speed;
+    float speed;
 
     Needs needs;
 
-    private final double baseSpeed = 0.3;
+    private final float baseSpeed = 0.3f;
     private float actualSpeed;
 
     public Agent(Position pos) {
         this.pos = pos;
         this.velocity = new Vector(0,0);
         this.lastVelocity = new Vector(0,0);
-        this.speed = 0.2;
+        this.speed = 0.2f;
         this.needs = new Needs();
     }
 
@@ -28,12 +28,12 @@ public class Agent {
         this.pos = pos;
         this.velocity = new Vector(0,0);
         this.lastVelocity = new Vector(0,0);
-        this.speed = 0.2;
+        this.speed = 0.2f;
         this.needs = needs;
     }
 
-    public double speed() {
-        return baseSpeed * (0.2 + 0.8 * needs.energy());
+    public float speed() {
+        return baseSpeed * (0.2f + 0.8f * needs.energy());
         //return baseSpeed * needs.energy() * (0.5 + needs.hunger());
     }
 
@@ -43,6 +43,10 @@ public class Agent {
 
     public Vector velocity() {
         return velocity;
+    }
+
+    public Needs needs() {
+        return needs;
     }
 
     public void actOn(World world) {
@@ -74,8 +78,7 @@ public class Agent {
         float energyFactor =
                 0.3f + needs.energy() * 0.7f;
 
-        actualSpeed =
-                (float) baseSpeed
+        actualSpeed = baseSpeed
                         * energyFactor
                         * foodSlowdown
                         * heatSpeed

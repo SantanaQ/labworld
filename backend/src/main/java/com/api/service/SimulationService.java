@@ -1,6 +1,8 @@
 package com.api.service;
 
 import com.api.resource.JsonWorldConfig;
+import com.api.service.frame_layouts.AgentLayout;
+import com.api.service.frame_layouts.WorldLayout;
 import com.api.ws.WebSocketBroadcaster;
 import com.sim.config.WorldConfig;
 import com.sim.snapshot.WorldSnapshot;
@@ -37,12 +39,12 @@ public class SimulationService {
 
     public void start() {
         world = new World(config);
-        FrameLayout layout = new FrameLayout(
+        WorldLayout layout = new WorldLayout(
                 config.layerCount(),
                 config.width(),
                 config.height(),
                 config.agentCount(),
-                config.agentStride()
+                AgentLayout.STRIDE
         );
 
         encoder = new FrameEncoder(layout);
@@ -84,8 +86,6 @@ public class SimulationService {
                 encoder.encode(snap);
                 broadcaster.broadcast(encoder.currentFrame());
             }
-
-
         }
     }
 

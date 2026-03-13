@@ -10,8 +10,8 @@ public class StateLayerConfig extends PotentialLayerConfig {
 
     private StateUpdater stateUpdater;
 
-    public StateLayerConfig(int width, int height, int seed) {
-        super(width, height, seed);
+    public StateLayerConfig(int width, int height) {
+        super(width, height);
     }
 
     public void setStateUpdater(StateUpdater stateUpdater) {
