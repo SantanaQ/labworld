@@ -1,10 +1,10 @@
 import './App.css'
-import SplitScreen from "./SplitScreen.tsx";
+import WorldDashboard from "./WorldDashboard.tsx";
 
 function App() {
 
   return (
-      <SplitScreen />
+      <WorldDashboard />
   )
 }
 

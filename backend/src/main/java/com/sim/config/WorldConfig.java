@@ -6,6 +6,8 @@ public class WorldConfig {
     public int height = 200;
     public int seed = 42069;
     public int agentCount = 250;
+    public int layerCount;
+
 
     public LayerConfig heatConfig;
     public LayerConfig foodConfig;
@@ -24,20 +26,47 @@ public class WorldConfig {
 
     public void setHeatConfig(LayerConfig heatConfig) {
         this.heatConfig = heatConfig;
+        this.layerCount++;
     }
 
     public void setFoodConfig(LayerConfig foodConfig) {
         this.foodConfig = foodConfig;
+        this.layerCount++;
     }
 
     public void setScentConfig(LayerConfig scentConfig) {
         this.scentConfig = scentConfig;
+        this.layerCount++;
     }
 
     public void setDefaults() {
-        this.heatConfig = DefaultCfgs.defaultHeat(width, height, seed);
-        this.foodConfig = DefaultCfgs.defaultFood(width, height, seed);
-        this.scentConfig = DefaultCfgs.defaultScent(width, height, seed);
+        setHeatConfig(DefaultCfgs.defaultHeat(width, height, seed));
+        setFoodConfig(DefaultCfgs.defaultFood(width, height, seed));
+        setScentConfig(DefaultCfgs.defaultScent(width, height, seed));
+    }
+
+    public int width() {
+        return width;
+    }
+
+    public int height() {
+        return height;
+    }
+
+    public int seed() {
+        return seed;
+    }
+
+    public int layerCount() {
+        return layerCount;
+    }
+
+    public int agentCount() {
+        return agentCount;
+    }
+
+    public int agentStride() {
+        return 0;
     }
 
 

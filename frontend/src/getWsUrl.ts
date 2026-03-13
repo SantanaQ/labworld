@@ -1,9 +1,8 @@
-export const getWsUrl = (path: string = '/ws'): string => {
-    if (typeof window === 'undefined') return '';
-
+export const getWsUrl = (path: string): string => {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const host = window.location.host;
 
-    const envUrl = import.meta.env.VITE_WS_OVERRIDE;
-    return envUrl || `${protocol}//${host}${path}`;
+    const cleanPath = path.startsWith('/') ? path : `/${path}`;
+
+    return `${protocol}//${host}${cleanPath}`;
 };

@@ -1,11 +1,19 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 //import NodeEditor from "./NodeEditor"
-import WorldEditorContainer from "./WorldEditorContainer.tsx";
-import {SimBridge} from "./SimBridge.tsx";
+import {WorldEditorContainer} from "./WorldEditorContainer.tsx";
+import {WorldSimulationContainer} from "./WorldSimulationContainer.tsx";
 
-const SplitScreen: React.FC = () => {
+export interface WorldConfig {
+    worldId: string;
+    width: number;
+    height: number;
+}
+
+
+const WorldDashboard: React.FC = () => {
     const [leftWidth, setLeftWidth] = useState<number>(50);
+    const [worldConfig, setWorldConfig] = useState<WorldConfig | null>(null);
     const isResizing = useRef<boolean>(false);
 
     const startResizing = useCallback(() => {
@@ -40,6 +48,11 @@ const SplitScreen: React.FC = () => {
         };
     }, [resize, stopResizing]);
 
+    const handleWorldGenerated = (config: WorldConfig) => {
+        console.log("Neue Welt konfiguriert:", config);
+        setWorldConfig(config);
+    };
+
     return (
         <div className="flex h-screen w-full overflow-hidden bg-gray-900">
 
@@ -48,12 +61,7 @@ const SplitScreen: React.FC = () => {
                 className="overflow-auto bg-slate-800"
                 style={{ width: `${leftWidth}%` }}
             >
-                <div className="p-5 pt-2">
-                    <h1 className="font-bold mb-4 text-white">World-Editor</h1>
-
-                </div>
-                <WorldEditorContainer />
-
+                <WorldEditorContainer onGenerateSuccess={handleWorldGenerated} />
             </div>
 
             {/* Divider / Resizer */}
@@ -67,11 +75,8 @@ const SplitScreen: React.FC = () => {
 
             {/* Right Page */}
             <div className="flex-1 overflow-auto bg-slate-700">
-                <div className="p-5 pt-2">
-                    <h3 className="font-bold mb-4 text-white">World-View</h3>
-                </div>
                 <div className="flex-1 overflow-hidden relative">
-                    <SimBridge/>
+                    <WorldSimulationContainer config={worldConfig}/>
                 </div>
             </div>
 
@@ -79,4 +84,4 @@ const SplitScreen: React.FC = () => {
     );
 };
 
-export default SplitScreen;
+export default WorldDashboard;

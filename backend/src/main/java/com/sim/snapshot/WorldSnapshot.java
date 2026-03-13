@@ -15,8 +15,8 @@ public class WorldSnapshot {
     private final float[][] foodSnap;
     private final float[][] scentSnap;
 
-    private final int[][] occupancySnap;
     private final List<AgentSnapshot> agentSnaps;
+    //private final int[][] occupancySnap;
 
     public WorldSnapshot(World world) {
 
@@ -31,8 +31,8 @@ public class WorldSnapshot {
         LayerSnapshot scent = new LayerSnapshot(world.layer(LayerID.SCENT));
         this.scentSnap = scent.values();
 
-        OccupancySnapshot occupancy = new OccupancySnapshot(world.occupancy(), width, height);
-        occupancySnap = occupancy.values();
+        //OccupancySnapshot occupancy = new OccupancySnapshot(world.occupancy(), width, height);
+        //occupancySnap = occupancy.values();
 
         agentSnaps = new ArrayList<>();
         for(Agent agent : world.agents()) {
@@ -58,10 +58,6 @@ public class WorldSnapshot {
         return foodSnap;
     }
 
-    public int[][] occupancy() {
-        return occupancySnap;
-    }
-
     public List<AgentSnapshot> agents() {
         return agentSnaps;
     }
@@ -70,4 +66,9 @@ public class WorldSnapshot {
     public float[][] scent() {
         return scentSnap;
     }
+
+    public long worldId() {
+        return 1L;
+    }
+
 }

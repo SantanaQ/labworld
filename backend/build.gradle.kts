@@ -2,6 +2,8 @@ plugins {
     id("java")
     id ("application")
     id("org.openjfx.javafxplugin") version "0.1.0"
+    id("org.springframework.boot") version "3.2.5"
+    id("io.spring.dependency-management") version "1.1.4"
 }
 
 group = "com.sim"
@@ -17,7 +19,11 @@ javafx {
 }
 
 dependencies {
-    implementation("io.javalin:javalin:6.1.3")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-websocket")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 }
@@ -25,7 +31,6 @@ dependencies {
 application {
     mainClass.set("com.sim.Main")
 }
-
 
 
 tasks.test {
