@@ -112,14 +112,12 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
     };
 
     return (
-        <div className="flex flex-col h-full w-full overflow-hidden">
-            <div className="border-b border-slate-600 w-full p-4">
-                <h1 className="text-white font-bold">World View</h1>
-            </div>
+        <div className="flex flex-col h-screen w-screen overflow-hidden">
+
 
             {/* Main Content Area */}
             <div ref={containerRef} className="flex-1 flex flex-col items-center justify-between p-4 min-h-0 overflow-hidden">
-
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
                 {/* Layer Controls */}
                 <div className="w-full max-w-[600px] shrink-0 z-20 bg-slate-900/90 p-3 rounded-lg border border-slate-700 shadow-xl">
                     <p className="text-[10px] text-slate-500 font-bold uppercase border-b border-slate-800 pb-1 mb-2 tracking-widest">
@@ -142,8 +140,8 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
                 </div>
 
                 {/* Canvas Area */}
-                <div className="flex-1 w-full flex items-center justify-center min-h-0 my-4 overflow-hidden">
-                    <div className="relative h-full rounded-2xl border border-slate-800 bg-black flex items-center justify-center">
+                <div className="flex-1 w-full flex items-center justify-center min-h-0 overflow-hidden">
+                    <div className="relative  rounded-2xl border border-slate-800 bg-black flex items-center justify-center">
                         <canvas
                             ref={canvasRef}
                             className="max-w-full max-h-full block rounded-2xl"
@@ -210,6 +208,7 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
                             </>
                         )}
                     </div>
+                </div>
                 </div>
             </div>
         </div>
