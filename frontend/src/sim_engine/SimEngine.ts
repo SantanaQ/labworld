@@ -46,13 +46,9 @@ export class SimEngine {
     }
 
     public reconfigure(config: WorldConfig) {
-        /*['heat', 'scent', 'supply', 'agents'].forEach((name) => {
+        ['heat', 'scent', 'supply', 'agents'].forEach((name) => {
             this.layers.setLayer(name as LayerName, config.width, config.height);
-        });*/
-        this.layers.setLayer('heat' as LayerName, config.width, config.height, config.heat);
-        this.layers.setLayer('scent' as LayerName, config.width, config.height, config.scent);
-        this.layers.setLayer('supply' as LayerName, config.width, config.height, config.supply);
-        this.layers.setLayer('agents' as LayerName, config.width, config.height);
+        });
         this.draw()
         //console.log(`Engine reconfigured to ${width}x${height}`);
     }
@@ -97,7 +93,7 @@ export class SimEngine {
 
     private decodeAgents(buffer: ArrayBuffer, offset: number) {
 
-        const stride = 40;
+        const stride = 36;
 
         const agentCount = (buffer.byteLength - offset) / stride;
 
@@ -109,23 +105,23 @@ export class SimEngine {
 
             const base = offset + i*stride;
 
-            const x = view.getFloat32(base + 0, true);
+            const x = view.getFloat32(base, true);
             const y = view.getFloat32(base + 4, true);
 
             const vx = view.getFloat32(base + 8, true);
             const vy = view.getFloat32(base + 12, true);
 
-            const hunger = view.getFloat32(base + 16, true);
-            const heat = view.getFloat32(base + 20, true);
-            const curiosity = view.getFloat32(base + 24, true);
-            const fear = view.getFloat32(base + 28, true);
+            const speed = view.getFloat64(base + 16, true);
 
-            const speed = view.getFloat64(base + 32, true);
+            const hunger = view.getFloat32(base + 20, true);
+            const heat = view.getFloat32(base + 24, true);
+            const curiosity = view.getFloat32(base + 28, true);
+            const fear = view.getFloat32(base + 32, true);
 
-            agents.push({x,y,vx,vy,hunger,heat,curiosity,fear,speed});
+            agents.push({x,y,vx,vy,speed,hunger,heat,curiosity,fear});
         }
 
-        this.agentBuffer = agents;
+        this.layers.setAgents(agents)
     }
 
     public updateSettings(settings: Partial<SimSettings>) {
@@ -138,7 +134,7 @@ export class SimEngine {
         if (this.settings.showHeat) this.renderer.drawLayer(this.layers.getLayer('heat'), (v) => [255, 50, 50, v*255]);
         if (this.settings.showSupply) this.renderer.drawLayer(this.layers.getLayer('supply'), (v) => [0, 0, 255, v*255]);
         if (this.settings.showScent) this.renderer.drawLayer(this.layers.getLayer('scent'), (v) => [0, 255, 0, v*255]);
-        if (this.settings.showAgents) this.renderer.drawLayer(this.layers.getLayer('agents'), (v) => [255, 165, 0, v*255]);
+        if (this.settings.showAgents) this.renderer.drawAgents(this.layers.getAgents(), this.layers.getDimensions()) ;
 
         this.animationFrameId = requestAnimationFrame(this.draw);
     }

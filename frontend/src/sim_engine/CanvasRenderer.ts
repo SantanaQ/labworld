@@ -1,4 +1,4 @@
-import type {LayerData} from "./LayerContainer.ts";
+import type {AgentData, LayerData, WorldDimensions} from "./LayerContainer.ts";
 
 export class CanvasRenderer {
     private canvas: HTMLCanvasElement;
@@ -34,6 +34,49 @@ export class CanvasRenderer {
 
         this.offCtx.putImageData(imgData, 0, 0);
         this.ctx.drawImage(this.offscreen, 0, 0, this.canvas.width, this.canvas.height);
+    }
+
+
+    public drawAgents(agents: AgentData[], worldDimension: WorldDimensions) {
+        const ctx = this.ctx;
+        if (!ctx) return;
+
+        const radius = 2;
+
+        ctx.save();
+
+        const scaleX = this.canvas.width / worldDimension.width;
+        const scaleY = this.canvas.height / worldDimension.height;
+        for (const agent of agents) {
+
+            const x = agent.x * scaleX;
+            const y = agent.y * scaleY;
+
+            const r = Math.min(255, agent.fear * 255);
+            const g = Math.min(255, agent.curiosity * 255);
+            const b = Math.min(255, agent.hunger * 255);
+
+            ctx.fillStyle = `rgb(${r},${g},${b})`;
+
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            const dirLength = 6;
+
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(
+                x + agent.vx * dirLength,
+                y + agent.vy * dirLength
+            );
+
+            ctx.strokeStyle = "white";
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        }
+
+        ctx.restore();
     }
 
     public clear() {
