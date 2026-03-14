@@ -39,14 +39,6 @@ public class StateLayer extends PotentialLayer {
         return state;
     }
 
-    public float stateAt(int x, int y) {
-        return state[y][x];
-    }
-
-    public float influenceAt(int x, int y) {
-        return influence[y][x];
-    }
-
     public void applyInfluence(int x, int y, float value) {
         if(isInBounds(x, y)) {
             float sum = influence[y][x] + value;
@@ -55,30 +47,15 @@ public class StateLayer extends PotentialLayer {
         }
     }
 
-    public void setState(int x, int y, float value) {
-        state[y][x] = value;
-    }
-
-    public void setNextState(int x, int y, float value) {
-        next[y][x] = value;
-    }
-
     public void updateState() {
-        stateUpdater.update(this);
+        stateUpdater.update(potential, state, next, influence);
+        swapState();
     }
 
-    public void swapState() {
+    private void swapState() {
         float[][] temp = state;
         state = next;
         next = temp;
-    }
-
-    public void decayInfluence(float decay) {
-        for(int h = 0; h < influence.length; h++) {
-            for(int w = 0; w < influence[0].length; w++) {
-                influence[h][w] *= decay;
-            }
-        }
     }
 
 

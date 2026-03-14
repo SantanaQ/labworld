@@ -9,7 +9,7 @@ import java.util.List;
 
 public class PotentialLayer implements WorldLayer{
 
-    private final float[][] potential;
+    final float[][] potential;
 
     private final SignalSource signal;
     private final TimeBehavior timeBehavior;
@@ -38,16 +38,8 @@ public class PotentialLayer implements WorldLayer{
         return val;
     }
 
-    public final float potentialAt(int x, int y) {
-        return potential[y][x];
-    }
-
-    public final void setPotential(int x, int y, float val) {
-        potential[y][x] = val;
-    }
-
     public final void updatePotential(float time) {
-        potentialUpdater.update(this, time);
+        potentialUpdater.update(this, potential, time);
     }
 
     public final int width() {

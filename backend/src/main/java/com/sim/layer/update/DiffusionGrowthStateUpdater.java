@@ -1,7 +1,5 @@
 package com.sim.layer.update;
 
-import com.sim.layer.StateLayer;
-
 public class DiffusionGrowthStateUpdater implements StateUpdater {
 
     private final float crossWeight = 0.20f;
@@ -25,56 +23,39 @@ public class DiffusionGrowthStateUpdater implements StateUpdater {
     }
 
     @Override
-    public void update(StateLayer layer) {
+    public void update(float[][] potential, float[][] state,
+                       float[][] nextState, float[][] influence) {
 
-        int w = layer.width();
-        int h = layer.height();
+        int w = potential[0].length;
+        int h = potential.length;
 
         for (int y = 0; y < h; y++) {
             for (int x = 0; x < w; x++) {
 
-                float s = layer.stateAt(x, y);
-                float p = layer.potentialAt(x, y);
+                float s = state[y][x];
+                float p = potential[y][x];
 
-                float kernel = applyWeightedAvg(x, y, layer);
+                float kernel = applyWeightedAvg(x, y, state, crossWeight, diagWeight);
 
                 s += diffusion * (kernel - s);
-
 
                 // slow growth only if potential allows it
                 if (p > s) {
                     s += growthRate * p * (1 - s);
                 }
 
-                s += layer.influenceAt(x, y);
+                s += influence[y][x];
 
                 s *= stateDecay;
 
                 s = Math.clamp(s, 0f, 1f);
 
-                layer.setNextState(x, y, s);
+                nextState[y][x] = s;
+
+                influence[y][x] *= influenceDecay;
             }
         }
-
-        layer.decayInfluence(influenceDecay);
-        layer.swapState();
     }
 
-    private float applyWeightedAvg(int x, int y, StateLayer layer) {
 
-        float n  = layer.valueAt(x, y-1);
-        float s  = layer.valueAt(x, y+1);
-        float w  = layer.valueAt(x-1, y);
-        float e  = layer.valueAt(x+1, y);
-
-        float nw = layer.valueAt(x-1, y-1);
-        float ne = layer.valueAt(x+1, y-1);
-        float sw = layer.valueAt(x-1, y+1);
-        float se = layer.valueAt(x+1, y+1);
-
-        float cross = (n + s + w + e) * crossWeight;
-        float diag  = (nw + ne + sw + se) * diagWeight;
-
-        return cross + diag;
-    }
 }
