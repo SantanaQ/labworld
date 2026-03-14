@@ -18,18 +18,18 @@ public class ConfigurationController {
     }
 
     @PostMapping("/load")
-    public ResponseEntity<WorldSnapshot> configure(@RequestBody String json) {
+    public ResponseEntity<WorldConfig> configure(@RequestBody String json) {
         JsonWorldConfig jsonCfg = JsonWorldConfig.fromJson(json);
         simulationService.setConfig(jsonCfg);
 
-        WorldSnapshot snapshot = simulationService.previewSnapshot();
-        return ResponseEntity.ok(snapshot);
+        return ResponseEntity.ok(simulationService.config());
     }
 
     @PostMapping("/load-default")
-    public WorldConfig loadDefault() {
+    public ResponseEntity<WorldConfig> loadDefault() {
         simulationService.setConfig(new WorldConfig());
-        return simulationService.config();
+
+        return ResponseEntity.ok(simulationService.config());
     }
 
 }

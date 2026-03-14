@@ -1,6 +1,7 @@
 import {LayerContainer, type LayerName} from "./LayerContainer.ts";
 import { CanvasRenderer } from "./CanvasRenderer.ts";
 import {SimWebSocket} from "./SimWebsocket.ts";
+import type {WorldConfig} from "../Dashboard.tsx";
 
 export type ConnectionStatus = 'connected' | 'reconnecting' | 'disconnected';
 
@@ -44,14 +45,19 @@ export class SimEngine {
         this.renderer = new CanvasRenderer(canvas);
     }
 
-    public reconfigure(width: number, height: number) {
-        ['heat', 'scent', 'supply', 'agents'].forEach((name) => {
-            this.layers.setLayer(name as LayerName, width, height);
-        });
-        console.log(`Engine reconfigured to ${width}x${height}`);
+    public reconfigure(config: WorldConfig) {
+        /*['heat', 'scent', 'supply', 'agents'].forEach((name) => {
+            this.layers.setLayer(name as LayerName, config.width, config.height);
+        });*/
+        this.layers.setLayer('heat' as LayerName, config.width, config.height, config.heat);
+        this.layers.setLayer('scent' as LayerName, config.width, config.height, config.scent);
+        this.layers.setLayer('supply' as LayerName, config.width, config.height, config.supply);
+        this.layers.setLayer('agents' as LayerName, config.width, config.height);
+        this.draw()
+        //console.log(`Engine reconfigured to ${width}x${height}`);
     }
 
-    public connect(worldId: string) {
+    public connect(worldId: number) {
         this.ws = new SimWebSocket(worldId, (frame) => this.handleBinaryFrame(frame), (status) => console.log('WS status:', status));
         this.ws.connect();
     }

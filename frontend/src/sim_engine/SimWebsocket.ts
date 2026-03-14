@@ -7,12 +7,12 @@ export class SimWebSocket {
     private maxRetries = 10;
     private reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
 
-    private worldId: string;
+    private worldId: number;
     private onFrame: (frame: ArrayBuffer) => void;
     private onStatus: (status: ConnectionStatus) => void;
 
     constructor(
-        worldId: string,
+        worldId: number,
         onFrame: (frame: ArrayBuffer) => void,
         onStatus: (status: ConnectionStatus) => void
     ) {

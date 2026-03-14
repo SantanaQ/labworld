@@ -1,14 +1,17 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-//import NodeEditor from "./NodeEditor"
 import {EditorContainer} from "./EditorContainer.tsx";
 import {SimulationContainer} from "./SimulationContainer.tsx";
 
 export interface WorldConfig {
-    worldId: string;
+    worldId: number;
     width: number;
     height: number;
+    heat: Float32Array;
+    supply: Float32Array;
+    scent: Float32Array;
 }
+
 
 
 const Dashboard: React.FC = () => {
@@ -49,8 +52,14 @@ const Dashboard: React.FC = () => {
     }, [resize, stopResizing]);
 
     const handleWorldGenerated = (config: WorldConfig) => {
-        console.log("Neue Welt konfiguriert:", config);
-        setWorldConfig(config);
+        setWorldConfig({
+            worldId: config.worldId,
+            width: config.width,
+            height: config.height,
+            heat: config.heat,
+            supply: config.supply,
+            scent: config.scent,
+        });
     };
 
     return (

@@ -74,6 +74,7 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
 
         const engine = new SimEngine(canvasRef.current);
         engineRef.current = engine;
+        engine.start();
 
         const observer = new ResizeObserver((entries) => {
             for (const entry of entries) {
@@ -98,7 +99,7 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
 
     useEffect(() => {
         if (config && engineRef.current) {
-            engineRef.current.reconfigure(config.width, config.height);
+            engineRef.current.reconfigure(config);
         }
     }, [config]);
 
@@ -120,7 +121,7 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
             <div ref={containerRef} className="flex-1 flex flex-col items-center justify-between p-4 min-h-0 overflow-hidden">
 
                 {/* Layer Controls */}
-                <div className="w-full max-w-[450px] shrink-0 z-20 bg-slate-900/90 p-3 rounded-lg border border-slate-700 shadow-xl">
+                <div className="w-full max-w-[600px] shrink-0 z-20 bg-slate-900/90 p-3 rounded-lg border border-slate-700 shadow-xl">
                     <p className="text-[10px] text-slate-500 font-bold uppercase border-b border-slate-800 pb-1 mb-2 tracking-widest">
                         Layer Visibility
                     </p>
@@ -142,10 +143,10 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
 
                 {/* Canvas Area */}
                 <div className="flex-1 w-full flex items-center justify-center min-h-0 my-4 overflow-hidden">
-                    <div className="relative h-full rounded-3xl border border-slate-800 bg-black flex items-center justify-center">
+                    <div className="relative h-full rounded-2xl border border-slate-800 bg-black flex items-center justify-center">
                         <canvas
                             ref={canvasRef}
-                            className="max-w-full max-h-full block rounded-3xl"
+                            className="max-w-full max-h-full block rounded-2xl"
                             style={{ imageRendering: 'pixelated' }}
                         />
                     </div>
@@ -153,12 +154,13 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
 
                 {/* Sim Controls */}
                 <div
-                    className="w-full max-w-[450px] shrink-0 z-20 bg-slate-900/90 p-3 rounded-lg border border-slate-700 shadow-xl">
+                    className="w-full max-w-[600px] shrink-0 z-20 bg-slate-900/90 p-3 rounded-lg border border-slate-700 shadow-xl">
                     <p className="text-[10px] text-slate-500 font-bold uppercase border-b border-slate-800 pb-1 mb-2 tracking-widest">
                         Sim Settings
                     </p>
+                    <div className="flex m-auto items-center justify-center min-h-0 my-4 overflow-hidden">
                     <EditorSlider label="Speed" value={sliderValue} min={0.1} max={2} step={0.1} onChange={handleSliderChange}/>
-
+                    </div>
                     <div className="flex gap-2">
                         {simState === 'stopped' && (
                             <button

@@ -19,7 +19,7 @@ export const EditorSlider: React.FC<EditorSliderProps> = ({
                     {label}
                 </label>
                 <span className="text-xs font-mono text-blue-400 bg-blue-400/10 px-1.5 py-0.5 rounded">
-          {value}
+          {value}x
         </span>
             </div>
 

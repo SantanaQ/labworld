@@ -40,16 +40,11 @@ export const  EditorContainer: React.FC<EditorProps> = ({ onGenerateSuccess }) =
         const response = await fetch('/api/sim/config/load-default', {
             method: 'POST',
         });
-        const data = await response.json();
+        if (!response.ok) return;
 
-        const config = {
-            worldId: data.worldId || null,
-            width: data.width || null,
-            height: data.height || null,
+        const preview = await response.json();
 
-        }
-
-        onGenerateSuccess(config);
+        onGenerateSuccess(preview);
 
     };
 

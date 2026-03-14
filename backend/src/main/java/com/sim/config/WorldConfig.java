@@ -11,8 +11,6 @@ public class WorldConfig {
     public int worldId = 1;
     private int layerCount;
 
-
-
     public LayerConfig heatConfig;
     public LayerConfig foodConfig;
     public LayerConfig scentConfig;
