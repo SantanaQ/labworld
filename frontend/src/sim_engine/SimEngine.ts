@@ -2,6 +2,8 @@ import {LayerContainer, type LayerName} from "./LayerContainer.ts";
 import { CanvasRenderer } from "./CanvasRenderer.ts";
 import {SimWebSocket} from "./SimWebsocket.ts";
 import type {WorldConfig} from "../Dashboard.tsx";
+import type {Camera} from "../hooks/UseCanvasCamera.ts";
+import React from "react";
 
 export type ConnectionStatus = 'connected' | 'reconnecting' | 'disconnected';
 
@@ -12,7 +14,7 @@ export interface SimSettings {
     showAgents: boolean;
     speed: number;
 }
-
+/*
 interface AgentProps {
     x: number;
     y: number;
@@ -23,7 +25,7 @@ interface AgentProps {
     curiosity: number;
     fear: number;
     speed: number;
-}
+}*/
 
 export class SimEngine {
     private layers = new LayerContainer();
@@ -31,7 +33,7 @@ export class SimEngine {
     private ws: SimWebSocket | null = null;
     private animationFrameId = 0;
 
-    private agentBuffer = new Array<AgentProps>();
+    //private agentBuffer = new Array<AgentProps>();
 
     public settings: SimSettings = {
         showHeat: true,
@@ -41,15 +43,15 @@ export class SimEngine {
         speed: 1,
     };
 
-    constructor(canvas: HTMLCanvasElement) {
-        this.renderer = new CanvasRenderer(canvas);
+    constructor(canvas: HTMLCanvasElement, cameraRef : React.RefObject<Camera>) {
+        this.renderer = new CanvasRenderer(canvas, cameraRef);
     }
 
     public reconfigure(config: WorldConfig) {
         ['heat', 'scent', 'supply', 'agents'].forEach((name) => {
             this.layers.setLayer(name as LayerName, config.width, config.height);
         });
-        this.draw()
+
         //console.log(`Engine reconfigured to ${width}x${height}`);
     }
 
@@ -72,7 +74,6 @@ export class SimEngine {
         const height = view.getInt32(offset, true);
         offset += 4;
 
-        console.log(width, height);
         const cellCount = width * height;
 
         const heat = new Float32Array(buffer, offset, cellCount);
@@ -134,7 +135,7 @@ export class SimEngine {
         if (this.settings.showHeat) this.renderer.drawLayer(this.layers.getLayer('heat'), (v) => [255, 50, 50, v*255]);
         if (this.settings.showSupply) this.renderer.drawLayer(this.layers.getLayer('supply'), (v) => [0, 0, 255, v*255]);
         if (this.settings.showScent) this.renderer.drawLayer(this.layers.getLayer('scent'), (v) => [0, 255, 0, v*255]);
-        if (this.settings.showAgents) this.renderer.drawAgents(this.layers.getAgents(), this.layers.getDimensions()) ;
+        if (this.settings.showAgents) this.renderer.drawAgents(this.layers.getAgents()) ;
 
         this.animationFrameId = requestAnimationFrame(this.draw);
     }
@@ -150,4 +151,6 @@ export class SimEngine {
     }
 
     public resize(w: number, h: number) { this.renderer.resize(w, h); }
+
+
 }

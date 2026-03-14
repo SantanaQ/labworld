@@ -7,7 +7,7 @@ public class WorldConfig {
     public int width = 200;
     public int height = 200;
     private int seed = 42069;
-    private int agentCount = 150;
+    private int agentCount = 15;
     public int worldId = 1;
     private int layerCount;
 

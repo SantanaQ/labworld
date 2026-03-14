@@ -85,7 +85,9 @@ const Dashboard: React.FC = () => {
             {/* Right Page */}
             <div className="flex-1 overflow-auto bg-slate-700">
                 <div className="flex-1 overflow-hidden relative">
-                    <SimulationContainer config={worldConfig}/>
+                    {worldConfig && (
+                        <SimulationContainer config={worldConfig}/>
+                    )}
                 </div>
             </div>
 
