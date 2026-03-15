@@ -1,6 +1,6 @@
 package com.sim.signal;
 
-public final class ValueNoise implements SignalSource {
+public class ValueNoise implements SignalSource {
 
     private final HashNoise hash;
     private final int cellSize;

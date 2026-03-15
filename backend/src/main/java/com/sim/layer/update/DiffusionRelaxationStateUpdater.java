@@ -1,5 +1,7 @@
 package com.sim.layer.update;
 
+import com.sim.layer.StateLayer;
+
 public class DiffusionRelaxationStateUpdater implements StateUpdater {
 
     private final float crossWeight = 0.20f;
@@ -19,18 +21,19 @@ public class DiffusionRelaxationStateUpdater implements StateUpdater {
     }
 
     @Override
-    public void update(float[][] potential, float[][] state,
-                       float[][] nextState, float[][] influence) {
-        int w = potential[0].length;
-        int h = potential.length;
+    public void update(StateLayer layer, float[] potential, float[] state,
+                       float[] nextState, float[] influence) {
+        int w = layer.width;
+        int h = layer.height;
 
+        int idx;
         for (int y = 0; y < h; y++) {
             for (int x = 0; x < w; x++) {
+                idx = y * w + x;
+                float s = state[idx];
+                float p = potential[idx];
 
-                float s = state[y][x];
-                float p = potential[y][x];
-
-                float kernel = applyWeightedAvg(x, y, state, crossWeight, diagWeight);
+                float kernel = applyWeightedAvg(w, h, x, y, state, crossWeight, diagWeight);
 
                 // diffusion
                 s += diffusion * (kernel - s);
@@ -39,15 +42,15 @@ public class DiffusionRelaxationStateUpdater implements StateUpdater {
                 s += relaxation * (p - s);
 
                 // influence
-                s += influence[y][x];
+                s += influence[idx];
                 s = Math.clamp(s, 0f, 1f);
 
                 // decay
                 s *= stateDecay;
 
-                nextState[y][x] = s;
+                nextState[idx] = s;
 
-                influence[y][x] *= influenceDecay;
+                influence[idx] *= influenceDecay;
             }
         }
     }

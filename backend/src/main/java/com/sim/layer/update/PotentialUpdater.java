@@ -4,6 +4,6 @@ import com.sim.layer.PotentialLayer;
 
 public interface PotentialUpdater {
 
-    void update(PotentialLayer layer, float[][] potential, float time);
+    void update(PotentialLayer layer, float[] potential, float time);
 
 }

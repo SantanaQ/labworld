@@ -5,7 +5,7 @@ public interface WorldLayer {
     int height();
 
     float valueAt(int x, int y);
-    float[][] values();
+    float[] values();
 
     default void printValues() {
         for(int y = 0 ; y < height() ; y++) {

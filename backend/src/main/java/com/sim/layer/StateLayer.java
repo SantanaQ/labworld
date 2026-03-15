@@ -10,9 +10,9 @@ import java.util.List;
 
 public class StateLayer extends PotentialLayer {
 
-    private float[][] state;
-    private float[][] next;
-    private final float[][] influence;
+    private float[] state;
+    private float[] next;
+    private final float[] influence;
 
     StateUpdater stateUpdater;
 
@@ -21,40 +21,40 @@ public class StateLayer extends PotentialLayer {
                       PotentialUpdater potentialUpdater, StateUpdater stateUpdater) {
         super(width, height, signal, timeBehavior, compositing, potentialUpdater);
         this.stateUpdater = stateUpdater;
-        this.state = new float[height][width];
-        this.next = new float[height][width];
-        this.influence = new float[height][width];
+        this.state = new float[height * width];
+        this.next = new float[height * width];
+        this.influence = new float[height * width];
         this.updateState();
     }
 
     @Override
     public float valueAt(int x, int y) {
         if(isInBounds(x, y)) {
-            return state[y][x];
+            return state[y * width + x];
         }
         return 0;
     }
 
     @Override
-    public float[][] values() {
+    public float[] values() {
         return state;
     }
 
     public void applyInfluence(int x, int y, float value) {
         if(isInBounds(x, y)) {
-            float sum = influence[y][x] + value;
+            float sum = influence[y * width + x] + value;
             float clamped = Math.clamp(sum, -1, 1);
-            influence[y][x] = clamped;
+            influence[y * width + x] = clamped;
         }
     }
 
     public void updateState() {
-        stateUpdater.update(potential, state, next, influence);
+        stateUpdater.update(this, potential, state, next, influence);
         swapState();
     }
 
     private void swapState() {
-        float[][] temp = state;
+        float[] temp = state;
         state = next;
         next = temp;
     }

@@ -24,7 +24,12 @@ public class WorldSnapshot {
         this.width = world.width();
         this.height = world.height();
 
-        LayerSnapshot heat
+        this.heatSnap = new float[width][height];
+        this.foodSnap = new float[width][height];
+        this.scentSnap = new float[width][height];
+        this.agentSnaps = new ArrayList<>();
+
+        /*LayerSnapshot heat
                 = new LayerSnapshot(world.layer(LayerID.HEAT));
         this.heatSnap = heat.values();
         LayerSnapshot food = new LayerSnapshot(world.layer(LayerID.FOOD));
@@ -38,6 +43,10 @@ public class WorldSnapshot {
                     agent.speed(), agent.needs());
             agentSnaps.add(snap);
         }
+        */
+    }
+
+    public void refreshSnapshot() {
 
     }
 

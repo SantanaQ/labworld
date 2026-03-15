@@ -9,7 +9,11 @@ import java.util.List;
 
 public class PotentialLayer implements WorldLayer{
 
-    final float[][] potential;
+
+    public final int width;
+    public final int height;
+    public final float[] potential;
+
 
     private final SignalSource signal;
     private final TimeBehavior timeBehavior;
@@ -18,7 +22,9 @@ public class PotentialLayer implements WorldLayer{
 
     public PotentialLayer(int width, int height, SignalSource signal,
                           TimeBehavior timeBehavior, List<LayerStep> compositing, PotentialUpdater updater) {
-        this.potential = new float[height][width];
+        this.width = width;
+        this.height = height;
+        this.potential = new float[width * height];
 
         this.signal = signal;
         this.timeBehavior = timeBehavior;
@@ -44,23 +50,23 @@ public class PotentialLayer implements WorldLayer{
     }
 
     public final int width() {
-        return potential[0].length;
+        return width;
     }
 
     public final int height() {
-        return potential.length;
+        return height;
     }
 
     @Override
     public float valueAt(int x, int y) {
         if(isInBounds(x, y)) {
-            return potential[y][x];
+            return potential[y * width + x];
         }
         return 0;
     }
 
     @Override
-    public float[][] values() {
+    public float[] values() {
         return potential;
     }
 

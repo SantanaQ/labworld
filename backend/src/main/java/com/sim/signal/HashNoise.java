@@ -1,6 +1,6 @@
 package com.sim.signal;
 
-public final class HashNoise {
+public class HashNoise {
 
     private final int seed;
 

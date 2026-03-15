@@ -1,19 +1,23 @@
 package com.sim.layer.update;
 
+import com.sim.layer.StateLayer;
+
 public class CopyStateUpdater implements StateUpdater{
 
     @Override
-    public void update(float[][] potential, float[][] state,
-                       float[][] nextState, float[][] influence) {
-        int w = potential[0].length;
-        int h = potential.length;
+    public void update(StateLayer layer, float[] potential, float[] state,
+                       float[] nextState, float[] influence) {
+        int w = layer.width;
+        int h = layer.height;
 
+        int idx;
         float s;
         for(int y = 0; y < h; y++){
             for(int x = 0; x < w; x++){
-                s = potential[y][x] + influence[y][x];
-                nextState[y][x] = s;
-                influence[y][x] *= 0.5f;
+                idx = y * w + x;
+                s = potential[idx] + influence[idx];
+                nextState[idx] = s;
+                influence[idx] *= 0.5f;
             }
         }
     }
