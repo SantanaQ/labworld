@@ -4,6 +4,7 @@ import com.sim.layer.step.LayerStep;
 import com.sim.layer.time_behavior.TimeBehavior;
 import com.sim.layer.update.PotentialUpdater;
 import com.sim.layer.update.StateUpdater;
+import com.sim.signal.SignalField;
 import com.sim.signal.SignalSource;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public class StateLayer extends PotentialLayer {
 
     StateUpdater stateUpdater;
 
-    public StateLayer(int width, int height, SignalSource signal,
+    public StateLayer(int width, int height, SignalField signal,
                       TimeBehavior timeBehavior, List<LayerStep> compositing,
                       PotentialUpdater potentialUpdater, StateUpdater stateUpdater) {
         super(width, height, signal, timeBehavior, compositing, potentialUpdater);

@@ -8,6 +8,7 @@ import com.sim.layer.update.InactiveStateUpdater;
 import com.sim.layer.update.PotentialUpdater;
 import com.sim.layer.update.StateUpdater;
 import com.sim.signal.GridSignal;
+import com.sim.signal.SignalField;
 import com.sim.signal.SignalSource;
 
 import java.util.ArrayList;
@@ -18,7 +19,9 @@ public class LayerBuilder {
     private int width;
     private int height;
 
-    private SignalSource signal;
+    private SignalField signalField;
+
+    //private SignalSource signal;
     private TimeBehavior timeBehavior;
     private List<LayerStep> compositing;
 
@@ -34,7 +37,8 @@ public class LayerBuilder {
     private void initDefaults() {
         this.compositing = new ArrayList<>();
         this.timeBehavior = new Fixed();
-        this.signal = new GridSignal(new float[height][width]);
+        SignalSource signal = new GridSignal(new float[height][width]);
+        this.signalField = new SignalField(width, height, signal);
         this.potentialUpdater = new DefaultPotentialUpdater();
         this.stateUpdater = new InactiveStateUpdater();
     }
@@ -48,7 +52,8 @@ public class LayerBuilder {
 
     public LayerBuilder withSignal(SignalSource signal) {
         if(signal != null) {
-            this.signal = signal;
+            //this.signal = signal;
+            this.signalField = new SignalField(width, height, signal);
         }
         return this;
     }
@@ -82,14 +87,14 @@ public class LayerBuilder {
     }
 
     public PotentialLayer buildPotentialLayer() {
-        PotentialLayer layer = new PotentialLayer(width, height, signal,
+        PotentialLayer layer = new PotentialLayer(width, height, signalField,
                 timeBehavior, compositing, potentialUpdater);
         return layer;
     }
 
     public StateLayer buildStateLayer() {
         StateLayer layer = new StateLayer(width, height,
-                signal, timeBehavior, compositing,
+                signalField, timeBehavior, compositing,
                 potentialUpdater, stateUpdater);
         return layer;
     }

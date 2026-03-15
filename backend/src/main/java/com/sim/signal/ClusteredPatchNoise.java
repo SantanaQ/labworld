@@ -1,5 +1,7 @@
 package com.sim.signal;
 
+import com.sim.utils.MathHelpers;
+
 public class ClusteredPatchNoise implements SignalSource {
 
     private final SignalSource base;
@@ -37,7 +39,7 @@ public class ClusteredPatchNoise implements SignalSource {
         b = b * b;
 
         // smooth threshold -> patches
-        float patch = smoothstep(threshold - softness, threshold + softness, b);
+        float patch = MathHelpers.smoothstep(threshold - softness, threshold + softness, b);
 
         // holes inside patches
         float d = detail.sample(x, y);
@@ -48,9 +50,4 @@ public class ClusteredPatchNoise implements SignalSource {
         return Math.clamp(result, 0f, 1f);
     }
 
-    private float smoothstep(float a, float b, float x) {
-
-        float t = Math.clamp((x - a) / (b - a), 0f, 1f);
-        return t * t * (3f - 2f * t);
-    }
 }

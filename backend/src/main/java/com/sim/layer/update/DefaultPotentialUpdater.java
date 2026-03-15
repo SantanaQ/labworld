@@ -9,7 +9,7 @@ public class DefaultPotentialUpdater implements PotentialUpdater {
         int h = layer.height;
         int w = layer.width;
 
-        float val = 0;
+        float val;
         for (int y = 0; y < h; y++) {
             for (int x = 0; x < w; x++) {
                 val = layer.applyTime(x, y, time);

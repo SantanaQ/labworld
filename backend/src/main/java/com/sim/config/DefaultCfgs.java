@@ -4,7 +4,7 @@ import com.sim.layer.LayerID;
 import com.sim.layer.step.*;
 import com.sim.layer.time_behavior.Composite;
 import com.sim.layer.time_behavior.DomainWarp;
-import com.sim.layer.time_behavior.Drifting;
+import com.sim.layer.time_behavior.Drift;
 import com.sim.layer.time_behavior.Fixed;
 import com.sim.layer.update.*;
 import com.sim.signal.*;
@@ -78,17 +78,20 @@ public final class DefaultCfgs {
                 seed+200,
                 30,
                 2,
-                5));
+                0.4f));
 
         DomainWarp warp = new DomainWarp(
-                new FractalNoise(
-                        new ValueNoise(seed+1, 64),
-                        3,
-                        0.6f),
-                new FractalNoise(
-                        new ValueNoise(seed+2, 64),
-                        3,
-                        0.6f),
+                new SignalField(width, height,
+                    new FractalNoise(
+                            new ValueNoise(seed+1, 64),
+                            3,
+                            0.6f)),
+                new SignalField(width, height,
+                    new FractalNoise(
+                            new ValueNoise(seed+2, 64),
+                            3,
+                            0.6f))
+                ,
                 50);
 
         Composite warpingDrift = new Composite(List.of(defaultDrift(), warp));
@@ -98,8 +101,8 @@ public final class DefaultCfgs {
         return c;
     }
 
-    private static Drifting defaultDrift() {
-        return new Drifting(0.05f, 0);
+    private static Drift defaultDrift() {
+        return new Drift(0.5f, 0.3f);
     }
 
 

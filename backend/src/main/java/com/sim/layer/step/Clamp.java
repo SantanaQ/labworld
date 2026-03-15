@@ -1,7 +1,5 @@
 package com.sim.layer.step;
 
-import com.sim.world.Coordinate;
-
 public final class Clamp implements LayerStep{
 
     private final float min;

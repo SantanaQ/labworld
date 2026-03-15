@@ -3,6 +3,7 @@ package com.sim.json_factories;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sim.layer.time_behavior.*;
 import com.sim.signal.FractalNoise;
+import com.sim.signal.SignalField;
 import com.sim.signal.SignalSource;
 import com.sim.signal.ValueNoise;
 
@@ -37,10 +38,13 @@ public class TimeBehaviorFactory {
     private TimeBehavior createDrift(JsonNode node) {
         float speed = (float) node.get("speed").asDouble();
         float angle = (float) node.get("angle").asDouble();
-        return new Drifting(speed, angle);
+        return new Drift(speed, angle);
     }
 
     private TimeBehavior createDomainWarp(JsonNode node) {
+        int width = node.get("width").asInt();
+        int height = node.get("height").asInt();
+
         int cellSizeX = node.get("cellSizeX").asInt();
         int octavesX = node.get("octavesX").asInt();
         float persistenceX = (float) node.get("persistenceX").asDouble();
@@ -56,7 +60,10 @@ public class TimeBehaviorFactory {
                 new ValueNoise(seed, cellSizeX), octavesX, persistenceX);
         SignalSource warpY = new FractalNoise(
                 new ValueNoise(seed, cellSizeY), octavesY, persistenceY);
-        return new DomainWarp(warpX, warpY, strength);
+        SignalField fieldX = new SignalField(width,height, warpX);
+        SignalField fieldY = new SignalField(width,height, warpY);
+
+        return new DomainWarp(fieldX, fieldY, strength);
     }
 
     private TimeBehavior createComposite(JsonNode node) {

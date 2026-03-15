@@ -1,7 +1,6 @@
 package com.sim.layer.time_behavior;
 
-import com.sim.signal.SignalSource;
-
+import com.sim.signal.SignalField;
 import java.util.List;
 
 public final class Composite implements TimeBehavior {
@@ -12,23 +11,16 @@ public final class Composite implements TimeBehavior {
         this.behaviors = behaviors;
     }
 
-
     @Override
-    public float sample(SignalSource source, float x, float y, float time) {
-        SignalSource current = source;
+    public float sample(SignalField source, int x, int y, float time) {
+
+        float value = 0;
 
         for (TimeBehavior b : behaviors) {
-            SignalSource prev = current;
-            current = (px, py) -> b.sample(prev, px, py, time);
+            value += b.sample(source, x, y, time);
         }
 
-        return current.sample(x, y);
+        return value;
     }
 
-    @Override
-    public void setActive(boolean active) {
-        for (TimeBehavior b : behaviors) {
-            b.setActive(active);
-        }
-    }
 }

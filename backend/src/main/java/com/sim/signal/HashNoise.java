@@ -14,6 +14,6 @@ public class HashNoise {
                 + seed * 31;
 
         h = (h ^ (h >> 13)) * 1274126177;
-        return ((h ^ (h >> 16)) & 0xFFFF) / (float) 0xFFFF;
+        return (h & 0x7fffffff) * 4.6566129e-10f;
     }
 }

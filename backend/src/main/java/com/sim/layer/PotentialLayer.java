@@ -3,7 +3,7 @@ package com.sim.layer;
 import com.sim.layer.step.LayerStep;
 import com.sim.layer.time_behavior.TimeBehavior;
 import com.sim.layer.update.PotentialUpdater;
-import com.sim.signal.SignalSource;
+import com.sim.signal.SignalField;
 
 import java.util.List;
 
@@ -15,26 +15,27 @@ public class PotentialLayer implements WorldLayer{
     public final float[] potential;
 
 
-    private final SignalSource signal;
+    //private final SignalSource signal;
+    private final SignalField signalField;
     private final TimeBehavior timeBehavior;
     private final List<LayerStep> compositing;
     private final PotentialUpdater potentialUpdater;
 
-    public PotentialLayer(int width, int height, SignalSource signal,
+    public PotentialLayer(int width, int height, SignalField signalField,
                           TimeBehavior timeBehavior, List<LayerStep> compositing, PotentialUpdater updater) {
         this.width = width;
         this.height = height;
         this.potential = new float[width * height];
 
-        this.signal = signal;
+        this.signalField = signalField;
         this.timeBehavior = timeBehavior;
         this.compositing = compositing;
         this.potentialUpdater = updater;
         this.updatePotential(1);
     }
 
-    public final float applyTime(float x, float y, float time) {
-        return timeBehavior.sample(signal, x, y, time);
+    public final float applyTime(int x, int y, float time) {
+        return timeBehavior.sample(signalField, x, y, time);
     }
 
     public final float applyCompositing(float originVal, int x, int y) {

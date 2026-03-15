@@ -20,7 +20,6 @@ public class World {
 
     final Random rand;
     final List<Agent> agents;
-    final OccupancyGrid occupancy;
     private float time = 1;
 
     public World(WorldConfig config) {
@@ -29,7 +28,6 @@ public class World {
         this.runtimes = new HashMap<>();
 
         agents = new ArrayList<>();
-        occupancy = new OccupancyGrid(config.width(), config.height());
         rand = new Random(config.seed());
 
         addRuntime(LayerID.HEAT, config.heatConfig);
@@ -97,20 +95,11 @@ public class World {
             }
         }
 
-        rebuildOccupancy();
         time++;
     }
 
     public int agentCount() {
         return agents.size();
-    }
-
-    public List<Agent> agentsAt(Coordinate coord) {
-        return occupancy.at(coord);
-    }
-
-    public float occupancyAt(Coordinate coord) {
-        return agentsAt(coord).size();
     }
 
     public float time() {
@@ -123,10 +112,6 @@ public class World {
 
     public float layerAt(LayerID id, Coordinate coord) {
         return runtimes.get(id).layer().valueAt(coord.x(), coord.y());
-    }
-
-    public OccupancyGrid occupancy() {
-        return occupancy;
     }
 
     public List<Agent> agents() {
@@ -153,40 +138,6 @@ public class World {
             Agent agent = new Agent(pos);
             agents.add(agent);
         }
-    }
-
-    private void rebuildOccupancy() {
-       occupancy.clear();
-       for(Agent agent : agents) {
-           occupancy.set(agent.position().nearestCoordinate(this), agent);
-       }
-    }
-
-    public List<Coordinate> neighbors(
-            Coordinate center,
-            int radius
-    ) {
-        List<Coordinate> neighbors = new ArrayList<>();
-
-        for (int dx = -radius; dx <= radius; dx++) {
-            for (int dy = -radius; dy <= radius; dy++) {
-
-                if (dx == 0 && dy == 0) continue;
-
-                Coordinate n = center.add(dx, dy);
-                if (isInBounds(n)) {
-                    neighbors.add(n);
-                }
-            }
-        }
-        return neighbors;
-    }
-
-    public boolean isInBounds(Coordinate coordinate) {
-        return coordinate.x() >= 0
-                && coordinate.x() < config.width()
-                && coordinate.y() >= 0
-                && coordinate.y() < config.height();
     }
 
     public void affect(LayerID layerId, Coordinate c, float amount) {
