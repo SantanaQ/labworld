@@ -176,7 +176,7 @@ public class Agent {
         float pX = (float) (pos.x() + velocity().vx() * actualSpeed);
         float pY = (float) (pos.y() + velocity().vy() * actualSpeed);
         this.pos = new Position(pX,pY);
-        this.lastVelocity.copy(velocity);
+        this.lastVelocity.copyOf(velocity);
     }
 
     private void metabolism(Senses s) {

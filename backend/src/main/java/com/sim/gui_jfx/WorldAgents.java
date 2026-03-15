@@ -1,15 +1,10 @@
 package com.sim.gui_jfx;
 
-import com.sim.snapshot.AgentSnapshot;
 import com.sim.snapshot.WorldSnapshot;
 
-import com.sim.world.Coordinate;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-
-import java.util.Map;
-import java.util.Optional;
 
 public class WorldAgents implements RenderLayer {
 
@@ -36,7 +31,7 @@ public class WorldAgents implements RenderLayer {
     }
 
     public void renderAll(WorldSnapshot worldSnap) {
-        for(var agent : worldSnap.agents()) {
+        /*for(var agent : worldSnap.agents()) {
             gc.setFill(Color.BLACK);
             float fx = agent.position().x();
             float fy = agent.position().y();
@@ -49,7 +44,7 @@ public class WorldAgents implements RenderLayer {
                     fy * App.CELL_SIZE,
                     App.CELL_SIZE,
                     App.CELL_SIZE);
-        }
+        }*/
     }
 
 }

@@ -1,22 +1,26 @@
 package com.sim.snapshot;
 
+import com.sim.agent.Agent;
 import com.sim.layer.LayerID;
 import com.sim.world.World;
-import com.sim.agent.Agent;
 
 import java.util.*;
 
 public class WorldSnapshot {
 
+    public static int AGENT_PROPS = AgentProps.values().length;
+
     private final int worldId;
     private final int width;
     private final int height;
 
-    private final float[][] heatSnap;
-    private final float[][] foodSnap;
-    private final float[][] scentSnap;
+    private final float[] heatBuffer;
+    private final float[] foodBuffer;
+    private final float[] scentBuffer;
 
-    private final List<AgentSnapshot> agentSnaps;
+    private final List<float[]> agentSnaps;
+
+    private final float[] agentBuffer;
 
     public WorldSnapshot(World world) {
 
@@ -24,30 +28,41 @@ public class WorldSnapshot {
         this.width = world.width();
         this.height = world.height();
 
-        this.heatSnap = new float[width][height];
-        this.foodSnap = new float[width][height];
-        this.scentSnap = new float[width][height];
+        this.heatBuffer = new float[width * height];
+        this.foodBuffer = new float[width * height];
+        this.scentBuffer = new float[width * height];
+
+        this.agentBuffer = new float[world.agentCount() *  AGENT_PROPS];
+
         this.agentSnaps = new ArrayList<>();
-
-        /*LayerSnapshot heat
-                = new LayerSnapshot(world.layer(LayerID.HEAT));
-        this.heatSnap = heat.values();
-        LayerSnapshot food = new LayerSnapshot(world.layer(LayerID.FOOD));
-        this.foodSnap = food.values();
-        LayerSnapshot scent = new LayerSnapshot(world.layer(LayerID.SCENT));
-        this.scentSnap = scent.values();
-
-        agentSnaps = new ArrayList<>();
-        for(Agent agent : world.agents()) {
-            AgentSnapshot snap = new AgentSnapshot(agent.position(), agent.velocity(),
-                    agent.speed(), agent.needs());
-            agentSnaps.add(snap);
-        }
-        */
     }
 
-    public void refreshSnapshot() {
+    public void refresh(World world) {
+        agentSnaps.clear();
 
+        copyLayer(world, LayerID.FOOD, foodBuffer);
+        copyLayer(world, LayerID.SCENT, scentBuffer);
+        copyLayer(world, LayerID.HEAT, heatBuffer);
+
+        int base = 0;
+        for(Agent agent : world.agents()) {
+            agentBuffer[base] = agent.position().x();
+            agentBuffer[base + 1] = agent.position().y();
+            agentBuffer[base + 2] = agent.velocity().vx();
+            agentBuffer[base + 3] = agent.velocity().vy();
+            agentBuffer[base + 4] = agent.speed();
+            agentBuffer[base + 5] = agent.needs().energy();
+            agentBuffer[base + 6] = agent.needs().hunger();
+            agentBuffer[base + 7] = agent.needs().heat();
+            agentBuffer[base + 8] = agent.needs().curiosity();
+            agentBuffer[base + 9] = agent.needs().fear();
+            base += AGENT_PROPS;
+        }
+    }
+
+    private void copyLayer(World world, LayerID layerId, float[] buffer) {
+        float[] src = world.layer(layerId).values();
+        System.arraycopy(src, 0, buffer, 0, src.length);
     }
 
     public int worldId() {
@@ -66,20 +81,20 @@ public class WorldSnapshot {
         return height;
     }
 
-    public float[][] heat() {
-        return heatSnap;
+    public float[] heat() {
+        return heatBuffer;
     }
 
-    public float[][] food() {
-        return foodSnap;
+    public float[] food() {
+        return foodBuffer;
     }
 
-    public List<AgentSnapshot> agents() {
-        return agentSnaps;
+    public float[] agents() {
+        return agentBuffer;
     }
 
-    public float[][] scent() {
-        return scentSnap;
+    public float[] scent() {
+        return scentBuffer;
     }
 
 

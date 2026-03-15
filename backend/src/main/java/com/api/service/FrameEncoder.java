@@ -1,81 +1,47 @@
 package com.api.service;
 
 import com.api.service.frame_layouts.WorldLayout;
-import com.sim.snapshot.AgentSnapshot;
 import com.sim.snapshot.WorldSnapshot;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 
 public class FrameEncoder {
 
-    private final byte[] frame;
+    private final ByteBuffer buffer;
+    private final FloatBuffer floats;
 
     public FrameEncoder(WorldLayout layout) {
-        frame = new byte[layout.totalSize];
+        buffer = ByteBuffer
+                .allocateDirect(layout.totalSize)
+                .order(ByteOrder.LITTLE_ENDIAN);
+
+        floats = buffer.asFloatBuffer();
     }
 
-    public byte[] encode(WorldSnapshot snap) {
-        int offset = 0;
-        offset = writeIntLE(offset, snap.worldId());
-        offset = writeIntLE(offset, snap.width());
-        offset = writeIntLE(offset, snap.height());
-        offset = encodeLayers(snap, offset);
-        encodeAgents(snap, offset);
+    public ByteBuffer encode(WorldSnapshot snap) {
 
-        return frame;
+        buffer.clear();
+        floats.clear();
+
+        // Header
+        buffer.putInt(snap.worldId());
+        buffer.putInt(snap.width());
+        buffer.putInt(snap.height());
+
+        floats.position(buffer.position() / Float.BYTES);
+
+        // Layers
+        floats.put(snap.heat());
+        floats.put(snap.food());
+        floats.put(snap.scent());
+
+        // Agents
+        floats.put(snap.agents());
+
+        buffer.position(floats.position() * Float.BYTES);
+
+        return buffer;
     }
-
-    private int encodeLayers(WorldSnapshot snap, int offset) {
-        offset = encodeLayerGrid(snap.heat(), offset);
-        offset = encodeLayerGrid(snap.food(), offset);
-        offset = encodeLayerGrid(snap.scent(), offset);
-        return offset;
-    }
-
-    private int encodeLayerGrid(float[][] grid, int offset) {
-        for (float[] floats : grid) {
-            for (float aFloat : floats) {
-                writeFloatLE(offset, aFloat);
-                offset += Float.BYTES;
-            }
-        }
-        return offset;
-    }
-
-    private int encodeAgents(WorldSnapshot snap, int offset) {
-        for (AgentSnapshot agent : snap.agents()) {
-            writeFloatLE(offset, agent.position().x()); offset += Float.BYTES;
-            writeFloatLE(offset, agent.position().y()); offset += Float.BYTES;
-
-            writeFloatLE(offset, agent.velocity().vx()); offset += Float.BYTES;
-            writeFloatLE(offset, agent.velocity().vy()); offset += Float.BYTES;
-
-            writeFloatLE(offset, agent.speed()); offset += Float.BYTES;
-
-            for (float need : agent.needs()) {
-                writeFloatLE(offset, need);
-                offset += Float.BYTES;
-            }
-        }
-        return offset;
-    }
-
-    public byte[] currentFrame() {
-        return frame;
-    }
-
-    public int writeIntLE(int offset, int value) {
-        frame[offset++] = (byte)(value & 0xFF);
-        frame[offset++] = (byte)((value >> 8) & 0xFF);
-        frame[offset++] = (byte)((value >> 16) & 0xFF);
-        frame[offset++] = (byte)((value >> 24) & 0xFF);
-        return offset;
-    }
-
-    private void writeFloatLE(int offset, float value) {
-        int bits = Float.floatToIntBits(value);
-        frame[offset] = (byte)(bits & 0xFF);
-        frame[offset+1] = (byte)((bits >> 8) & 0xFF);
-        frame[offset+2] = (byte)((bits >> 16) & 0xFF);
-        frame[offset+3] = (byte)((bits >> 24) & 0xFF);
-    }
-
 }

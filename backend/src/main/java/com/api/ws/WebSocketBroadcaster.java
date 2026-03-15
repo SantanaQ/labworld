@@ -6,6 +6,7 @@ import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,7 +23,7 @@ public class WebSocketBroadcaster {
         sessions.remove(session);
     }
 
-    public void broadcast(byte[] data) {
+    public void broadcast(ByteBuffer data) {
         for (WebSocketSession s : sessions) {
             try {
                 if (s.isOpen()) {

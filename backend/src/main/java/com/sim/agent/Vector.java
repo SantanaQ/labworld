@@ -31,11 +31,16 @@ public class Vector {
         return this;
     }
 
-    public Vector copy(Vector other) {
+    public Vector copyOf(Vector other) {
         this.vx = other.vx;
         this.vy = other.vy;
         return this;
     }
+
+    public Vector copy() {
+        return new Vector(vx, vy);
+    }
+
 
     public Vector set(float vx, float vy) {
         this.vx = vx;

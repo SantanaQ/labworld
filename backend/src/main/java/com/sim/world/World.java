@@ -101,6 +101,10 @@ public class World {
         time++;
     }
 
+    public int agentCount() {
+        return agents.size();
+    }
+
     public List<Agent> agentsAt(Coordinate coord) {
         return occupancy.at(coord);
     }

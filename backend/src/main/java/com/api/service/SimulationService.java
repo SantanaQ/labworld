@@ -9,12 +9,15 @@ import com.sim.snapshot.WorldSnapshot;
 import com.sim.world.World;
 import org.springframework.stereotype.Service;
 
+import java.nio.ByteBuffer;
+
 @Service
 public class SimulationService {
 
 
     private WorldConfig config;
     private World world;
+    private WorldSnapshot worldSnapshot;
 
     private final WebSocketBroadcaster broadcaster;
     private FrameEncoder encoder;
@@ -46,6 +49,7 @@ public class SimulationService {
 
     public void start() {
         world = new World(config);
+        worldSnapshot = new WorldSnapshot(world);
         WorldLayout layout = new WorldLayout(
                 config.layerCount(),
                 config.width(),
@@ -53,6 +57,7 @@ public class SimulationService {
                 config.agentCount(),
                 AgentLayout.STRIDE
         );
+
 
         encoder = new FrameEncoder(layout);
 
@@ -113,9 +118,9 @@ public class SimulationService {
             }
 
             if (ticked) {
-                WorldSnapshot snap  = new WorldSnapshot(world);
-                encoder.encode(snap);
-                broadcaster.broadcast(encoder.currentFrame());
+                worldSnapshot.refresh(world);
+                ByteBuffer frame = encoder.encode(worldSnapshot);
+                broadcaster.broadcast(frame);
             }
         }
     }

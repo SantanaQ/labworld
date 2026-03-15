@@ -15,4 +15,8 @@ public record Position(float x, float y) {
         return new Position(this.x + vector.vx(), this.y + vector.vy());
     }
 
+    public Position copy() {
+        return new Position(this.x, this.y);
+    }
+
 }
