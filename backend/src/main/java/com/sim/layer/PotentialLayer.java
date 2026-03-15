@@ -24,6 +24,7 @@ public class PotentialLayer implements WorldLayer{
         this.timeBehavior = timeBehavior;
         this.compositing = compositing;
         this.potentialUpdater = updater;
+        this.updatePotential(1);
     }
 
     public final float applyTime(float x, float y, float time) {

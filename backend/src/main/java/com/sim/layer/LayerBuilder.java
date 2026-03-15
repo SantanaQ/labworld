@@ -84,7 +84,6 @@ public class LayerBuilder {
     public PotentialLayer buildPotentialLayer() {
         PotentialLayer layer = new PotentialLayer(width, height, signal,
                 timeBehavior, compositing, potentialUpdater);
-        potentialUpdater.update(layer, 1);
         return layer;
     }
 
@@ -92,8 +91,6 @@ public class LayerBuilder {
         StateLayer layer = new StateLayer(width, height,
                 signal, timeBehavior, compositing,
                 potentialUpdater, stateUpdater);
-        potentialUpdater.update(layer, 1);
-        stateUpdater.update(layer);
         return layer;
     }
 

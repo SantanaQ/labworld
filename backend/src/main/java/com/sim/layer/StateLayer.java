@@ -24,6 +24,7 @@ public class StateLayer extends PotentialLayer {
         this.state = new float[height][width];
         this.next = new float[height][width];
         this.influence = new float[height][width];
+        this.updateState();
     }
 
     @Override
