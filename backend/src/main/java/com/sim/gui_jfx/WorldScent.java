@@ -32,10 +32,10 @@ public class WorldScent implements RenderLayer {
     @Override
     public void renderCell(WorldSnapshot worldSnap, int x, int y) {
 
-        float val = worldSnap.scent()[y][x];
+        /*float val = worldSnap.scent()[y][x];
         gc.setFill(color(val));
         gc.fillRect(x * App.CELL_SIZE, y * App.CELL_SIZE, App.CELL_SIZE, App.CELL_SIZE);
-
+*/
     }
 
     private Color color(float value) {

@@ -94,7 +94,7 @@ export class SimEngine {
 
     private decodeAgents(buffer: ArrayBuffer, offset: number) {
 
-        const stride = 36;
+        const stride = 40;
 
         const agentCount = (buffer.byteLength - offset) / stride;
 
@@ -104,7 +104,7 @@ export class SimEngine {
 
         for(let i=0;i<agentCount;i++){
 
-            const base = offset + i*stride;
+            const base = offset + i * stride;
 
             const x = view.getFloat32(base, true);
             const y = view.getFloat32(base + 4, true);
@@ -113,11 +113,12 @@ export class SimEngine {
             const vy = view.getFloat32(base + 12, true);
 
             const speed = view.getFloat64(base + 16, true);
+            const energy = view.getFloat64(base + 20, true);
 
-            const hunger = view.getFloat32(base + 20, true);
-            const heat = view.getFloat32(base + 24, true);
-            const curiosity = view.getFloat32(base + 28, true);
-            const fear = view.getFloat32(base + 32, true);
+            const hunger = view.getFloat32(base + 24, true);
+            const heat = view.getFloat32(base + 28, true);
+            const curiosity = view.getFloat32(base + 32, true);
+            const fear = view.getFloat32(base + 36, true);
 
             agents.push({x,y,vx,vy,speed,hunger,heat,curiosity,fear});
         }

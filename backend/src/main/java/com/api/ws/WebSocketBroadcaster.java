@@ -27,13 +27,14 @@ public class WebSocketBroadcaster {
         for (WebSocketSession s : sessions) {
             try {
                 if (s.isOpen()) {
-                    s.sendMessage(new BinaryMessage(data));
+                    s.sendMessage(new BinaryMessage(data.asReadOnlyBuffer()));
                 }
             } catch (IOException | IllegalStateException e) {
                 remove(s);
             }
         }
     }
+
 
     public void clear() {
         sessions.clear();

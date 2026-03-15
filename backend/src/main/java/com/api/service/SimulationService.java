@@ -10,6 +10,7 @@ import com.sim.world.World;
 import org.springframework.stereotype.Service;
 
 import java.nio.ByteBuffer;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class SimulationService {
@@ -22,7 +23,7 @@ public class SimulationService {
     private final WebSocketBroadcaster broadcaster;
     private FrameEncoder encoder;
 
-    private boolean running;
+    private final AtomicBoolean running = new AtomicBoolean(false);
     private Thread simulationThread;
 
     private int tickBase = 30;
@@ -61,7 +62,7 @@ public class SimulationService {
 
         encoder = new FrameEncoder(layout);
 
-        running = true;
+        running.set(true);
         simulationThread = new Thread(() -> {
             try {
                 loop();
@@ -73,12 +74,12 @@ public class SimulationService {
     }
 
     public synchronized void pause() {
-        running = false;
+        running.set(false);
     }
 
     public synchronized void resume() {
-        if(!running) {
-            running = true;
+        if(!running.get()) {
+            running.set(true);
             simulationThread = new Thread(() -> {
                 try {
                     loop();
@@ -91,7 +92,7 @@ public class SimulationService {
     }
 
     public synchronized void stop() {
-        running = false;
+        running.set(false);
         interruptThread();
         clearSession();
         cleanWorldConfig();
@@ -102,7 +103,7 @@ public class SimulationService {
         long lastTime = System.nanoTime();
         long accumulator = 0;
 
-        while(running) {
+        while(running.get()) {
             long now = System.nanoTime();
             long delta = now - lastTime;
             lastTime = now;

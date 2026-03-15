@@ -31,10 +31,10 @@ public class WorldFood implements RenderLayer {
     @Override
     public void renderCell(WorldSnapshot worldSnap, int x, int y) {
 
-        float val = worldSnap.food()[y][x];
+        /*float val = worldSnap.food()[y][x];
         gc.setFill(color(val));
         gc.fillOval(x * App.CELL_SIZE, y * App.CELL_SIZE, App.CELL_SIZE * val, App.CELL_SIZE * val);
-
+        */
     }
 
     private Color color(float value) {

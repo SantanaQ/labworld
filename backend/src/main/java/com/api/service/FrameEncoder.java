@@ -42,6 +42,8 @@ public class FrameEncoder {
 
         buffer.position(floats.position() * Float.BYTES);
 
+        buffer.flip();
+
         return buffer;
     }
 }

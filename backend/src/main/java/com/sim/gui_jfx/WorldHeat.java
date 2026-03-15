@@ -34,7 +34,7 @@ public class WorldHeat implements RenderLayer{
 
     @Override
     public void renderCell(WorldSnapshot worldSnap, int x, int y) {
-        float temp = worldSnap.heat()[y][x];
+        /*float temp = worldSnap.heat()[y][x];
         int idx = Math.max(0, Math.min(255, Math.round(temp * 255)));
         gc.setFill(colorMap[idx]);
         gc.fillRect(
@@ -42,7 +42,7 @@ public class WorldHeat implements RenderLayer{
                 y * App.CELL_SIZE,
                 App.CELL_SIZE,
                 App.CELL_SIZE
-        );
+        );*/
     }
 
     private Color turboColor(float val, float min, float max) {
