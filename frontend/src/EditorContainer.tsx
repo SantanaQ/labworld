@@ -28,6 +28,7 @@ interface EditorProps {
 export const  EditorContainer: React.FC<EditorProps> = ({ onGenerateSuccess }) => {
     const [nodes, setNodes] = useState<Node[]>(initialNodes);
     const [edges, setEdges] = useState<Edge[]>(initialEdges);
+    const [loading, setLoading] = useState(false);
 
     const addNode = (type: NodeType) => {
 
@@ -45,30 +46,52 @@ export const  EditorContainer: React.FC<EditorProps> = ({ onGenerateSuccess }) =
     }
 
     const handleGenerate = async () => {
-        const response = await fetch('/api/sim/config/load-default', {
-            method: 'POST',
-        });
-        if (!response.ok) return;
+        if(loading) return;
 
-        const preview = await response.json();
+        setLoading(true);
+        try {
+            await new Promise(resolve => setTimeout(resolve, 2000));
 
-        onGenerateSuccess(preview);
+            const response = await fetch('/api/sim/config/load-default', {
+                method: 'POST',
+            });
+            if (!response.ok) return;
+
+            const preview = await response.json();
+
+            onGenerateSuccess(preview);
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setLoading(false);
+        }
 
     };
 
     return (
-        <div className="flex h-full w-full overflow-hidden bg-slate-800">
+        <div className="flex h-full w-full overflow-hidden bg-slate-700">
             <EditorSidebar onAddNode={addNode}/>
 
-            <div className="flex-1 h-full relative bg-slate-800">
-                <div className="flex flex-row justify-between border-b border-slate-700 w-full p-2 items-center">
-                    <h1 className="text-white font-bold">World Editor</h1>
+            <div className="flex-1 h-full relative">
+                <div className="flex flex-row justify-end border-b border-slate-500 w-full p-2 items-center bg-slate-900 shadow-md">
+                    {/*<h1 className="text-white font-bold">World Editor</h1>*/}
                     <div className="">
                         <button
                             onClick={handleGenerate}
-                            className="bg-blue-600 font-bold flex flex-row p-2 text-white rounded cursor-pointer hover:bg-blue-800 delay-50 duration-300 focus:outline-none"
+                            disabled={loading}
+                            className={`${loading ? "bg-grey cursor-not-allowed" :  "bg-blue-600"} font-bold flex flex-row p-2 text-white rounded cursor-pointer hover:bg-blue-800 delay-50 duration-300 focus:outline-none`}
                         >
-                            Generate
+                            {loading ? (
+                                <div className="flex justify-center items-center">
+                                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Loading...
+                                </div>
+                            ) : (
+                                "Build"
+                            )}
                         </button>
                     </div>
                 </div>

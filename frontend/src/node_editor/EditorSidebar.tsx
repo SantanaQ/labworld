@@ -46,12 +46,12 @@ export const EditorSidebar: React.FC<EditorSidebarProps> = ({ onAddNode }) => {
     }
 
     return (
-        <div className="w-64 h-full bg-slate-900 border-r border-slate-700 flex flex-col shrink-0">
+        <div className="w-55 h-full bg-slate-900 border-r border-slate-500 flex flex-col shrink-0">
 
-            <div className="p-4 border-b border-slate-700">
-        <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-          Components
-        </span>
+            <div className="p-4 border-b border-slate-500">
+                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  Modifier
+                </span>
             </div>
 
             <div className="flex-1 overflow-y-auto">
@@ -104,6 +104,9 @@ export const EditorSidebar: React.FC<EditorSidebarProps> = ({ onAddNode }) => {
 
                 ))}
 
+            </div>
+            <div className="text-slate-600 italic test-sx">
+                <p>*delete nodes with backspace</p>
             </div>
 
         </div>

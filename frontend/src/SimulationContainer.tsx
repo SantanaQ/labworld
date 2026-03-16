@@ -22,7 +22,7 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
 
     const [simSpeed, setSimSpeed] = useState(1);
     const [sliderValue, setSliderValue] = useState(simSpeed);
-    const [simState, setSimState] = useState<'stopped' | 'running' | 'paused'>('stopped');
+    const [simState, setSimState] = useState<'idle' | 'stopped' | 'running' | 'paused'>('idle');
 
     const [settings, setSettings] = useState<SimSettings>({
         showHeat: true,
@@ -90,7 +90,7 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
             case 'start':
             case 'resume': engineRef.current.start(); setSimState('running'); break;
             case 'pause': setSimState('paused'); break;
-            case 'stop': engineRef.current.stop(); setSimState('stopped'); break;
+            case 'stop': engineRef.current.stop(); setSimState('stopped'); config = null; break;
         }
     };
 
@@ -101,7 +101,7 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
     };
 
     return (
-        <div className="h-screen w-full flex items-center justify-center bg-slate-950 p-3">
+        <div className="h-screen w-full flex items-center justify-center bg-slate-900 p-3">
 
             <div ref={containerRef} className="h-screen w-full flex gap-4 p-4">
 
@@ -115,11 +115,11 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
                 </div>
 
                 {/* RIGHT: Bento Panel */}
-                <div className="flex-1 flex-col gap-3 h-full">
+                <div className="flex-1 flex-col gap-3 h-full max-w-[400px] min-w-[200px]">
 
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 gap-3">
                         {/* Layer Visibility */}
-                        <div className="bg-slate-900/90 p-3 rounded-lg border border-slate-700 shadow-xl">
+                        <div className="bg-slate-900 p-3 rounded-lg border border-slate-700 shadow-xl">
                             <p className="text-[10px] text-slate-500 font-bold uppercase border-b border-slate-800 pb-1 mb-2 tracking-widest">
                                 Layer Visibility
                             </p>
@@ -156,35 +156,33 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
 
                     {/* Buttons */}
                     <div className="flex flex-col gap-2 mt-2">
-                        {simState === 'stopped' && <button
-                            onClick={() => handleSimulation('start')}
-                            className="w-full py-2 bg-green-600/20 hover:bg-green-600 text-green-500 hover:text-white text-[10px] font-bold uppercase rounded border border-green-600/30 transition-all">
-                            Play
-                        </button>}
-                        {simState === 'running' && <>
+                        {simState === 'idle' &&
+                            <button
+                                onClick={() => handleSimulation('start')}
+                                className="w-full py-2 bg-green-600/20 hover:bg-green-600 text-green-500 hover:text-white text-[10px] font-bold uppercase rounded border border-green-600/30 transition-all cursor-pointer">
+                                Play
+                            </button>}
+                        {simState === 'running' &&
                             <button
                                 onClick={() => handleSimulation('pause')}
-                                className="w-full py-2 bg-yellow-600/20 hover:bg-yellow-600 text-yellow-500 hover:text-white text-[10px] font-bold uppercase rounded border border-yellow-600/30 transition-all">
+                                className="w-full py-2 bg-yellow-600/20 hover:bg-yellow-600 text-yellow-500 hover:text-white text-[10px] font-bold uppercase rounded border border-yellow-600/30 transition-all cursor-pointer">
                                 Pause
                             </button>
-                            <button
-                                onClick={() => handleSimulation('stop')}
-                                className="w-full py-2 bg-red-600/20 hover:bg-red-600 text-red-500 hover:text-white text-[10px] font-bold uppercase rounded border border-red-600/30 transition-all">
-                                Stop
-                            </button>
-                        </>}
-                        {simState === 'paused' && <>
+                        }
+                        {simState === 'paused' &&
                             <button
                                 onClick={() => handleSimulation('resume')}
-                                className="w-full py-2 bg-green-600/20 hover:bg-green-600 text-green-500 hover:text-white text-[10px] font-bold uppercase rounded border border-green-600/30 transition-all">
+                                className="w-full py-2 bg-green-600/20 hover:bg-green-600 text-green-500 hover:text-white text-[10px] font-bold uppercase rounded border border-green-600/30 transition-all cursor-pointer">
                                 Resume
                             </button>
+                        }
+                        {(simState === 'running' || simState === 'paused') &&
                             <button
                                 onClick={() => handleSimulation('stop')}
-                                className="w-full py-2 bg-red-600/20 hover:bg-red-600 text-red-500 hover:text-white text-[10px] font-bold uppercase rounded border border-red-600/30 transition-all">
+                                className="w-full py-2 bg-red-600/20 hover:bg-red-600 text-red-500 hover:text-white text-[10px] font-bold uppercase rounded border border-red-600/30 transition-all cursor-pointer">
                                 Stop
                             </button>
-                        </>}
+                        }
                     </div>
 
                 </div>

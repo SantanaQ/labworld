@@ -12,6 +12,7 @@ export interface AgentData {
     vx: number;
     vy: number;
     speed: number;
+    energy: number;
     hunger: number;
     heat: number;
     curiosity: number;

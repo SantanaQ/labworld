@@ -95,7 +95,7 @@ public final class DefaultCfgs {
                 50);
 
         Composite warpingDrift = new Composite(List.of(defaultDrift(), warp));
-        c.setTimeBehavior(warpingDrift);
+        c.setTimeBehavior(warp);
         c.addLayerStep(new SoftThreshold(0.2f, 0.1f));
         c.setPotentialUpdater(new DefaultPotentialUpdater());
         return c;

@@ -4,10 +4,10 @@ import com.sim.layer.LayerID;
 
 public class WorldConfig {
 
-    public int width = 200;
-    public int height = 200;
+    public int width = 256;
+    public int height = 256;
     private int seed = 42069;
-    private int agentCount = 15;
+    private int agentCount = 64;
     public int worldId = 1;
     private int layerCount;
 
@@ -69,6 +69,10 @@ public class WorldConfig {
 
     public int agentCount() {
         return agentCount;
+    }
+
+    public void setWorldId(int worldId) {
+        this.worldId = worldId;
     }
 
     public LayerConfig configOf(LayerID id) {

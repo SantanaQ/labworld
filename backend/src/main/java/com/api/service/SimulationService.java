@@ -30,7 +30,6 @@ public class SimulationService {
     private int ticksPerSecond = tickBase;
     private long tickNanos = 1_000_000_000L / ticksPerSecond;
 
-
     public SimulationService(WebSocketBroadcaster broadcaster) {
         this.broadcaster = broadcaster;
     }

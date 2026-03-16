@@ -83,10 +83,10 @@ const Dashboard: React.FC = () => {
             </div>
 
             {/* Right Page */}
-            <div className="flex-1 overflow-auto bg-slate-700">
+            <div className="flex-1 overflow-auto bg-slate-900">
                 <div className="flex-1 overflow-hidden relative">
                     {worldConfig && (
-                        <SimulationContainer config={worldConfig}/>
+                        <SimulationContainer key={worldConfig.worldId} config={worldConfig}/>
                     )}
                 </div>
             </div>

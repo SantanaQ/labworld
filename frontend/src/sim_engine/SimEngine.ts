@@ -120,7 +120,7 @@ export class SimEngine {
             const curiosity = view.getFloat32(base + 32, true);
             const fear = view.getFloat32(base + 36, true);
 
-            agents.push({x,y,vx,vy,speed,hunger,heat,curiosity,fear});
+            agents.push({x,y,vx,vy,speed,energy, hunger,heat,curiosity,fear});
         }
 
         this.layers.setAgents(agents)

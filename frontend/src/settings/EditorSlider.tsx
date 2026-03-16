@@ -1,9 +1,7 @@
 import React from 'react';
-import type {ParamType} from "../node_editor/nodes/NodeDataTypes.ts";
-
 interface EditorSliderProps {
     label: string;
-    value: ParamType;
+    value: number;
     min?: number;
     max?: number;
     step?: number;

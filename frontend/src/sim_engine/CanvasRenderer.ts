@@ -54,7 +54,7 @@ export class CanvasRenderer {
     public drawAgents(agents: AgentData[]) {
 
         const ctx = this.ctx
-        const radius = 2
+        const radius = 1.5
 
         ctx.save()
 
@@ -74,7 +74,7 @@ export class CanvasRenderer {
             ctx.beginPath()
             ctx.arc(x, y, radius, 0, Math.PI * 2)
             ctx.fill()
-
+            /*
             const dirLength = 6
 
             ctx.beginPath()
@@ -86,7 +86,7 @@ export class CanvasRenderer {
 
             ctx.strokeStyle = "white"
             ctx.lineWidth = 1
-            ctx.stroke()
+            ctx.stroke()*/
         }
 
         ctx.restore()
