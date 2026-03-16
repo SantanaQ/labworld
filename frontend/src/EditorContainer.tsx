@@ -1,4 +1,4 @@
-import {useCallback, useState} from "react";
+import {useState} from "react";
 import type {Edge} from "@xyflow/react";
 import {EditorSidebar} from "./node_editor/EditorSidebar.tsx";
 import NodeEditor from "./node_editor/NodeEditor.tsx";
@@ -6,6 +6,9 @@ import NodeEditor from "./node_editor/NodeEditor.tsx";
 import {
     type Node
 } from '@xyflow/react';
+
+import {nodeRegistry, type NodeType} from "./node_editor/nodes/NodeDataTypes.ts";
+import {createNodeData} from "./node_editor/nodes/NodeFactory.ts";
 
 const initialNodes: Node[] = [
     { id: '1', data: { label: 'Node 1' }, position: { x: 5, y: 5 } },
@@ -26,15 +29,20 @@ export const  EditorContainer: React.FC<EditorProps> = ({ onGenerateSuccess }) =
     const [nodes, setNodes] = useState<Node[]>(initialNodes);
     const [edges, setEdges] = useState<Edge[]>(initialEdges);
 
-    const addNode = useCallback((label: string, type: string) => {
-        const newNode: Node = {
-            id: `node_${Date.now()}`, // Eindeutige ID
-            type: type,
-            data: { label: label },
-            position: { x: 50, y: 50 }, // Standard-Position
-        };
-        setNodes((nds) => [...nds, newNode]);
-    }, []);
+    const addNode = (type: NodeType) => {
+
+        const def = nodeRegistry[type]
+
+        const node = {
+            id: `node_${Date.now()}`,
+            type,
+            position: { x: 100, y: 100 },
+            deletable: def.deletable ?? true,
+            data: createNodeData(type)
+        }
+
+        setNodes((nds) => [...nds, node])
+    }
 
     const handleGenerate = async () => {
         const response = await fetch('/api/sim/config/load-default', {

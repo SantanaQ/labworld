@@ -1,4 +1,4 @@
-import { /*useState,*/ useCallback } from 'react';
+import React, { useCallback } from 'react';
 import {
     ReactFlow,
     addEdge,
@@ -9,35 +9,18 @@ import {
     //type FitViewOptions,
     type OnConnect,
     type OnNodesChange,
-    type OnEdgesChange,
+    type OnEdgesChange, getIncomers, getOutgoers, getConnectedEdges,
     //type OnNodeDrag,
     //type DefaultEdgeOptions,
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
-/*
-const initialNodes: Node[] = [
-    { id: '1', data: { label: 'Node 1' }, position: { x: 5, y: 5 } },
-    { id: '2', data: { label: 'Node 2' }, position: { x: 5, y: 100 } },
-    { id: '3', data: { label: 'Node 3' }, position: { x: 5, y: 150 } },
-];
 
-const initialEdges: Edge[] = [
-    { id: 'e1-2', source: '1', target: '2' },
-    { id: 'e3-1', source: '3', target: '1' }
-];
+import {GenericNode} from "./nodes/GenericNode.tsx";
 
-const fitViewOptions: FitViewOptions = {
-    padding: 0.2,
-};
-
-const defaultEdgeOptions: DefaultEdgeOptions = {
-    animated: true,
-};
-
-const onNodeDrag: OnNodeDrag = (_, node) => {
-    console.log('drag event', node.data);
-};*/
+export const nodeTypes = {
+    clamp: GenericNode
+}
 
 interface NodeEditorProps {
     nodes: Node[];
@@ -62,14 +45,49 @@ export default function NodeEditor({ nodes, setNodes, edges, setEdges }: NodeEdi
         [setEdges],
     );
 
+    const onEdgeClick = (_ : React.MouseEvent<Element, MouseEvent>, edge : Edge) => {
+        setEdges((eds) => eds.filter((e) => e.id !== edge.id))
+    }
+
+    const onNodesDelete = useCallback(
+        (deleted : Node[]) => {
+            let remainingNodes = [...nodes];
+            setEdges(
+                deleted.reduce((acc, node: Node) => {
+                    const incomers = getIncomers(node, remainingNodes, acc);
+                    const outgoers = getOutgoers(node, remainingNodes, acc);
+                    const connectedEdges = getConnectedEdges([node], acc);
+
+                    const remainingEdges = acc.filter((edge : Edge) => !connectedEdges.includes(edge));
+
+                    const createdEdges = incomers.flatMap(({ id: source }) =>
+                        outgoers.map(({ id: target }) => ({
+                            id: `${source}->${target}`,
+                            source,
+                            target,
+                        })),
+                    );
+
+                    remainingNodes = remainingNodes.filter((rn) => rn.id !== node.id);
+
+                    return [...remainingEdges, ...createdEdges];
+                }, edges),
+            );
+        },
+        [nodes, edges],
+    );
+
     return (
         <div className="h-full w-full">
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
+                nodeTypes={nodeTypes}
                 onNodesChange={onNodesChange}
+                onNodesDelete={onNodesDelete}
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
+                onEdgeClick={onEdgeClick}
                 fitView
                 proOptions={{hideAttribution: true}}
             />
