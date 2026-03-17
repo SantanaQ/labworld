@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import type {Node, Edge} from "@xyflow/react";
 import { createDefaultWorldTemplate } from "./DefaultWorldTemplate.ts";
 import {createEmptyCanvasTemplate} from "./EmptyCanvasTemplate.ts";

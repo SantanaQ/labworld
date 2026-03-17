@@ -109,6 +109,7 @@ export function GenericNode({ id, type, data, selected }: NodeProps) {
                 return (
                     <input className="w-full bg-slate-800 border border-slate-700 rounded px-2 py-1 text-xs text-white"
                            type="text"
+                           value={value}
                            placeholder={param.default}
                            minLength={param.min}
                            maxLength={param.max}

@@ -7,7 +7,7 @@ export function createDefaultWorldTemplate(): { nodes: Node[]; edges: Edge[] } {
     const nodes: Node[] = [
         // --- Heat Layer ---
         createNode("fractalNoise", "heatSignal", -100, -500, {
-            seed: "seed",
+            seed: "create-with-this",
             cellSize: 30,
             octaves: 2,
             persistence: 0.4,
@@ -24,7 +24,7 @@ export function createDefaultWorldTemplate(): { nodes: Node[]; edges: Edge[] } {
 
         // --- Supply Layer ---
         createNode("clusteredPatchNoise", "supplySignal", -50, 50, {
-            seed: "seed",
+            seed: "create-with-this",
             cellSizeBase: 18,
             cellSizeHoles: 8,
             octavesBase: 3,
@@ -69,7 +69,7 @@ export function createDefaultWorldTemplate(): { nodes: Node[]; edges: Edge[] } {
 
         // --- World ---
         createNode("world", "world", 800, 400, {
-            seed: "seed",
+            seed: "create-with-this",
             width: 256,
             height: 256,
         }),

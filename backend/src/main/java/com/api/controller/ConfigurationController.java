@@ -19,6 +19,7 @@ public class ConfigurationController {
 
     @PostMapping("/load")
     public ResponseEntity<WorldConfig> configure(@RequestBody String json) {
+        System.out.println(json);
         JsonWorldConfig jsonCfg = JsonWorldConfig.fromJson(json);
         simulationService.setConfig(jsonCfg);
 

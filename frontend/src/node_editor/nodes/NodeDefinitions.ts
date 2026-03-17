@@ -385,7 +385,7 @@ export const signalRegistry = {
         params: {
             seed: {
                 type: "text",
-                default: "",
+                default: "your seed here",
                 min: 1,
                 max: 16,
                 inline: false,
@@ -437,7 +437,7 @@ export const signalRegistry = {
         params: {
             seed: {
                 type: "text",
-                default: "",
+                default: "your seed here",
                 min: 1,
                 max: 16,
                 inline: false,
@@ -537,7 +537,7 @@ export const signalRegistry = {
         params: {
             seed: {
                 type: "text",
-                default: "",
+                default: "your seed here",
                 min: 1,
                 max: 16,
                 inline: false,

@@ -12,6 +12,7 @@ import {createNodeData} from "./node_editor/nodes/NodeFactory.ts";
 import FetchButton from "./components/FetchButton.tsx";
 import TemplateSelector from "./node_editor/templates/TemplateSelector.tsx";
 import {createEmptyCanvasTemplate} from "./node_editor/templates/EmptyCanvasTemplate.ts";
+import type {NodeGraphJSON} from "./node_editor/NodeJSON.ts";
 
 interface EditorProps {
     onGenerateSuccess: (config: any) => void
@@ -21,7 +22,7 @@ export const  EditorContainer: React.FC<EditorProps> = ({ onGenerateSuccess }) =
     const [nodes, setNodes] = useState<Node[]>([]);
     const [edges, setEdges] = useState<Edge[]>([]);
 
-    const loadTemplate = () => {
+    const loadEmptyTemplate = () => {
         const { nodes, edges } = createEmptyCanvasTemplate();
 
         setNodes(nodes);
@@ -29,7 +30,7 @@ export const  EditorContainer: React.FC<EditorProps> = ({ onGenerateSuccess }) =
     };
 
     useEffect(() => {
-        loadTemplate();
+        loadEmptyTemplate();
     },[]);
 
     const addNode = (type: NodeType) => {
@@ -47,13 +48,34 @@ export const  EditorContainer: React.FC<EditorProps> = ({ onGenerateSuccess }) =
         setNodes((nds) => [...nds, node])
     }
 
-    const handleGenerate = async () => {
-        await new Promise(resolve => setTimeout(resolve, 2000));
+    const generateJSON = (nodes: Node[], edges: Edge[]): NodeGraphJSON => {
+        return {
+            nodes: nodes.map((n) => ({
+                id: n.id,
+                type: n.type as NodeType,
+                position: n.position,
+                data: n.data,
+            })),
+            edges: edges.map((e) => ({
+                source: e.source,
+                sourceHandle: e.sourceHandle ?? undefined,
+                target: e.target,
+                targetHandle: e.targetHandle ?? undefined,
+            })),
+        };
+    };
 
-        const response = await fetch('/api/sim/config/load-default', {
+    const handleGenerate = async () => {
+        const payload = generateJSON(nodes, edges);
+
+        const response = await fetch('/api/sim/config/load', {
             method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
         });
-        if (!response.ok) return;
+        if (!response.ok) throw new Error(`Error: ${response.statusText}`);
 
         const preview = await response.json();
 
