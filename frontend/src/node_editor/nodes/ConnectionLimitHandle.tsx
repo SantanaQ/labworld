@@ -4,15 +4,15 @@ type ConnectionLimitHandleProps = HandleProps & {
     connectionCount: number;
 };
 
-const ConnectionLimitHandle = (props: ConnectionLimitHandleProps) => {
+const ConnectionLimitHandle = ({connectionCount, ...props}: ConnectionLimitHandleProps) => {
     const connections = useNodeConnections({
-        handleType: props.type,
+        handleType: props.type
     });
 
     return (
         <Handle
             {...props}
-            isConnectable={connections.length < props.connectionCount}
+            isConnectable={connections.length < connectionCount}
         />
     );
 };

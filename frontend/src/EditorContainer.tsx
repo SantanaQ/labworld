@@ -7,7 +7,7 @@ import {
     type Node
 } from '@xyflow/react';
 
-import {nodeRegistry, type NodeType} from "./node_editor/nodes/NodeDataTypes.ts";
+import {nodeRegistry, type NodeType} from "./node_editor/nodes/NodeDefinitions.ts";
 import {createNodeData} from "./node_editor/nodes/NodeFactory.ts";
 import FetchButton from "./components/FetchButton.tsx";
 

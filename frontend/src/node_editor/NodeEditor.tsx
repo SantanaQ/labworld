@@ -6,12 +6,9 @@ import {
     applyEdgeChanges,
     type Node,
     type Edge,
-    //type FitViewOptions,
     type OnConnect,
     type OnNodesChange,
     type OnEdgesChange, getIncomers, getOutgoers, getConnectedEdges,
-    //type OnNodeDrag,
-    //type DefaultEdgeOptions,
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
@@ -19,7 +16,14 @@ import '@xyflow/react/dist/style.css';
 import {GenericNode} from "./nodes/GenericNode.tsx";
 
 export const nodeTypes = {
-    clamp: GenericNode
+    clamp: GenericNode,
+    normalize: GenericNode,
+    binaryThreshold: GenericNode,
+    softThreshold: GenericNode,
+    suitabilityMask: GenericNode,
+    suitabilityDecay: GenericNode,
+
+    imageSignal: GenericNode,
 }
 
 interface NodeEditorProps {

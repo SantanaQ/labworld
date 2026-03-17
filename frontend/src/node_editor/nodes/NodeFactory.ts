@@ -1,4 +1,4 @@
-import {nodeRegistry, type NodeType} from "./NodeDataTypes.ts";
+import {nodeRegistry, type NodeType} from "./NodeDefinitions.ts";
 
 export function createNodeData(type: NodeType) {
     const def = nodeRegistry[type]

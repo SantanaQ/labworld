@@ -1,7 +1,7 @@
 import React, {useMemo, useState} from "react"
 import { ChevronDown, ChevronRight, Plus } from "lucide-react"
 
-import { nodeRegistry, type NodeType } from "./nodes/NodeDataTypes"
+import { nodeRegistry, type NodeType } from "./nodes/NodeDefinitions.ts"
 
 interface EditorSidebarProps {
     onAddNode: (type: NodeType) => void

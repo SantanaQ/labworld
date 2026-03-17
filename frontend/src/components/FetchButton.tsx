@@ -3,11 +3,11 @@ import Spinner from "./Spinner.tsx";
 
 export interface FetchButtonProps {
     children: React.ReactNode,
-    baseStyle : string,
-    styleOnLoad : string,
-    styleOnReady : string,
+    baseStyle: string,
+    styleOnLoad: string,
+    styleOnReady: string,
     onClick: () => Promise<void> | void,
-    onError? : (error: unknown) => void,
+    onError?: (error: unknown) => void,
 }
 
 function FetchButton(props: FetchButtonProps) {
