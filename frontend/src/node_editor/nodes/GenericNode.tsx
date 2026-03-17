@@ -10,7 +10,7 @@ export function GenericNode({ id, type, data, selected }: NodeProps) {
     const handleOffset = 46;
 
     const handleCount = Math.max(def.inputs.length, def.outputs.length);
-    const paramsOffset = handleOffset + handleCount * handleSpacing;
+    const paramsOffset = handleCount * handleSpacing;
 
     function updateParam(key: string, value: any) {
         rf.setNodes((nodes) =>
