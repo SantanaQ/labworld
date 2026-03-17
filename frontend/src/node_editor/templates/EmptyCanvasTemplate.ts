@@ -1,20 +1,7 @@
 import type {Node, Edge} from "@xyflow/react";
-import { nodeRegistry, type NodeType } from "./nodes/NodeDefinitions";
-import {createNodeData} from "./nodes/NodeFactory.ts";
+import {createNode} from "./CreateNode.ts";
 
-function createNode(type: NodeType, id: string, x: number, y: number): Node {
-    const def = nodeRegistry[type];
-
-    return {
-        id,
-        type,
-        position: { x, y },
-        deletable: def.deletable ?? true,
-        data: createNodeData(type),
-    };
-}
-
-export function createEmptyWorldTemplate(): {
+export function createEmptyCanvasTemplate(): {
     nodes: Node[];
     edges: Edge[];
 } {

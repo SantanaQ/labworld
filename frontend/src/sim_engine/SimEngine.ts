@@ -14,18 +14,7 @@ export interface SimSettings {
     showAgents: boolean;
     speed: number;
 }
-/*
-interface AgentProps {
-    x: number;
-    y: number;
-    vx: number;
-    vy: number;
-    hunger: number;
-    heat: number;
-    curiosity: number;
-    fear: number;
-    speed: number;
-}*/
+
 
 export class SimEngine {
     private layers = new LayerContainer();

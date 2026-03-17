@@ -10,7 +10,8 @@ import {
 import {nodeRegistry, type NodeType} from "./node_editor/nodes/NodeDefinitions.ts";
 import {createNodeData} from "./node_editor/nodes/NodeFactory.ts";
 import FetchButton from "./components/FetchButton.tsx";
-import {createEmptyWorldTemplate} from "./node_editor/EmptyCanvasTemplate.tsx";
+import TemplateSelector from "./node_editor/templates/TemplateSelector.tsx";
+import {createEmptyCanvasTemplate} from "./node_editor/templates/EmptyCanvasTemplate.ts";
 
 interface EditorProps {
     onGenerateSuccess: (config: any) => void
@@ -21,7 +22,7 @@ export const  EditorContainer: React.FC<EditorProps> = ({ onGenerateSuccess }) =
     const [edges, setEdges] = useState<Edge[]>([]);
 
     const loadTemplate = () => {
-        const { nodes, edges } = createEmptyWorldTemplate();
+        const { nodes, edges } = createEmptyCanvasTemplate();
 
         setNodes(nodes);
         setEdges(edges);
@@ -64,15 +65,9 @@ export const  EditorContainer: React.FC<EditorProps> = ({ onGenerateSuccess }) =
             <EditorSidebar onAddNode={addNode}/>
 
             <div className="flex-1 h-full relative">
-                <div className="flex flex-row justify-between border-b border-slate-500 w-full p-2 items-center bg-slate-900 shadow-md">
-                    <FetchButton
-                        baseStyle={"font-bold flex flex-row p-2 text-white rounded focus:outline-none"}
-                        styleOnLoad={"bg-grey cursor-not-allowed"}
-                        styleOnReady={"bg-blue-600 cursor-pointer hover:bg-blue-800 delay-50 duration-300"}
-                        onClick={loadTemplate}
-                    >
-                        Empty Canvas
-                    </FetchButton>
+                <div className="flex flex-row justify-between border-b border-slate-500 w-full p-2 items-center bg-slate-900 shadow-md gap-1">
+
+                    <TemplateSelector setNodes={setNodes} setEdges={setEdges} />
 
                     <FetchButton
                         baseStyle={"font-bold flex flex-row p-2 text-white rounded focus:outline-none"}

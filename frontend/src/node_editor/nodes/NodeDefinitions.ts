@@ -852,7 +852,7 @@ export const layerRegistry = {
                 accepts: ["signal"],
             },
             {
-                id: "inputSupplyBaseUpdate",
+                id: "baseUpdate",
                 label : "Base Update",
                 connectionCount: 1,
                 kind: "layer",
