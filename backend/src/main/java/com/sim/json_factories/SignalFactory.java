@@ -49,15 +49,17 @@ public class SignalFactory {
     }
 
     private SignalSource createFractalNoise(JsonNode node) {
-        int seed = node.get("seed").asInt();
+        String seed = node.get("seed").asText();
+        int seedCode = seed.hashCode();
         int cellSize = node.get("cellSize").asInt();
         int octaves = node.get("octaves").asInt();
         float persistence = (float) node.get("persistence").asDouble();
-        return new FractalNoise(seed, cellSize, octaves, persistence);
+        return new FractalNoise(seedCode, cellSize, octaves, persistence);
     }
 
     private SignalSource createClusteredPatchNoise(JsonNode node) {
-        int seed = node.get("seed").asInt();
+        String seed = node.get("seed").asText();
+        int seedCode = seed.hashCode();
         int cellSizeBase = node.get("cellSizeBase").asInt();
         int octavesBase = node.get("octavesBase").asInt();
         float persistenceBase = (float) node.get("persistenceBase").asDouble();
@@ -70,13 +72,14 @@ public class SignalFactory {
         float softness = (float) node.get("softness").asDouble();
         float holeStrength = (float) node.get("holeStrength").asDouble();
 
-        SignalSource base = new FractalNoise(seed, cellSizeBase, octavesBase, persistenceBase);
-        SignalSource holes = new FractalNoise(seed, cellSizeHoles, octavesHoles, persistenceHoles);
+        SignalSource base = new FractalNoise(seedCode, cellSizeBase, octavesBase, persistenceBase);
+        SignalSource holes = new FractalNoise(seedCode, cellSizeHoles, octavesHoles, persistenceHoles);
         return new ClusteredPatchNoise(base, holes, threshold, softness, holeStrength);
     }
 
     private SignalSource createHoleMaskNoise(JsonNode node) {
-        int seed = node.get("seed").asInt();
+        String seed = node.get("seed").asText();
+        int seedCode = seed.hashCode();
         int cellSizeBase = node.get("cellSizeBase").asInt();
         int octavesBase = node.get("octavesBase").asInt();
         float persistenceBase = (float) node.get("persistenceBase").asDouble();
@@ -87,8 +90,8 @@ public class SignalFactory {
 
         float holeThreshold = (float) node.get("holeThreshold").asDouble();
         float holeStrength = (float) node.get("holeStrength").asDouble();
-        SignalSource base = new FractalNoise(seed, cellSizeBase, octavesBase, persistenceBase);
-        SignalSource holes = new FractalNoise(seed, cellSizeHoles, octavesHoles, persistenceHoles);
+        SignalSource base = new FractalNoise(seedCode, cellSizeBase, octavesBase, persistenceBase);
+        SignalSource holes = new FractalNoise(seedCode, cellSizeHoles, octavesHoles, persistenceHoles);
         return new HoleMaskNoise(base, holes, holeThreshold, holeStrength);
     }
 

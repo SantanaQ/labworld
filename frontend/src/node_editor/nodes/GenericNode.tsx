@@ -7,7 +7,7 @@ export function GenericNode({ id, type, data, selected }: NodeProps) {
     const def = nodeRegistry[type as NodeType];
 
     const handleSpacing = 18;
-    const handleOffset = 36;
+    const handleOffset = 46;
 
     const handleCount = Math.max(def.inputs.length, def.outputs.length);
     const paramsOffset = handleOffset + handleCount * handleSpacing;
@@ -104,6 +104,17 @@ export function GenericNode({ id, type, data, selected }: NodeProps) {
 
                     </div>
                 )
+
+            case "text":
+                return (
+                    <input className="w-full bg-slate-800 border border-slate-700 rounded px-2 py-1 text-xs text-white"
+                           type="text"
+                           placeholder={param.default}
+                           minLength={param.min}
+                           maxLength={param.max}
+                           onChange={(e) => updateParam(key, e.target.value)}
+                    />
+                )
             default:
                 return null;
         }
@@ -149,7 +160,8 @@ export function GenericNode({ id, type, data, selected }: NodeProps) {
             } rounded-md min-w-[140px] relative`}
         >
             {/* Header */}
-            <div className="px-3 py-2 border-b border-slate-700 font-semibold text-slate-200 text-xs">
+            <div className="flex flex-col px-3 py-2 border-b border-slate-700 font-semibold text-slate-200 text-xs">
+                <p className="text-[8px]">{def.category}</p>
                 {def.label}
             </div>
 
@@ -168,7 +180,7 @@ export function GenericNode({ id, type, data, selected }: NodeProps) {
                         id={input.id}
                         connectionCount={input.connectionCount}
                     />
-                    <span className="ml-1 text-[10px] text-slate-400">{input.label}</span>
+                    <span className="ml-2 text-[10px] text-slate-400">{input.label}</span>
                 </div>
             ))}
 
@@ -181,7 +193,7 @@ export function GenericNode({ id, type, data, selected }: NodeProps) {
                         top: handleOffset + idx * handleSpacing,
                     }}
                 >
-          <span className="mr-1 text-[10px] text-slate-400">
+          <span className="mr-2 text-[10px] text-slate-400">
             {output.label}
           </span>
                     <ConnectionLimitHandle

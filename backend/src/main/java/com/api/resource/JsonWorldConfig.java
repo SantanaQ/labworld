@@ -34,8 +34,8 @@ public class JsonWorldConfig {
         return root.get("worldHeight").asInt();
     }
 
-    public int seed() {
-        return root.get("seed").asInt();
+    public String seed() {
+        return root.get("seed").asText();
     }
 
     public int agentCount() {

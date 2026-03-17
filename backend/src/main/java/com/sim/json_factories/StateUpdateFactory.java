@@ -44,7 +44,7 @@ public class StateUpdateFactory {
         float diffusion = node.get("diffusion").floatValue();
         float relaxation = node.get("relaxation").floatValue();
         float stateDecay = node.get("stateDecay").floatValue();
-        float influenceDecay = node.get("influence").floatValue();
+        float influenceDecay = node.get("influenceDecay").floatValue();
         return new DiffusionRelaxationStateUpdater(diffusion, relaxation, stateDecay, influenceDecay);
     }
 

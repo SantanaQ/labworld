@@ -8,7 +8,7 @@ import {
     type Edge,
     type OnConnect,
     type OnNodesChange,
-    type OnEdgesChange, getIncomers, getOutgoers, getConnectedEdges,
+    type OnEdgesChange, getIncomers, getOutgoers, getConnectedEdges, Background, BackgroundVariant,
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
@@ -24,6 +24,23 @@ export const nodeTypes = {
     suitabilityDecay: GenericNode,
 
     imageSignal: GenericNode,
+    fractalNoise: GenericNode,
+    clusteredPatchNoise: GenericNode,
+    holeMaskNoise: GenericNode,
+
+    copyStateUpdater: GenericNode,
+    diffusionGrowthUpdater: GenericNode,
+    diffusionRelaxationUpdater: GenericNode,
+
+    defaultPotentialUpdater: GenericNode,
+
+    heatLayer: GenericNode,
+    supplyLayer: GenericNode,
+    scentLayer: GenericNode,
+
+    world: GenericNode,
+
+    agents: GenericNode,
 }
 
 interface NodeEditorProps {
@@ -94,7 +111,9 @@ export default function NodeEditor({ nodes, setNodes, edges, setEdges }: NodeEdi
                 onEdgeClick={onEdgeClick}
                 fitView
                 proOptions={{hideAttribution: true}}
-            />
+            >
+                <Background color="#ccc" variant={BackgroundVariant.Dots} />
+            </ReactFlow>
         </div>
     );
 }

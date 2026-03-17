@@ -1,20 +1,18 @@
 import React, {useMemo, useState} from "react"
 import { ChevronDown, ChevronRight, Plus } from "lucide-react"
 
-import { nodeRegistry, type NodeType } from "./nodes/NodeDefinitions.ts"
+import {modifierRegistry, type NodeType} from "./nodes/NodeDefinitions.ts"
 
 interface EditorSidebarProps {
     onAddNode: (type: NodeType) => void
 }
 
-/*
-Build category structure from registry
-*/
+
 function buildCategories() {
 
     const categories: Record<string, { type: NodeType; label: string }[]> = {}
 
-    Object.entries(nodeRegistry).forEach(([type, def]) => {
+    Object.entries(modifierRegistry).forEach(([type, def]) => {
 
         const nodeType = type as NodeType
 
@@ -46,7 +44,7 @@ export const EditorSidebar: React.FC<EditorSidebarProps> = ({ onAddNode }) => {
     }
 
     return (
-        <div className="w-55 h-full bg-slate-900 border-r border-slate-500 flex flex-col shrink-0">
+        <div className="w-55 h-full bg-slate-900 border-r border-slate-500 flex flex-col shrink-0 shadow-xl/30">
 
             <div className="p-4 border-b border-slate-500">
                 <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">

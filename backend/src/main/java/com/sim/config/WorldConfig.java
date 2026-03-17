@@ -21,10 +21,10 @@ public class WorldConfig {
         setDefaults();
     }
 
-    public WorldConfig(int width, int height, int seed, int agentCount) {
+    public WorldConfig(int width, int height, String seed, int agentCount) {
         this.width = width;
         this.height = height;
-        this.seed = seed;
+        this.seed = seed.hashCode();
         this.agentCount = agentCount;
     }
 

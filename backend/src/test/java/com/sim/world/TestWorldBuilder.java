@@ -11,7 +11,7 @@ public class TestWorldBuilder {
 
     int width = 3;
     int height = 3;
-    int seed = 1;
+    String seed = "seed";
 
     float[][] heat = empty3x3();
     float[][] food = empty3x3();

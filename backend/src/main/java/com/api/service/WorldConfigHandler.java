@@ -28,7 +28,7 @@ public class WorldConfigHandler {
     public static WorldConfig translateConfig(JsonWorldConfig jsonCfg) {
         int width = jsonCfg.worldWidth();
         int height = jsonCfg.worldHeight();
-        int seed = jsonCfg.seed();
+        String seed = jsonCfg.seed();
         int agentCount = jsonCfg.agentCount();
 
         WorldConfig cfg = new WorldConfig(width, height, seed, agentCount);
