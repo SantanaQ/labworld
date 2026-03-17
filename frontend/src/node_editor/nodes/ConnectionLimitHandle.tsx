@@ -1,6 +1,10 @@
-import { Handle, useNodeConnections } from '@xyflow/react';
+import {Handle, type HandleProps, useNodeConnections} from '@xyflow/react';
 
-const ConnectionLimitHandle = (props) => {
+type ConnectionLimitHandleProps = HandleProps & {
+    connectionCount: number;
+};
+
+const ConnectionLimitHandle = (props: ConnectionLimitHandleProps) => {
     const connections = useNodeConnections({
         handleType: props.type,
     });

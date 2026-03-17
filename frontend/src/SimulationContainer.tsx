@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { SimEngine } from './sim_engine/SimEngine';
 import type { SimSettings } from './sim_engine/SimEngine';
-import { EditorSlider } from "./settings/EditorSlider";
+import { EditorSlider } from "./components/EditorSlider";
 import type { WorldConfig } from "./Dashboard.tsx";
 import { useDebouncedCallback } from "./hooks/UseDebouncedCallback.ts";
 import { useCanvasCamera } from "./hooks/UseCanvasCamera.ts";

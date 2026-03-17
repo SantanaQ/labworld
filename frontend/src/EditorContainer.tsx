@@ -9,6 +9,7 @@ import {
 
 import {nodeRegistry, type NodeType} from "./node_editor/nodes/NodeDataTypes.ts";
 import {createNodeData} from "./node_editor/nodes/NodeFactory.ts";
+import FetchButton from "./components/FetchButton.tsx";
 
 const initialNodes: Node[] = [
     { id: '1', data: { label: 'Node 1' }, position: { x: 5, y: 5 } },
@@ -76,7 +77,7 @@ export const  EditorContainer: React.FC<EditorProps> = ({ onGenerateSuccess }) =
                 <div className="flex flex-row justify-end border-b border-slate-500 w-full p-2 items-center bg-slate-900 shadow-md">
                     {/*<h1 className="text-white font-bold">World Editor</h1>*/}
                     <div className="">
-                        <button
+                        {/*<button
                             onClick={handleGenerate}
                             disabled={loading}
                             className={`${loading ? "bg-grey cursor-not-allowed" :  "bg-blue-600"} font-bold flex flex-row p-2 text-white rounded cursor-pointer hover:bg-blue-800 delay-50 duration-300 focus:outline-none`}
@@ -92,7 +93,15 @@ export const  EditorContainer: React.FC<EditorProps> = ({ onGenerateSuccess }) =
                             ) : (
                                 "Build"
                             )}
-                        </button>
+                        </button>*/}
+                        <FetchButton
+                            baseStyle={"font-bold flex flex-row p-2 text-white rounded focus:outline-none"}
+                            styleOnLoad={"bg-grey cursor-not-allowed"}
+                            styleOnReady={"bg-blue-600 cursor-pointer hover:bg-blue-800 delay-50 duration-300"}
+                            onClick={handleGenerate}
+                        >
+                            Build
+                        </FetchButton>
                     </div>
                 </div>
 

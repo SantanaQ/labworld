@@ -70,8 +70,8 @@ export const EditorSidebar: React.FC<EditorSidebarProps> = ({ onAddNode }) => {
               </span>
 
                             {openCats.includes(catTitle)
-                                ? <ChevronDown size={16}/>
-                                : <ChevronRight size={16}/>
+                                ? <ChevronDown size={16} color={"white"}/>
+                                : <ChevronRight size={16} color={"white"}/>
                             }
 
                         </button>
