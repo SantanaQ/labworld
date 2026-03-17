@@ -60,14 +60,32 @@ export class SimEngine {
         this.ws.connect();
     }
 
+    private formatUUID = (msb: bigint, lsb: bigint): string => {
+        const s = msb.toString(16).padStart(16, '0') + lsb.toString(16).padStart(16, '0');
+
+        return [
+            s.slice(0, 8),
+            s.slice(8, 12),
+            s.slice(12, 16),
+            s.slice(16, 20),
+            s.slice(20)
+        ].join('-');
+    };
+
+
     private handleBinaryFrame(buffer: ArrayBuffer) {
 
         const view = new DataView(buffer);
 
         let offset = 0;
 
-        view.getInt32(offset, true); // worldId
-        offset += 4;
+        //view.getInt32(offset, true); // worldId
+        const msb = view.getBigUint64(offset, false); // false = Big Endian (Standard für Java-Netzwerk)
+        offset += 8;
+        const lsb = view.getBigUint64(offset, false);
+        offset += 8;
+
+        const worldId = this.formatUUID(msb, lsb);
 
         const width = view.getInt32(offset, true);
         offset += 4;

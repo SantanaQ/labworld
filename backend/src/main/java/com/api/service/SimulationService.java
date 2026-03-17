@@ -10,6 +10,7 @@ import com.sim.world.World;
 import org.springframework.stereotype.Service;
 
 import java.nio.ByteBuffer;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
@@ -36,10 +37,16 @@ public class SimulationService {
 
     public void setConfig(JsonWorldConfig cfg) {
         this.config = WorldConfigHandler.translateConfig(cfg);
+        setID();
     }
 
     public void setConfig(WorldConfig cfg) {
         this.config = cfg;
+        setID();
+    }
+
+    private void setID() {
+        this.config.setWorldId(UUID.randomUUID());
     }
 
     public void setSpeed(double speed) {

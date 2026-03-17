@@ -6,6 +6,7 @@ import com.sim.snapshot.WorldSnapshot;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.UUID;
 
 public class FrameEncoder {
 
@@ -26,7 +27,10 @@ public class FrameEncoder {
         floats.clear();
 
         // Header
-        buffer.putInt(snap.worldId());
+        UUID uuid = snap.worldId();
+
+        buffer.putLong(uuid.getMostSignificantBits());
+        buffer.putLong(uuid.getLeastSignificantBits());
         buffer.putInt(snap.width());
         buffer.putInt(snap.height());
 
@@ -46,4 +50,6 @@ public class FrameEncoder {
 
         return buffer;
     }
+
+
 }

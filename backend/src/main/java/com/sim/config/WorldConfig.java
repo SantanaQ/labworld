@@ -2,13 +2,15 @@ package com.sim.config;
 
 import com.sim.layer.LayerID;
 
+import java.util.UUID;
+
 public class WorldConfig {
 
     public int width = 256;
     public int height = 256;
     private int seed = 42069;
     private int agentCount = 64;
-    public int worldId = 1;
+    public UUID worldId;
     private int layerCount;
 
     public LayerConfig heatConfig;
@@ -47,7 +49,7 @@ public class WorldConfig {
         setScentConfig(DefaultCfgs.defaultScent(width, height, seed));
     }
 
-    public int worldId() {
+    public UUID worldId() {
         return worldId;
     }
 
@@ -71,7 +73,7 @@ public class WorldConfig {
         return agentCount;
     }
 
-    public void setWorldId(int worldId) {
+    public void setWorldId(UUID worldId) {
         this.worldId = worldId;
     }
 

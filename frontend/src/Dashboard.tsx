@@ -12,8 +12,6 @@ export interface WorldConfig {
     scent: Float32Array;
 }
 
-
-
 const Dashboard: React.FC = () => {
     const [leftWidth, setLeftWidth] = useState<number>(50);
     const [worldConfig, setWorldConfig] = useState<WorldConfig | null>(null);

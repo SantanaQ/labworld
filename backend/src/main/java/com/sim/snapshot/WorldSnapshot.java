@@ -10,7 +10,7 @@ public class WorldSnapshot {
 
     public static int AGENT_PROPS = AgentProps.values().length;
 
-    private final int worldId;
+    private final UUID worldId;
     private final int width;
     private final int height;
 
@@ -65,7 +65,7 @@ public class WorldSnapshot {
         System.arraycopy(src, 0, buffer, 0, src.length);
     }
 
-    public int worldId() {
+    public UUID worldId() {
         return worldId;
     }
 

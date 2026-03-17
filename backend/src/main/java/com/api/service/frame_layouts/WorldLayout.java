@@ -15,7 +15,7 @@ public class WorldLayout {
 
     public WorldLayout(int layers, int width, int height, int agents, int agentStride) {
 
-        headerSize = Integer.BYTES + Integer.BYTES + Integer.BYTES; // frameId - width -height
+        headerSize = (Long.BYTES * 2) + Integer.BYTES + Integer.BYTES;  // worldId - width -height
 
         layerOffset = headerOffset + headerSize;
         layerSize = layers * width * height * Float.BYTES;

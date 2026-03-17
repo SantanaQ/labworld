@@ -43,7 +43,7 @@ public class World {
         runtimes.put(id, runtime);
     }
 
-    public int id() {
+    public UUID id() {
         return config.worldId();
     }
 
