@@ -8,6 +8,7 @@ import org.springframework.web.socket.WebSocketSession;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
@@ -23,7 +24,7 @@ public class WebSocketBroadcaster {
         sessions.remove(session);
     }
 
-    public void broadcast(ByteBuffer data) {
+    public void broadcast(UUID sessionId, ByteBuffer data) {
         for (WebSocketSession s : sessions) {
             try {
                 if (s.isOpen()) {

@@ -1,175 +1,57 @@
 package com.api.service;
 
-import com.api.resource.JsonWorldConfig;
-import com.api.service.frame_layouts.AgentLayout;
-import com.api.service.frame_layouts.WorldLayout;
+import com.api.session.SessionContext;
 import com.api.ws.WebSocketBroadcaster;
 import com.sim.config.WorldConfig;
-import com.sim.snapshot.WorldSnapshot;
-import com.sim.world.World;
 import org.springframework.stereotype.Service;
 
-import java.nio.ByteBuffer;
+import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class SimulationService {
 
-    private WorldConfig config;
-    private World world;
-    private WorldSnapshot worldSnapshot;
-
+    private final Map<UUID, SessionContext> sessions = new ConcurrentHashMap<>();
     private final WebSocketBroadcaster broadcaster;
-    private FrameEncoder encoder;
-
-    private final AtomicBoolean running = new AtomicBoolean(false);
-    private Thread simulationThread;
-
-    private int tickBase = 30;
-    private int ticksPerSecond = tickBase;
-    private long tickNanos = 1_000_000_000L / ticksPerSecond;
 
     public SimulationService(WebSocketBroadcaster broadcaster) {
         this.broadcaster = broadcaster;
     }
 
-    public void setConfig(JsonWorldConfig cfg) {
-        /*this.config = WorldConfigHandler.translateConfig(cfg);
-        setID();*/
+    public UUID createSession(WorldConfig config) {
+        SessionContext session = new SessionContext(config, broadcaster);
+        sessions.put(session.id(), session);
+        return session.id();
     }
 
-    public void setConfig(WorldConfig cfg) {
-        this.config = cfg;
-        setID();
+    public void start(UUID sessionId) {
+        sessions.get(sessionId).start();
     }
 
-    private void setID() {
-        this.config.setWorldId(UUID.randomUUID());
+    public void pause(UUID sessionId) {
+        sessions.get(sessionId).pause();
     }
 
-    public void setSpeed(double speed) {
-        this.ticksPerSecond = (int) (speed * tickBase);
-        this.tickNanos = 1_000_000_000L / ticksPerSecond;
+    public void resume(UUID sessionId) {
+        sessions.get(sessionId).resume();
     }
 
-    public void start() {
-        world = new World(config);
-        worldSnapshot = new WorldSnapshot(world);
-        WorldLayout layout = new WorldLayout(
-                config.layerCount(),
-                config.width(),
-                config.height(),
-                config.agentCount(),
-                AgentLayout.STRIDE
-        );
-
-
-        encoder = new FrameEncoder(layout);
-
-        running.set(true);
-        simulationThread = new Thread(() -> {
-            try {
-                loop();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
-        simulationThread.start();
+    public void applySpeed(UUID sessionId, double speed) {
+        sessions.get(sessionId).applySpeed(speed);
     }
 
-    public synchronized void pause() {
-        running.set(false);
+    public void stop(UUID sessionId) {
+        SessionContext session = sessions.remove(sessionId);
+        if (session != null) session.stop();
     }
 
-    public synchronized void resume() {
-        if(!running.get()) {
-            running.set(true);
-            simulationThread = new Thread(() -> {
-                try {
-                    loop();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
-            simulationThread.start();
-        }
+    public void sendPreview(UUID sessionId) {
+        sessions.get(sessionId).sendInitialFrame();
     }
 
-    public synchronized void stop() {
-        running.set(false);
-        interruptThread();
-        clearSession();
-        cleanWorldConfig();
-        resetTick();
-    }
-
-    private void loop() {
-        long lastTime = System.nanoTime();
-        long accumulator = 0;
-
-        while(running.get()) {
-            long now = System.nanoTime();
-            long delta = now - lastTime;
-            lastTime = now;
-
-            accumulator += delta;
-
-            boolean ticked = false;
-
-            while (accumulator >= tickNanos) {
-                world.tick();
-                accumulator -= tickNanos;
-                ticked = true;
-            }
-
-            if (ticked) {
-                worldSnapshot.refresh(world);
-                ByteBuffer frame = encoder.encode(worldSnapshot);
-                broadcaster.broadcast(frame);
-            }
-        }
-    }
-
-    public WorldSnapshot previewSnapshot() {
-        if(!hasConfig()) throw new IllegalStateException("No config set");
-        World tempWorld = new World(config);
-        return new WorldSnapshot(tempWorld);
-    }
-
-    public boolean hasConfig() {
-        return config != null;
-    }
-
-    public WorldConfig config() {
-        return config;
-    }
-
-    private void interruptThread() {
-        if (simulationThread != null) {
-            simulationThread.interrupt();
-            try {
-                simulationThread.join();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-            simulationThread = null;
-        }
-    }
-
-    private void resetTick() {
-        ticksPerSecond = tickBase;
-        tickNanos = 1_000_000_000L / ticksPerSecond;
-    }
-
-    private void clearSession() {
-        broadcaster.clear();
-    }
-
-    private void cleanWorldConfig() {
-        encoder = null;
-        world = null;
-        config = null;
+    public SessionContext get(UUID id) {
+        return sessions.get(id);
     }
 
 }

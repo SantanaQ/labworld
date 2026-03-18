@@ -1,29 +1,28 @@
 import {getWsUrl} from "./getWsUrl.ts";
 import type {ConnectionStatus} from "./SimEngine.ts";
-
 export class SimWebSocket {
     private socket: WebSocket | null = null;
     private retries = 0;
     private maxRetries = 10;
     private reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
 
-    private worldId: number;
+    private sessionId: string;
     private onFrame: (frame: ArrayBuffer) => void;
     private onStatus: (status: ConnectionStatus) => void;
 
     constructor(
-        worldId: number,
+        sessionId: string,
         onFrame: (frame: ArrayBuffer) => void,
         onStatus: (status: ConnectionStatus) => void
     ) {
-        this.worldId = worldId;
+        this.sessionId = sessionId;
         this.onFrame = onFrame;
         this.onStatus = onStatus;
     }
 
     public connect() {
         if (this.socket) this.socket.close();
-        const wsUrl = getWsUrl(`/ws/sim/${this.worldId}`);
+        const wsUrl = getWsUrl(`/ws/sim/${this.sessionId}`);
         this.socket = new WebSocket(wsUrl);
         this.socket.binaryType = 'arraybuffer';
 

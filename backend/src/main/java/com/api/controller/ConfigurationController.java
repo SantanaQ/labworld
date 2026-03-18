@@ -1,14 +1,13 @@
 package com.api.controller;
 
 import com.api.resource.*;
+import com.api.resource.response.SimulationInitResponse;
 import com.api.service.SimulationService;
 import com.sim.config.WorldConfig;
-import com.sim.layer.LayerID;
-import com.sim.snapshot.WorldSnapshot;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/sim/config")
@@ -21,20 +20,19 @@ public class ConfigurationController {
     }
 
     @PostMapping("/load")
-    public ResponseEntity<WorldConfig> configure(@RequestBody EditorConfig config) {
+    public ResponseEntity<SimulationInitResponse> configure(@RequestBody EditorConfig config) {
+
         EditorGraph graph = new EditorGraph(config);
         NodeGraphResolver resolver = new NodeGraphResolver(graph);
         WorldConfig worldConfig = resolver.configFromGraph();
-        simulationService.setConfig(worldConfig);
 
-        return ResponseEntity.ok(simulationService.config());
+        UUID sessionId = simulationService.createSession(worldConfig);
+
+        SimulationInitResponse response =
+                new SimulationInitResponse(sessionId, worldConfig);
+
+        return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/load-default")
-    public ResponseEntity<WorldConfig> loadDefault() {
-        simulationService.setConfig(new WorldConfig());
-
-        return ResponseEntity.ok(simulationService.config());
-    }
 
 }

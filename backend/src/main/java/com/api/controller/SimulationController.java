@@ -1,11 +1,11 @@
 package com.api.controller;
 
 import com.api.service.SimulationService;
+import com.api.session.SessionContext;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/sim")
@@ -17,38 +17,41 @@ public class SimulationController {
         this.simulationService = simulationService;
     }
 
-    @PostMapping("/start")
-    public ResponseEntity<Void> start() {
-        if(simulationService.hasConfig()) {
-            simulationService.start();
-            return ResponseEntity.ok().build();
-        } else
-            return ResponseEntity.badRequest().build();
-
-    }
-
-    @PostMapping("/pause")
-    public ResponseEntity<Void> pause() {
-        simulationService.pause();
+    @PostMapping("/start/{sessionId}")
+    public ResponseEntity<Void> start(@PathVariable String sessionId) {
+        simulationService.start(UUID.fromString(sessionId));
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/resume")
-    public ResponseEntity<Void> resume() {
-        simulationService.resume();
+    @PostMapping("/pause/{sessionId}")
+    public ResponseEntity<Void> pause(@PathVariable String sessionId) {
+        simulationService.pause(UUID.fromString(sessionId));
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/stop")
-    public ResponseEntity<Void> stop() {
-        simulationService.stop();
+    @PostMapping("/resume/{sessionId}")
+    public ResponseEntity<Void> resume(@PathVariable String sessionId) {
+        simulationService.resume(UUID.fromString(sessionId));
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/stop/{sessionId}")
+    public ResponseEntity<Void> stop(@PathVariable String sessionId) {
+        simulationService.stop(UUID.fromString(sessionId));
         return ResponseEntity.ok().build();
     }
 
 
-    @PostMapping("/speed/{speed}")
-    public ResponseEntity<Void> speed(@PathVariable double speed) {
-        simulationService.setSpeed(speed);
+    @PostMapping("/speed//{sessionId}/{speed}")
+    public ResponseEntity<Void> speed(@PathVariable String sessionId, @PathVariable double speed) {
+        simulationService.applySpeed(UUID.fromString(sessionId), speed);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/preview/{sessionId}")
+    public ResponseEntity<byte[]> preview(@PathVariable String sessionId) {
+        UUID uuid = UUID.fromString(sessionId);
+        simulationService.sendPreview(uuid);
         return ResponseEntity.ok().build();
     }
 }

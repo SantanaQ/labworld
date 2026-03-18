@@ -2,14 +2,14 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import {EditorContainer} from "./EditorContainer.tsx";
 import {SimulationContainer} from "./SimulationContainer.tsx";
+import type {UUID} from "node:crypto";
 
 export interface WorldConfig {
-    worldId: number;
+    sessionId: UUID;
     width: number;
     height: number;
-    heat: Float32Array;
-    supply: Float32Array;
-    scent: Float32Array;
+    layerCount: number;
+    agentCount: number;
 }
 
 const Dashboard: React.FC = () => {
@@ -51,12 +51,11 @@ const Dashboard: React.FC = () => {
 
     const handleWorldGenerated = (config: WorldConfig) => {
         setWorldConfig({
-            worldId: config.worldId,
+            sessionId: config.sessionId,
             width: config.width,
             height: config.height,
-            heat: config.heat,
-            supply: config.supply,
-            scent: config.scent,
+            layerCount: config.layerCount,
+            agentCount: config.agentCount,
         });
     };
 
@@ -84,7 +83,7 @@ const Dashboard: React.FC = () => {
             <div className="flex-1 overflow-auto bg-slate-900">
                 <div className="flex-1 overflow-hidden relative">
                     {worldConfig && (
-                        <SimulationContainer key={worldConfig.worldId} config={worldConfig}/>
+                        <SimulationContainer key={worldConfig.sessionId} config={worldConfig}/>
                     )}
                 </div>
             </div>
