@@ -13,8 +13,8 @@ public enum LayerID {
 
     public static LayerID byString(String id) {
         return switch (id) {
-            case "heatLayer" -> HEAT;
-            case "supplyLayer" -> FOOD;
+            case "heatLayer", "heat", "Heat" -> HEAT;
+            case "supplyLayer", "supply", "Supply" -> FOOD;
             case "scentLayer" -> SCENT;
             default -> throw new IllegalArgumentException("Invalid layer ID: " + id);
         };

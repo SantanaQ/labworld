@@ -1,11 +1,20 @@
 package com.api.resource.nodes.layerStep;
 
 import com.api.resource.nodes.EditorNode;
-import com.sim.layer.step.BinaryThreshold;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class BinaryThresholdNode extends EditorNode<BinaryThreshold> {
+import java.util.Map;
+
+import static com.api.resource.ObjectCaster.getFloat;
+
+public class BinaryThresholdNode extends EditorNode{
 
     private float threshold;
+
+    @JsonProperty("data")
+    public void unpackData(Map<String, Object> data) {
+        this.threshold =  getFloat(data, "threshold");
+    }
 
     public float threshold() {
         return threshold;
@@ -15,14 +24,5 @@ public class BinaryThresholdNode extends EditorNode<BinaryThreshold> {
         this.threshold = threshold;
     }
 
-    @Override
-    public String category() {
-        return "compositing";
-    }
-
-    @Override
-    public BinaryThreshold build() {
-        return new BinaryThreshold(threshold);
-    }
 
 }

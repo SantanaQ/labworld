@@ -1,5 +1,6 @@
 package com.sim.world;
 
+import com.sim.agent.Needs;
 import com.sim.config.LayerConfig;
 import com.sim.layer.LayerContext;
 import com.sim.config.WorldConfig;
@@ -35,7 +36,7 @@ public class World {
         addRuntime(LayerID.SCENT, config.scentConfig);
 
         rebuildAll();
-        spawnAgents(config.agentCount());
+        spawnAgents(config.agentCount(), config.agentNeeds());
     }
 
     private void addRuntime(LayerID id, LayerConfig config) {
@@ -130,12 +131,12 @@ public class World {
         return runtimes;
     }
 
-    private void spawnAgents(int agentCount) {
+    private void spawnAgents(int agentCount, Needs agentNeeds) {
         for(int i = 0; i < agentCount; i++) {
             int x = rand.nextInt(0, config.width());
             int y = rand.nextInt(0, config.height());
             Position pos = new Position(x, y);
-            Agent agent = new Agent(pos);
+            Agent agent = new Agent(pos, agentNeeds.copy());
             agents.add(agent);
         }
     }

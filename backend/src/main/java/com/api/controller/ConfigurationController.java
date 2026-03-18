@@ -22,11 +22,6 @@ public class ConfigurationController {
 
     @PostMapping("/load")
     public ResponseEntity<WorldConfig> configure(@RequestBody EditorConfig config) {
-
-        //System.out.println(json);
-        //JsonWorldConfig jsonCfg = JsonWorldConfig.fromJson(json);
-        //simulationService.setConfig(jsonCfg);
-
         EditorGraph graph = new EditorGraph(config);
         NodeGraphResolver resolver = new NodeGraphResolver(graph);
         WorldConfig worldConfig = resolver.configFromGraph();

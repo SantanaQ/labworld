@@ -1,5 +1,7 @@
 package com.api.resource;
 
+import com.api.resource.nodes.EditorEdge;
+import com.api.resource.nodes.EditorNode;
 import com.sim.layer.LayerID;
 
 import java.util.ArrayList;

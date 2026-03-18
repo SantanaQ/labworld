@@ -16,12 +16,11 @@ import java.util.List;
 
 public class LayerBuilder {
 
-    private int width;
-    private int height;
+    private final int width;
+    private final int height;
 
     private SignalField signalField;
 
-    //private SignalSource signal;
     private TimeBehavior timeBehavior;
     private List<LayerStep> compositing;
 
@@ -52,7 +51,6 @@ public class LayerBuilder {
 
     public LayerBuilder withSignal(SignalSource signal) {
         if(signal != null) {
-            //this.signal = signal;
             this.signalField = new SignalField(width, height, signal);
         }
         return this;

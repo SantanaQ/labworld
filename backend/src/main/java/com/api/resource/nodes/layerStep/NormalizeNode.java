@@ -1,16 +1,21 @@
 package com.api.resource.nodes.layerStep;
 
 import com.api.resource.nodes.EditorNode;
-import com.sim.layer.step.Normalize;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class NormalizeNode extends EditorNode<Normalize> {
+import java.util.Map;
+
+import static com.api.resource.ObjectCaster.getFloat;
+
+public class NormalizeNode extends EditorNode {
 
     private float min;
     private float max;
 
-    @Override
-    public Normalize build() {
-        return new Normalize(min, max);
+    @JsonProperty("data")
+    public void unpackData(Map<String, Object> data) {
+        this.min =  getFloat(data, "min");
+        this.max = getFloat(data, "max");
     }
 
     public float min() {

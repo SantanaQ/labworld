@@ -1,16 +1,21 @@
 package com.api.resource.nodes.layerStep;
 
 import com.api.resource.nodes.EditorNode;
-import com.sim.layer.step.Clamp;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ClampNode extends EditorNode<Clamp> {
+import java.util.Map;
+
+import static com.api.resource.ObjectCaster.getFloat;
+
+public class ClampNode extends EditorNode {
 
     private float min;
     private float max;
 
-    @Override
-    public Clamp build() {
-        return new Clamp(min, max);
+    @JsonProperty("data")
+    public void unpackData(Map<String, Object> data) {
+        this.min =  getFloat(data, "min");
+        this.max = getFloat(data, "max");
     }
 
     public float min() {

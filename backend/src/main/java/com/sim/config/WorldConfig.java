@@ -81,6 +81,10 @@ public class WorldConfig {
         this.agentNeeds = agentNeeds;
     }
 
+    public Needs agentNeeds() {
+        return agentNeeds;
+    }
+
     public void setWorldId(UUID worldId) {
         this.worldId = worldId;
     }

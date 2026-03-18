@@ -1,6 +1,9 @@
 package com.api.resource;
 
+import com.api.resource.nodes.EditorEdge;
 import com.sim.layer.LayerID;
+import com.api.resource.nodes.EditorNode;
+
 
 import java.util.*;
 
@@ -13,6 +16,7 @@ public class EditorGraph {
         for (EditorNode node : config.nodes()) {
             nodeMap.put(node.id(), new EditorGraphNode(node));
         }
+        System.out.println(nodeMap.size());
         this.root = nodeMap.get("world");
         build(config);
     }
@@ -32,7 +36,7 @@ public class EditorGraph {
         return nodeMap.get(id);
     }
 
-    public List<EditorGraphNode> executionOrderOfLayer(LayerID layerID) {
+    public List<EditorNode> executionOrderOfLayer(LayerID layerID) {
         switch (layerID) {
             case FOOD -> {
                 EditorGraphNode foodLayer = nodeMap.get("supplyLayer");
@@ -51,8 +55,8 @@ public class EditorGraph {
         }
     }
 
-    public List<EditorGraphNode> executionOrder(EditorGraphNode node) {
-        List<EditorGraphNode> order = new ArrayList<>();
+    public List<EditorNode> executionOrder(EditorGraphNode node) {
+        List<EditorNode> order = new ArrayList<>();
         Set<String> visited = new HashSet<>();
 
         buildOrder(node, order, visited);
@@ -60,7 +64,8 @@ public class EditorGraph {
         return order;
     }
 
-    private void buildOrder(EditorGraphNode node, List<EditorGraphNode> order, Set<String> visited) {
+    private void buildOrder(EditorGraphNode node, List<EditorNode> order, Set<String> visited) {
+        System.out.println(node);
         if(visited.contains(node.nodeData().id())) return;
 
         visited.add(node.nodeData().id());
@@ -68,7 +73,7 @@ public class EditorGraph {
             buildOrder(child, order, visited);
         }
 
-        order.add(node);
+        order.add(node.nodeData());
     }
 
     public void printGraph() {

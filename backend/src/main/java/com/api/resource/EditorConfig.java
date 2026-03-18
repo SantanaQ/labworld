@@ -1,5 +1,7 @@
 package com.api.resource;
 
+import com.api.resource.nodes.EditorEdge;
+import com.api.resource.nodes.EditorNode;
 import com.sim.layer.LayerID;
 
 import java.util.List;
@@ -9,8 +11,6 @@ public class EditorConfig {
 
     private List<EditorNode> nodes;
     private List<EditorEdge> edges;
-
-    private Map<String, LayerID> layerReferences;
 
     public List<EditorNode> nodes() {
         return nodes;

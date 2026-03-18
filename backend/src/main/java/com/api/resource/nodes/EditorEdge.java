@@ -1,4 +1,4 @@
-package com.api.resource;
+package com.api.resource.nodes;
 
 public class EditorEdge {
 

@@ -129,4 +129,8 @@ public class Needs {
         }
     }
 
+    public Needs copy() {
+        return new Needs(hunger, curiosity, fear, energy, heat);
+    }
+
 }

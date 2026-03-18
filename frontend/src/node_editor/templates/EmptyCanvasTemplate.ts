@@ -6,9 +6,9 @@ export function createEmptyCanvasTemplate(): {
     edges: Edge[];
 } {
     const nodes: Node[] = [
-        createNode("heatLayer", "heat", 100, 100),
-        createNode("supplyLayer", "supply", 100, 350),
-        createNode("scentLayer", "scent", 100, 600),
+        createNode("heatLayer", "heatLayer", 100, 100),
+        createNode("supplyLayer", "supplyLayer", 100, 350),
+        createNode("scentLayer", "scentLayer", 100, 600),
         createNode("agents", "agents", 100, 850, {
             amount: 128,
             hunger: 0.5,
@@ -27,21 +27,21 @@ export function createEmptyCanvasTemplate(): {
     const edges: Edge[] = [
         {
             id: "e_heat_world",
-            source: "heat",
+            source: "heatLayer",
             sourceHandle: "output",
             target: "world",
             targetHandle: "heat",
         },
         {
             id: "e_supply_world",
-            source: "supply",
+            source: "supplyLayer",
             sourceHandle: "output",
             target: "world",
             targetHandle: "supply",
         },
         {
             id: "e_scent_world",
-            source: "scent",
+            source: "scentLayer",
             sourceHandle: "output",
             target: "world",
             targetHandle: "scent",

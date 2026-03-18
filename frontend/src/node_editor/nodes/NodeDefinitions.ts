@@ -239,13 +239,6 @@ export const compositingRegistry = {
 
         outputs: [
             {
-                id: "reference",
-                label : "Reference Layer",
-                connectionCount: 1,
-                kind: "reference",
-                accepts: ["layer"],
-            },
-            {
                 id: "output",
                 label : "Output",
                 connectionCount: 1,
@@ -255,6 +248,16 @@ export const compositingRegistry = {
         ],
 
         params: {
+            reference: {
+                type: "select",
+                default: "Heat",
+                inline: false,
+                options: [
+                    "Heat",
+                    "Supply",
+                    "Scent",
+                ]
+            },
             min: {
                 type: "float",
                 default: 0,
@@ -291,13 +294,6 @@ export const compositingRegistry = {
 
         outputs: [
             {
-                id: "reference",
-                label : "Reference Layer",
-                connectionCount: 1,
-                kind: "reference",
-                accepts: ["layer"],
-            },
-            {
                 id: "output",
                 label : "Output",
                 connectionCount: 1,
@@ -307,6 +303,17 @@ export const compositingRegistry = {
         ],
 
         params: {
+            reference: {
+                type: "select",
+                default: "Heat",
+                inline: false,
+                options: [
+                    "Heat",
+                    "Supply",
+                    "Scent",
+                ]
+            },
+
             min: {
                 type: "float",
                 default: 0,
@@ -774,13 +781,6 @@ export const layerRegistry = {
 
         inputs: [
             {
-                id: "reference",
-                label : "Reference",
-                connectionCount: 10,
-                kind: "layer",
-                accepts: ["reference"],
-            },
-            {
                 id: "signal",
                 label : "Signal",
                 connectionCount: 1,
@@ -793,13 +793,6 @@ export const layerRegistry = {
                 connectionCount: 1,
                 kind: "layer",
                 accepts: ["baseUpdate"],
-            },
-            {
-                id: "stateUpdate",
-                label : "State Update",
-                connectionCount: 1,
-                kind: "layer",
-                accepts: ["stateUpdate"],
             },
             {
                 id: "compositing",
@@ -837,13 +830,6 @@ export const layerRegistry = {
         deletable: false,
 
         inputs: [
-            {
-                id: "reference",
-                label : "Reference",
-                connectionCount: 10,
-                kind: "layer",
-                accepts: ["reference"],
-            },
             {
                 id: "signal",
                 label : "Signal",
@@ -901,13 +887,6 @@ export const layerRegistry = {
         deletable: false,
 
         inputs: [
-            {
-                id: "reference",
-                label : "Reference",
-                connectionCount: 10,
-                kind: "layer",
-                accepts: ["reference"],
-            },
             {
                 id: "signal",
                 label : "Signal",

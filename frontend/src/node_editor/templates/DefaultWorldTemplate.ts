@@ -91,9 +91,7 @@ export function createDefaultWorldTemplate(): { nodes: Node[]; edges: Edge[] } {
         { id: "e_supplyStateUpdate_supplyLayer", source: "supplyStateUpdate", sourceHandle: "output", target: "supplyLayer", targetHandle: "stateUpdate" },
         { id: "e_supplyCompositing1_supplyCompositing2", source: "supplyCompositing1", sourceHandle: "output", target: "supplyCompositing2", targetHandle: "input" },
         { id: "e_supplyCompositing2_supplyCompositing3", source: "supplyCompositing2", sourceHandle: "output", target: "supplyCompositing3", targetHandle: "input" },
-        { id: "e_supplyCompositing2_refLayer", source: "supplyCompositing2", sourceHandle: "reference", target: "heatLayer", targetHandle: "reference" },
         { id: "e_supplyCompositing3_supplyLayer", source: "supplyCompositing3", sourceHandle: "output", target: "supplyLayer", targetHandle: "compositing" },
-        { id: "e_supplyCompositing3_refLayer", source: "supplyCompositing3", sourceHandle: "reference", target: "heatLayer", targetHandle: "reference" },
 
         // --- Layer → World ---
         { id: "e_heatLayer_world", source: "heatLayer", sourceHandle: "output", target: "world", targetHandle: "heat" },
