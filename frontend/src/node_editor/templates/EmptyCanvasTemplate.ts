@@ -9,9 +9,19 @@ export function createEmptyCanvasTemplate(): {
         createNode("heatLayer", "heat", 100, 100),
         createNode("supplyLayer", "supply", 100, 350),
         createNode("scentLayer", "scent", 100, 600),
-        createNode("agents", "agents", 100, 850),
+        createNode("agents", "agents", 100, 850, {
+            amount: 128,
+            hunger: 0.5,
+            heat: 0.5,
+            curiosity: 1,
+            fear: 0,
+        }),
 
-        createNode("world", "world", 400, 300),
+        createNode("world", "world", 400, 300, {
+            seed: "create-with-this",
+            width: 256,
+            height: 256,
+        }),
     ];
 
     const edges: Edge[] = [

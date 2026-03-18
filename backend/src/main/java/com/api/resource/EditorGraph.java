@@ -85,5 +85,9 @@ public class EditorGraph {
         }
     }
 
+    public EditorGraphNode root() {
+        return root;
+    }
+
 
 }

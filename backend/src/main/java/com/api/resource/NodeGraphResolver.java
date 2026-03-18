@@ -24,7 +24,7 @@ public class NodeGraphResolver {
     }
 
     public WorldConfig configFromGraph() {
-        EditorGraphNode worldNode = editorGraph.getNode("world");
+        EditorGraphNode worldNode = editorGraph.root();
         EditorGraphNode agentNode = editorGraph.getNode("agents");
 
         int width = (int) worldNode.nodeData().data().get("width");

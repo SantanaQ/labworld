@@ -4,8 +4,6 @@ package com.api.resource;
 import com.sim.layer.LayerID;
 
 import java.util.Map;
-import java.util.Optional;
-
 public class EditorNode {
 
     private String id;
