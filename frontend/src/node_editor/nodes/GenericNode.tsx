@@ -1,6 +1,7 @@
 import { Position, type NodeProps, useReactFlow } from "@xyflow/react";
 import { nodeRegistry, type NodeType } from "./NodeDefinitions";
 import ConnectionLimitHandle from "./ConnectionLimitHandle";
+import {useEffect} from "react";
 
 export function GenericNode({ id, type, data, selected }: NodeProps) {
     const rf = useReactFlow();
@@ -11,6 +12,28 @@ export function GenericNode({ id, type, data, selected }: NodeProps) {
 
     const handleCount = Math.max(def.inputs.length, def.outputs.length);
     const paramsOffset = handleCount * handleSpacing;
+
+    useEffect(() => {
+        if (!def?.params) return;
+
+        const updates: Record<string, any> = {};
+
+        Object.entries(def.params).forEach(([key, param]) => {
+            if (data?.[key] === undefined && param.default !== undefined) {
+                updates[key] = param.default;
+            }
+        });
+
+        if (Object.keys(updates).length > 0) {
+            rf.setNodes((nodes) =>
+                nodes.map((n) =>
+                    n.id === id
+                        ? { ...n, data: { ...n.data, ...updates } }
+                        : n
+                )
+            );
+        }
+    }, []);
 
     function updateParam(key: string, value: any) {
         rf.setNodes((nodes) =>

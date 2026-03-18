@@ -20,8 +20,6 @@ public class NodeGraphResolver {
         WorldNode worldNode = (WorldNode) editorGraph.getNode("world").nodeData();
         AgentNode agentNode = (AgentNode) editorGraph.getNode("agents").nodeData();
 
-        System.out.println("worldNode: " + worldNode.width() + " " + worldNode.height() + " " + worldNode.seed());
-
         WorldConfig worldConfig = LayerAssembler.buildWorldConfig(worldNode, agentNode);
         int width = worldNode.width();
         int height = worldNode.height();

@@ -16,7 +16,6 @@ public class EditorGraph {
         for (EditorNode node : config.nodes()) {
             nodeMap.put(node.id(), new EditorGraphNode(node));
         }
-        System.out.println(nodeMap.size());
         this.root = nodeMap.get("world");
         build(config);
     }
@@ -65,7 +64,6 @@ public class EditorGraph {
     }
 
     private void buildOrder(EditorGraphNode node, List<EditorNode> order, Set<String> visited) {
-        System.out.println(node);
         if(visited.contains(node.nodeData().id())) return;
 
         visited.add(node.nodeData().id());
