@@ -2,6 +2,7 @@ import type {NodeType} from "./nodes/NodeDefinitions.ts";
 
 interface NodeJSON {
     id: string;
+    category: string;
     type: NodeType;
     position: { x: number; y: number };
     data: Record<string, any>;

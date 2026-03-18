@@ -1,5 +1,6 @@
 package com.sim.json_factories;
 
+import com.api.resource.EditorGraphNode;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sim.layer.time_behavior.*;
 import com.sim.signal.FractalNoise;
@@ -13,9 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-public class TimeBehaviorFactory {
+public class TimeBehaviorFactory implements LayerFactory<TimeBehavior> {
 
-    private final Map<String, Function<JsonNode, TimeBehavior>> registry = new HashMap<>();
+    private final Map<String, Function<EditorGraphNode, TimeBehavior>> registry = new HashMap<>();
 
     public TimeBehaviorFactory() {
         registry.put("Fixed", this::createFixed);
@@ -24,50 +25,51 @@ public class TimeBehaviorFactory {
         registry.put("Composite", this::createComposite);
     }
 
-    public TimeBehavior create(JsonNode node) {
-        String type = node.get("type").asText();
-        Function<JsonNode, TimeBehavior> creator = registry.get(type);
+    public TimeBehavior create(EditorGraphNode node) {
+        String type = node.nodeData().type();
+        Function<EditorGraphNode, TimeBehavior> creator = registry.get(type);
         if (creator == null) throw new IllegalArgumentException("Unknown time type: " + type);
         return creator.apply(node);
     }
 
-    private TimeBehavior createFixed(JsonNode node) {
+    private TimeBehavior createFixed(EditorGraphNode node) {
         return new Fixed();
     }
 
-    private TimeBehavior createDrift(JsonNode node) {
-        float speed = (float) node.get("speed").asDouble();
-        float angle = (float) node.get("angle").asDouble();
+    private TimeBehavior createDrift(EditorGraphNode node) {
+        float speed = (float) node.nodeData().get("speed");
+        float angle = (float) node.nodeData().get("angle");
         return new Drift(speed, angle);
     }
 
-    private TimeBehavior createDomainWarp(JsonNode node) {
-        int width = node.get("width").asInt();
-        int height = node.get("height").asInt();
+    private TimeBehavior createDomainWarp(EditorGraphNode node) {
+        int width = (int) node.nodeData().get("width");
+        int height = (int) node.nodeData().get("height");
 
-        int cellSizeX = node.get("cellSizeX").asInt();
-        int octavesX = node.get("octavesX").asInt();
-        float persistenceX = (float) node.get("persistenceX").asDouble();
+        int cellSizeX = (int) node.nodeData().get("cellSizeX");
+        int octavesX = (int) node.nodeData().get("octavesX");
+        float persistenceX = (float) node.nodeData().get("persistenceX");
 
-        int cellSizeY = node.get("cellSizeY").asInt();
-        int octavesY = node.get("octavesY").asInt();
-        float persistenceY = (float) node.get("persistenceY").asDouble();
+        int cellSizeY = (int) node.nodeData().get("cellSizeY");
+        int octavesY = (int) node.nodeData().get("octavesY");
+        float persistenceY = (float) node.nodeData().get("persistenceY");
 
-        float strength = (float) node.get("strength").asDouble();
-        int seed = node.get("seed").asInt();
+        float strength = (float) node.nodeData().get("strength");
+        String seed = (String) node.nodeData().get("seed");
+        int seedCode = seed.hashCode();
 
         SignalSource warpX = new FractalNoise(
-                new ValueNoise(seed, cellSizeX), octavesX, persistenceX);
+                new ValueNoise(seedCode, cellSizeX), octavesX, persistenceX);
         SignalSource warpY = new FractalNoise(
-                new ValueNoise(seed, cellSizeY), octavesY, persistenceY);
+                new ValueNoise(seedCode, cellSizeY), octavesY, persistenceY);
         SignalField fieldX = new SignalField(width,height, warpX);
         SignalField fieldY = new SignalField(width,height, warpY);
 
         return new DomainWarp(fieldX, fieldY, strength);
     }
 
-    private TimeBehavior createComposite(JsonNode node) {
-        JsonNode childrenNode = node.get("children");
+    private TimeBehavior createComposite(EditorGraphNode node) {
+        /*String[] children = node.nodeData().get("children");
         if (childrenNode == null || !childrenNode.isArray()) {
             throw new IllegalArgumentException("Composite must have a children array");
         }
@@ -75,8 +77,8 @@ public class TimeBehaviorFactory {
         List<TimeBehavior> children = new ArrayList<>();
         for (JsonNode childNode : childrenNode) {
             children.add(create(childNode));
-        }
-        return new Composite(children);
+        }*/
+        return new Composite(List.of());
     }
 
 }

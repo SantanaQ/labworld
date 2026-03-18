@@ -1,5 +1,6 @@
 package com.sim.config;
 
+import com.sim.agent.Needs;
 import com.sim.layer.LayerID;
 
 import java.util.UUID;
@@ -9,7 +10,10 @@ public class WorldConfig {
     public int width = 256;
     public int height = 256;
     private int seed = 42069;
+
     private int agentCount = 64;
+    private Needs agentNeeds = new Needs();
+
     public UUID worldId;
     private int layerCount;
 
@@ -73,9 +77,15 @@ public class WorldConfig {
         return agentCount;
     }
 
+    public void setAgentNeeds(Needs agentNeeds) {
+        this.agentNeeds = agentNeeds;
+    }
+
     public void setWorldId(UUID worldId) {
         this.worldId = worldId;
     }
+
+
 
     public LayerConfig configOf(LayerID id) {
         return switch (id) {

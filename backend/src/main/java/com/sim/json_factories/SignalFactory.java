@@ -1,5 +1,6 @@
 package com.sim.json_factories;
 
+import com.api.resource.EditorGraphNode;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sim.layer.step.LayerStep;
 import com.sim.signal.*;
@@ -14,9 +15,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-public class SignalFactory {
+public class SignalFactory implements LayerFactory<SignalSource> {
 
-    private final Map<String, Function<JsonNode, SignalSource>> registry = new HashMap<>();
+    private final Map<String, Function<EditorGraphNode, SignalSource>> registry = new HashMap<>();
 
     public SignalFactory() {
         registry.put("Image", this::createImageGrid);
@@ -25,17 +26,17 @@ public class SignalFactory {
         registry.put("HoleMaskNoise", this::createHoleMaskNoise);
     }
 
-    public SignalSource create(JsonNode node) {
-        String type = node.get("type").asText();
-        Function<JsonNode, SignalSource> creator = registry.get(type);
+    public SignalSource create(EditorGraphNode node) {
+        String type = node.nodeData().type();
+        Function<EditorGraphNode, SignalSource> creator = registry.get(type);
         if (creator == null) throw new IllegalArgumentException("Unknown signal type: " + type);
         return creator.apply(node);
     }
 
-    private SignalSource createImageGrid(JsonNode node) {
-        int width = node.get("width").asInt();
-        int height = node.get("height").asInt();
-        String base64 = node.get("imageData").asText();
+    private SignalSource createImageGrid(EditorGraphNode node) {
+        int width = (int) node.nodeData().get("width");
+        int height = (int) node.nodeData().get("height");
+        String base64 = (String) node.nodeData().get("imageData");
 
         try {
             BufferedImage img = decodeImage(base64);
@@ -48,48 +49,48 @@ public class SignalFactory {
 
     }
 
-    private SignalSource createFractalNoise(JsonNode node) {
-        String seed = node.get("seed").asText();
+    private SignalSource createFractalNoise(EditorGraphNode node) {
+        String seed = (String) node.nodeData().get("seed");
         int seedCode = seed.hashCode();
-        int cellSize = node.get("cellSize").asInt();
-        int octaves = node.get("octaves").asInt();
-        float persistence = (float) node.get("persistence").asDouble();
+        int cellSize = (int) node.nodeData().get("cellSize");
+        int octaves = (int) node.nodeData().get("octaves");
+        float persistence = (float) node.nodeData().get("persistence");
         return new FractalNoise(seedCode, cellSize, octaves, persistence);
     }
 
-    private SignalSource createClusteredPatchNoise(JsonNode node) {
-        String seed = node.get("seed").asText();
+    private SignalSource createClusteredPatchNoise(EditorGraphNode node) {
+        String seed = (String) node.nodeData().get("seed");
         int seedCode = seed.hashCode();
-        int cellSizeBase = node.get("cellSizeBase").asInt();
-        int octavesBase = node.get("octavesBase").asInt();
-        float persistenceBase = (float) node.get("persistenceBase").asDouble();
+        int cellSizeBase = (int) node.nodeData().get("cellSizeBase");
+        int octavesBase = (int) node.nodeData().get("octavesBase");
+        float persistenceBase = (float) node.nodeData().get("persistenceBase");
 
-        int cellSizeHoles = node.get("cellSizeHoles").asInt();
-        int octavesHoles = node.get("octavesHoles").asInt();
-        float persistenceHoles = (float) node.get("persistenceHoles").asDouble();
+        int cellSizeHoles = (int) node.nodeData().get("cellSizeHoles");
+        int octavesHoles = (int) node.nodeData().get("octavesHoles");
+        float persistenceHoles = (float) node.nodeData().get("persistenceHoles");
 
-        float threshold = (float) node.get("threshold").asDouble();
-        float softness = (float) node.get("softness").asDouble();
-        float holeStrength = (float) node.get("holeStrength").asDouble();
+        float threshold = (float) node.nodeData().get("threshold");
+        float softness = (float) node.nodeData().get("softness");
+        float holeStrength = (float) node.nodeData().get("holeStrength");
 
         SignalSource base = new FractalNoise(seedCode, cellSizeBase, octavesBase, persistenceBase);
         SignalSource holes = new FractalNoise(seedCode, cellSizeHoles, octavesHoles, persistenceHoles);
         return new ClusteredPatchNoise(base, holes, threshold, softness, holeStrength);
     }
 
-    private SignalSource createHoleMaskNoise(JsonNode node) {
-        String seed = node.get("seed").asText();
+    private SignalSource createHoleMaskNoise(EditorGraphNode node) {
+        String seed = (String) node.nodeData().get("seed");
         int seedCode = seed.hashCode();
-        int cellSizeBase = node.get("cellSizeBase").asInt();
-        int octavesBase = node.get("octavesBase").asInt();
-        float persistenceBase = (float) node.get("persistenceBase").asDouble();
+        int cellSizeBase = (int) node.nodeData().get("cellSizeBase");
+        int octavesBase = (int) node.nodeData().get("octavesBase");
+        float persistenceBase = (float) node.nodeData().get("persistenceBase");
 
-        int cellSizeHoles = node.get("cellSizeHoles").asInt();
-        int octavesHoles = node.get("octavesHoles").asInt();
-        float persistenceHoles = (float) node.get("persistenceHoles").asDouble();
+        int cellSizeHoles = (int) node.nodeData().get("cellSizeHoles");
+        int octavesHoles = (int) node.nodeData().get("octavesHoles");
+        float persistenceHoles = (float) node.nodeData().get("persistenceHoles");
 
-        float holeThreshold = (float) node.get("holeThreshold").asDouble();
-        float holeStrength = (float) node.get("holeStrength").asDouble();
+        float holeThreshold = (float) node.nodeData().get("holeThreshold");
+        float holeStrength = (float) node.nodeData().get("holeStrength");
         SignalSource base = new FractalNoise(seedCode, cellSizeBase, octavesBase, persistenceBase);
         SignalSource holes = new FractalNoise(seedCode, cellSizeHoles, octavesHoles, persistenceHoles);
         return new HoleMaskNoise(base, holes, holeThreshold, holeStrength);

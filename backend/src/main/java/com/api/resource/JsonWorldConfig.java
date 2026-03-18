@@ -4,13 +4,19 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
 
 public class JsonWorldConfig {
 
     private final JsonNode root;
+    private final JsonNode nodes;
+    private final JsonNode edges;
 
-    private JsonWorldConfig(JsonNode root) {
+    private JsonWorldConfig(JsonNode root, JsonNode nodes, JsonNode edges) {
         this.root = root;
+        this.nodes = nodes;
+        this.edges = edges;
     }
 
 
@@ -18,7 +24,9 @@ public class JsonWorldConfig {
         ObjectMapper mapper = new ObjectMapper();
         try {
             JsonNode rootNode = mapper.readTree(json);
-            return new JsonWorldConfig(rootNode);
+            JsonNode nodes = rootNode.get("nodes");
+            JsonNode edges = nodes.get("edges");
+            return new JsonWorldConfig(rootNode, nodes, edges);
         } catch (IOException e) {
             throw new RuntimeException("Invalid JSON for world config", e);
         }
@@ -26,7 +34,7 @@ public class JsonWorldConfig {
 
 
     public int worldWidth() {
-        return root.get("worldWidth").asInt();
+        return 0;
     }
 
 

@@ -16,7 +16,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Service
 public class SimulationService {
 
-
     private WorldConfig config;
     private World world;
     private WorldSnapshot worldSnapshot;
@@ -36,8 +35,8 @@ public class SimulationService {
     }
 
     public void setConfig(JsonWorldConfig cfg) {
-        this.config = WorldConfigHandler.translateConfig(cfg);
-        setID();
+        /*this.config = WorldConfigHandler.translateConfig(cfg);
+        setID();*/
     }
 
     public void setConfig(WorldConfig cfg) {

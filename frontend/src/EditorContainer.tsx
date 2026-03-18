@@ -50,12 +50,18 @@ export const  EditorContainer: React.FC<EditorProps> = ({ onGenerateSuccess }) =
 
     const generateJSON = (nodes: Node[], edges: Edge[]): NodeGraphJSON => {
         return {
-            nodes: nodes.map((n) => ({
-                id: n.id,
-                type: n.type as NodeType,
-                position: n.position,
-                data: n.data,
-            })),
+            nodes: nodes.map((n) => {
+                const def = nodeRegistry[n.type as NodeType];
+                if (!def) throw new Error(`Unknown node type: ${n.type}`);
+
+                return {
+                    id: n.id,
+                    category: def.category,
+                    type: n.type as NodeType,
+                    position: n.position,
+                    data: n.data,
+                };
+            }),
             edges: edges.map((e) => ({
                 source: e.source,
                 sourceHandle: e.sourceHandle ?? undefined,
