@@ -2,10 +2,9 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import {EditorContainer} from "./EditorContainer.tsx";
 import {SimulationContainer} from "./SimulationContainer.tsx";
-import type {UUID} from "node:crypto";
 
 export interface WorldConfig {
-    sessionId: UUID;
+    sessionId: string;
     width: number;
     height: number;
     layerCount: number;
