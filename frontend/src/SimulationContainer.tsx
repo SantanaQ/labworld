@@ -33,7 +33,7 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
     });
 
     const changeSpeed = useDebouncedCallback(async (value: number) => {
-        const response = await fetch(`/api/sim/speed/${value}`, { method: 'POST' });
+        const response = await fetch(`/api/sim/speed/${config?.sessionId}/${value}`, { method: 'POST' });
         if (!response.ok) console.error("Simulation: Changing speed failed!");
         else setSimSpeed(value);
     }, 200);
@@ -74,6 +74,7 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
         }
     }, [config]);
 
+
     const handleSliderChange = (value: number) => {
         setSliderValue(value);
         changeSpeed(value);
@@ -81,15 +82,15 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
 
     const handleSimulation = async (action: 'start' | 'pause' | 'resume' | 'stop') => {
         if (!engineRef.current || !config) return;
-        if (action === 'start') engineRef.current.connect(config.worldId);
+        if (action === 'start') engineRef.current.connect(config.sessionId);
 
-        const response = await fetch(`/api/sim/${action}`, { method: 'POST' });
+        const response = await fetch(`/api/sim/${action}/${config.sessionId}`, { method: 'POST' });
         if (!response.ok) return console.error(`Simulation ${action} failed!`);
 
         switch (action) {
             case 'start':
             case 'resume': engineRef.current.start(); setSimState('running'); break;
-            case 'pause': setSimState('paused'); break;
+            case 'pause': engineRef.current.pause(); setSimState('paused'); break;
             case 'stop': engineRef.current.stop(); setSimState('stopped'); config = null; break;
         }
     };
