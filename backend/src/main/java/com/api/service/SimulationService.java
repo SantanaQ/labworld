@@ -26,19 +26,27 @@ public class SimulationService {
     }
 
     public void start(UUID sessionId) {
-        sessions.get(sessionId).start();
+        if(sessionPresent(sessionId)) {
+            sessions.get(sessionId).start();
+        }
     }
 
     public void pause(UUID sessionId) {
-        sessions.get(sessionId).pause();
+        if(sessionPresent(sessionId)) {
+            sessions.get(sessionId).pause();
+        }
     }
 
     public void resume(UUID sessionId) {
-        sessions.get(sessionId).resume();
+        if(sessionPresent(sessionId)) {
+            sessions.get(sessionId).resume();
+        }
     }
 
     public void applySpeed(UUID sessionId, double speed) {
-        sessions.get(sessionId).applySpeed(speed);
+        if(sessionPresent(sessionId)) {
+            sessions.get(sessionId).applySpeed(speed);
+        }
     }
 
     public void stop(UUID sessionId) {
@@ -54,6 +62,10 @@ public class SimulationService {
 
     public SessionContext get(UUID id) {
         return sessions.get(id);
+    }
+
+    private boolean sessionPresent(UUID id) {
+        return sessions.containsKey(id);
     }
 
 }

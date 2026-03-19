@@ -117,9 +117,13 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
     };
 
     return (
-        <div className="h-screen w-full flex bg-slate-900 p-3">
+        <div className="h-full w-full bg-slate-900">
+            <div className="flex flex-row justify-between border-b border-slate-500 h-15 w-full p-2 items-center bg-slate-900 shadow-md gap-1">
+                <h1 className="text-white font-bold">Simulation</h1>
+            </div>
 
-            <div ref={containerRef} className="h-screen w-full flex gap-4 p-4 items-center">
+
+            <div ref={containerRef} className="h-full w-full flex gap-4 p-3 items-center bg-slate-700">
 
                 {/* LEFT: Canvas */}
                 <div className="flex-none aspect-square w-full max-w-[600px] max-h-[600px] relative overflow-hidden rounded-2xl border border-slate-800 bg-black">
@@ -131,82 +135,79 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
                 </div>
 
                 <div className="w-full h-full max-h-[600px]">
-                {/* RIGHT: Bento Panel */}
-                <div className="flex-1 flex-col gap-3 max-w-[400px] min-w-[200px]">
+                    {/* RIGHT: Bento Panel */}
+                    <div className="flex-1 flex-col gap-3 max-w-[400px] min-w-[200px]">
 
-                    <div className="grid grid-cols-1 gap-3">
-                        {/* Layer Visibility */}
-                        <div className="bg-slate-900 p-3 rounded-lg border border-slate-700 shadow-xl">
-                            <p className="text-[10px] text-slate-500 font-bold uppercase border-b border-slate-800 pb-1 mb-2 tracking-widest">
-                                Layer Visibility
-                            </p>
-                            <div className="flex flex-col gap-1">
-                                {['showHeat','showSupply','showScent','showAgents'].map((key) => (
-                                    <label key={key} className="flex items-center gap-2 text-[11px] text-slate-300 cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            className="w-3.5 h-3.5 rounded bg-slate-800 border-slate-700 text-blue-600 focus:ring-0"
-                                            checked={settings[key as keyof SimSettings] as boolean}
-                                            onChange={() => toggleLayer(key as keyof SimSettings)}
-                                        />
-                                        {key.replace('show','')}
-                                    </label>
-                                ))}
+                        <div className="grid grid-cols-1 gap-3">
+                            {/* Layer Visibility */}
+                            <div className="bg-slate-900 p-3 rounded-lg border border-slate-700 shadow-xl">
+                                <p className="text-[10px] text-slate-500 font-bold uppercase border-b border-slate-800 pb-1 mb-2 tracking-widest">
+                                    Layer Visibility
+                                </p>
+                                <div className="flex flex-col gap-1">
+                                    {['showHeat','showSupply','showScent','showAgents'].map((key) => (
+                                        <label key={key} className="flex items-center gap-2 text-[11px] text-slate-300 cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                className="w-3.5 h-3.5 rounded bg-slate-800 border-slate-700 text-blue-600 focus:ring-0"
+                                                checked={settings[key as keyof SimSettings] as boolean}
+                                                onChange={() => toggleLayer(key as keyof SimSettings)}
+                                            />
+                                            {key.replace('show','')}
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Simulation Settings */}
+                            <div className="bg-slate-900/90 p-3 rounded-lg border border-slate-700 shadow-xl">
+                                <p className="text-[10px] text-slate-500 font-bold uppercase border-b border-slate-800 pb-1 mb-2 tracking-widest">
+                                    Simulation
+                                </p>
+                                <EditorSlider
+                                    label="Speed"
+                                    value={sliderValue}
+                                    min={0.1}
+                                    max={2}
+                                    step={0.1}
+                                    onChange={handleSliderChange}
+                                />
                             </div>
                         </div>
 
-                        {/* Simulation Settings */}
-                        <div className="bg-slate-900/90 p-3 rounded-lg border border-slate-700 shadow-xl">
-                            <p className="text-[10px] text-slate-500 font-bold uppercase border-b border-slate-800 pb-1 mb-2 tracking-widest">
-                                Simulation
-                            </p>
-                            <EditorSlider
-                                label="Speed"
-                                value={sliderValue}
-                                min={0.1}
-                                max={2}
-                                step={0.1}
-                                onChange={handleSliderChange}
-                            />
+                        {/* Buttons */}
+                        <div className="flex flex-col gap-2 mt-2">
+                            {simState === 'idle' &&
+                                <button
+                                    onClick={() => handleSimulation('start')}
+                                    className="w-full py-2 bg-green-600/20 hover:bg-green-600 text-green-500 hover:text-white text-[10px] font-bold uppercase rounded border border-green-600/30 transition-all cursor-pointer">
+                                    Play
+                                </button>}
+                            {simState === 'running' &&
+                                <button
+                                    onClick={() => handleSimulation('pause')}
+                                    className="w-full py-2 bg-yellow-600/20 hover:bg-yellow-600 text-yellow-500 hover:text-white text-[10px] font-bold uppercase rounded border border-yellow-600/30 transition-all cursor-pointer">
+                                    Pause
+                                </button>
+                            }
+                            {simState === 'paused' &&
+                                <button
+                                    onClick={() => handleSimulation('resume')}
+                                    className="w-full py-2 bg-green-600/20 hover:bg-green-600 text-green-500 hover:text-white text-[10px] font-bold uppercase rounded border border-green-600/30 transition-all cursor-pointer">
+                                    Resume
+                                </button>
+                            }
+                            {(simState === 'running' || simState === 'paused') &&
+                                <button
+                                    onClick={() => handleSimulation('stop')}
+                                    className="w-full py-2 bg-red-600/20 hover:bg-red-600 text-red-500 hover:text-white text-[10px] font-bold uppercase rounded border border-red-600/30 transition-all cursor-pointer">
+                                    Stop
+                                </button>
+                            }
                         </div>
                     </div>
-
-                    {/* Buttons */}
-                    <div className="flex flex-col gap-2 mt-2">
-                        {simState === 'idle' &&
-                            <button
-                                onClick={() => handleSimulation('start')}
-                                className="w-full py-2 bg-green-600/20 hover:bg-green-600 text-green-500 hover:text-white text-[10px] font-bold uppercase rounded border border-green-600/30 transition-all cursor-pointer">
-                                Play
-                            </button>}
-                        {simState === 'running' &&
-                            <button
-                                onClick={() => handleSimulation('pause')}
-                                className="w-full py-2 bg-yellow-600/20 hover:bg-yellow-600 text-yellow-500 hover:text-white text-[10px] font-bold uppercase rounded border border-yellow-600/30 transition-all cursor-pointer">
-                                Pause
-                            </button>
-                        }
-                        {simState === 'paused' &&
-                            <button
-                                onClick={() => handleSimulation('resume')}
-                                className="w-full py-2 bg-green-600/20 hover:bg-green-600 text-green-500 hover:text-white text-[10px] font-bold uppercase rounded border border-green-600/30 transition-all cursor-pointer">
-                                Resume
-                            </button>
-                        }
-                        {(simState === 'running' || simState === 'paused') &&
-                            <button
-                                onClick={() => handleSimulation('stop')}
-                                className="w-full py-2 bg-red-600/20 hover:bg-red-600 text-red-500 hover:text-white text-[10px] font-bold uppercase rounded border border-red-600/30 transition-all cursor-pointer">
-                                Stop
-                            </button>
-                        }
-                    </div>
-
                 </div>
-                </div>
-
             </div>
-
         </div>
     );
 };

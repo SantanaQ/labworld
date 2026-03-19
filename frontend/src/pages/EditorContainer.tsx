@@ -94,7 +94,7 @@ export const  EditorContainer: React.FC<EditorProps> = ({ onGenerateSuccess }) =
             <EditorSidebar onAddNode={addNode}/>
 
             <div className="flex-1 h-full relative">
-                <div className="flex flex-row justify-between border-b border-slate-500 w-full p-2 items-center bg-slate-900 shadow-md gap-1">
+                <div className="flex flex-row justify-between border-b border-slate-500 w-full h-15 p-2 items-center bg-slate-900 shadow-md gap-1">
 
                     <TemplateSelector setNodes={setNodes} setEdges={setEdges} />
 

@@ -59,34 +59,41 @@ const Dashboard: React.FC = () => {
     };
 
     return (
-        <div className="flex h-screen w-full overflow-hidden bg-gray-900">
-
-            {/* Left Page */}
-            <div
-                className="overflow-auto bg-slate-800"
-                style={{ width: `${leftWidth}%` }}
-            >
-                <EditorContainer onGenerateSuccess={handleWorldGenerated} />
-            </div>
-
-            {/* Divider / Resizer */}
-            <div
-                onMouseDown={startResizing}
-                className="w-1.5 h-full bg-black hover:bg-blue-500 cursor-col-resize transition-colors flex items-center justify-center relative z-10"
-            >
-                {/* Handle */}
-                <div className="absolute h-12 w-1 bg-gray-600 rounded-full"></div>
-            </div>
-
-            {/* Right Page */}
-            <div className="flex-1 overflow-auto bg-slate-900">
-                <div className="flex-1 overflow-hidden relative">
-                    {worldConfig && (
-                        <SimulationContainer config={worldConfig}/>
-                    )}
+        <div className="flex flex-col h-screen w-full overflow-hidden bg-slate-800">
+            <div className="w-99/100 m-auto">
+                <div className="w-fit p-2 border border-slate-700 rounded-lg">
+                    <h1 className="w-full text-white font-bold text-xl">Labworld &#128300; &#127757;</h1>
                 </div>
             </div>
+            <div className="flex h-92/100 w-99/100 overflow-hidden m-auto mt-0 border border-slate-700 rounded-lg shadow-md">
 
+                {/* Left Page */}
+                <div
+                    className="overflow-auto bg-slate-800"
+                    style={{ width: `${leftWidth}%` }}
+                >
+                    <EditorContainer onGenerateSuccess={handleWorldGenerated} />
+                </div>
+
+                {/* Divider / Resizer */}
+                <div
+                    onMouseDown={startResizing}
+                    className="w-1.5 h-full bg-black hover:bg-blue-500 cursor-col-resize transition-colors flex items-center justify-center relative z-10"
+                >
+                    {/* Handle */}
+                    <div className="absolute h-12 w-1 bg-gray-600 rounded-full"></div>
+                </div>
+
+                {/* Right Page */}
+                <div className=" flex-1 overflow-auto bg-slate-900">
+                    <div className="h-full flex-1 overflow-hidden relative">
+                        {worldConfig && (
+                            <SimulationContainer config={worldConfig}/>
+                        )}
+                    </div>
+                </div>
+
+            </div>
         </div>
     );
 };

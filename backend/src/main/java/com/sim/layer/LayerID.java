@@ -15,7 +15,7 @@ public enum LayerID {
         return switch (id) {
             case "heatLayer", "heat", "Heat" -> HEAT;
             case "supplyLayer", "supply", "Supply" -> FOOD;
-            case "scentLayer" -> SCENT;
+            case "scentLayer", "scent", "Scent" -> SCENT;
             default -> throw new IllegalArgumentException("Invalid layer ID: " + id);
         };
     }
