@@ -15,7 +15,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class SessionContext {
 
     private final UUID id;
-    private final WorldConfig config;
 
     private World world;
     private WorldSnapshot snapshot;
@@ -32,15 +31,8 @@ public class SessionContext {
 
     public SessionContext(WorldConfig config, WebSocketBroadcaster broadcaster) {
         this.id = UUID.randomUUID();
-        this.config = config;
         this.broadcaster = broadcaster;
-    }
 
-    public UUID id() {
-        return id;
-    }
-
-    public void start() {
         world = new World(config);
         snapshot = new WorldSnapshot(world);
 
@@ -53,7 +45,13 @@ public class SessionContext {
                         AgentLayout.STRIDE
                 )
         );
+    }
 
+    public UUID id() {
+        return id;
+    }
+
+    public void start() {
         running.set(true);
 
         thread = new Thread(this::loop);
@@ -91,7 +89,7 @@ public class SessionContext {
     }
 
     public void resume() {
-        if(!running.get()) {
+        if(!isRunning()) {
             running.set(true);
             thread = new Thread(() -> {
                 try {

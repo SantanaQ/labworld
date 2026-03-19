@@ -42,7 +42,7 @@ public class SimulationController {
     }
 
 
-    @PostMapping("/speed//{sessionId}/{speed}")
+    @PostMapping("/speed/{sessionId}/{speed}")
     public ResponseEntity<Void> speed(@PathVariable String sessionId, @PathVariable double speed) {
         simulationService.applySpeed(UUID.fromString(sessionId), speed);
         return ResponseEntity.ok().build();

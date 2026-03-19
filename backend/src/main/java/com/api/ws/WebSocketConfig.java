@@ -15,7 +15,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(socket, "/ws/sim/**")
+        registry.addHandler(socket, "/ws/sim/{sessionId}")
                 .setAllowedOrigins("*");
     }
 }
