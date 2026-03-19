@@ -108,7 +108,7 @@ export function GenericNode({ id, type, data, selected }: NodeProps) {
 
                         <input
                             type="file"
-                            accept="image/*"
+                            accept="image/png, image/jpeg"
                             onChange={(e) => {
 
                                 const file = e.target.files?.[0]
@@ -246,7 +246,7 @@ export function GenericNode({ id, type, data, selected }: NodeProps) {
                         {row.map(([key, param]) => (
                             <div key={key} className="flex flex-col gap-1">
                                 {param.hideLabel ? "" :  <label className="text-slate-400 text-xs">{key}</label>}
-                                {renderParam(key, param)}
+                                {param.hideInput ? "" : renderParam(key, param)}
                             </div>
                         ))}
                     </div>

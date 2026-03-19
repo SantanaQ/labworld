@@ -23,7 +23,7 @@ export const nodeTypes = {
     suitabilityMask: GenericNode,
     suitabilityDecay: GenericNode,
 
-    imageSignal: GenericNode,
+    image: GenericNode,
     fractalNoise: GenericNode,
     clusteredPatchNoise: GenericNode,
     holeMaskNoise: GenericNode,

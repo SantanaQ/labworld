@@ -7,13 +7,12 @@ import {
     type Node
 } from '@xyflow/react';
 
-import {nodeRegistry, type NodeType} from "../node_editor/nodes/NodeDefinitions.ts";
+import {type NodeParam, nodeRegistry, type NodeType} from "../node_editor/nodes/NodeDefinitions.ts";
 import {createNodeData} from "../node_editor/nodes/NodeFactory.ts";
 import FetchButton from "../components/FetchButton.tsx";
 import TemplateSelector from "../node_editor/templates/TemplateSelector.tsx";
 import {createEmptyCanvasTemplate} from "../node_editor/templates/EmptyCanvasTemplate.ts";
 import type {NodeGraphJSON} from "../node_editor/NodeJSON.ts";
-import type {WorldConfig} from "./Dashboard.tsx";
 
 interface EditorProps {
     onGenerateSuccess: (config: any) => void
@@ -22,6 +21,7 @@ interface EditorProps {
 export const  EditorContainer: React.FC<EditorProps> = ({ onGenerateSuccess }) => {
     const [nodes, setNodes] = useState<Node[]>([]);
     const [edges, setEdges] = useState<Edge[]>([]);
+
 
     const loadEmptyTemplate = () => {
         const { nodes, edges } = createEmptyCanvasTemplate();
@@ -50,10 +50,22 @@ export const  EditorContainer: React.FC<EditorProps> = ({ onGenerateSuccess }) =
     }
 
     const generateJSON = (nodes: Node[], edges: Edge[]): NodeGraphJSON => {
+
+        const worldNode = nodes.find(n => n.type === "world");
+        const worldWidth = worldNode?.data.width;
+        const worldHeight = worldNode?.data.height;
+
         return {
             nodes: nodes.map((n) => {
                 const def = nodeRegistry[n.type as NodeType];
                 if (!def) throw new Error(`Unknown node type: ${n.type}`);
+
+                const data = { ...n.data };
+
+                if (def.requiresDimensions) {
+                    if (worldWidth !== undefined) data.width = worldWidth;
+                    if (worldHeight !== undefined) data.height = worldHeight;
+                }
 
                 return {
                     id: n.id,

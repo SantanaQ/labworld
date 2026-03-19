@@ -29,6 +29,7 @@ export interface NodeParam {
     inline?: boolean
     options?: string[]
     hideLabel?: boolean
+    hideInput?: boolean
 }
 
 export interface NodeHandle {
@@ -44,6 +45,7 @@ export interface NodeDefinition {
     label: string
     category: string
     deletable: boolean
+    requiresDimensions?: boolean
 
     inputs: NodeHandle[]
     outputs: NodeHandle[]
@@ -344,10 +346,11 @@ export const compositingRegistry = {
 } as Record<string, NodeDefinition>
 
 export const signalRegistry = {
-    imageSignal: {
+    image: {
         label: "Image",
         category: "Signal",
         deletable: true,
+        requiresDimensions: true,
 
         inputs: [
         ],
@@ -363,12 +366,33 @@ export const signalRegistry = {
         ],
 
         params: {
-            image: {
+            imageData: {
                 type: "image",
                 default: null,
                 inline: false,
                 hideLabel: true,
-            }
+                requiresDimension: true,
+            },
+            width: {
+                type: "int",
+                default: 256,
+                min: 2,
+                max: 2048,
+                step: 1,
+                inline: false,
+                hideLabel: true,
+                hideInput: true,
+            },
+            height: {
+                type: "int",
+                default: 256,
+                min: 2,
+                max: 2048,
+                step: 1,
+                inline: false,
+                hideLabel: true,
+                hideInput: true,
+            },
         },
     },
     fractalNoise: {

@@ -61,7 +61,7 @@ const Dashboard: React.FC = () => {
     return (
         <div className="flex flex-col h-screen w-full overflow-hidden bg-slate-800">
             <div className="w-99/100 m-auto">
-                <div className="w-fit p-2 border border-slate-700 rounded-lg">
+                <div className="w-fit p-2 border border-slate-700 rounded-lg shadow-md">
                     <h1 className="w-full text-white font-bold text-xl">Labworld &#128300; &#127757;</h1>
                 </div>
             </div>

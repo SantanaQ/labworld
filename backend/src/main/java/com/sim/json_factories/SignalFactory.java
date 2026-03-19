@@ -108,12 +108,18 @@ public class SignalFactory {
 
 
     private static BufferedImage decodeImage(String base64) throws IOException {
-        byte[] imageBytes = Base64.getDecoder().decode(base64);
+        if (base64.startsWith("data:")) {
+            int commaIndex = base64.indexOf(',');
+            if (commaIndex > 0) {
+                base64 = base64.substring(commaIndex + 1);
+            }
+        }
+        byte[] imageBytes = Base64.getMimeDecoder().decode(base64);
 
         try (ByteArrayInputStream bais = new ByteArrayInputStream(imageBytes)) {
             BufferedImage img = ImageIO.read(bais);
             if (img == null) {
-                throw new IllegalArgumentException("Ungültige Bilddaten");
+                throw new IllegalArgumentException("invalid image data");
             }
             return img;
         }
