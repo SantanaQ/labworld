@@ -1,5 +1,5 @@
 import type {AgentData, LayerData} from "./LayerContainer.ts";
-import type {Camera} from "../hooks/UseCanvasCamera.ts";
+import type {Camera} from "../hooks/useCanvasCamera.ts";
 import React from "react";
 
 export class CanvasRenderer {

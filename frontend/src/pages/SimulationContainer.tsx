@@ -3,8 +3,8 @@ import { SimEngine } from '../sim_engine/SimEngine.ts';
 import type { SimSettings } from '../sim_engine/SimEngine.ts';
 import { EditorSlider } from "../components/EditorSlider.tsx";
 import type { WorldConfig } from "./Dashboard.tsx";
-import { useDebouncedCallback } from "../hooks/UseDebouncedCallback.ts";
-import { useCanvasCamera } from "../hooks/UseCanvasCamera.ts";
+import { useDebouncedCallback } from "../hooks/useDebouncedCallback.ts";
+import { useCanvasCamera } from "../hooks/useCanvasCamera.ts";
 
 interface Props {
     config: WorldConfig | null;

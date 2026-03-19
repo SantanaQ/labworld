@@ -2,7 +2,7 @@ import {LayerContainer, type LayerName} from "./LayerContainer.ts";
 import { CanvasRenderer } from "./CanvasRenderer.ts";
 import {SimWebSocket} from "./SimWebsocket.ts";
 import type {WorldConfig} from "../pages/Dashboard.tsx";
-import type {Camera} from "../hooks/UseCanvasCamera.ts";
+import type {Camera} from "../hooks/useCanvasCamera.ts";
 import React from "react";
 
 export type ConnectionStatus = 'connected' | 'reconnecting' | 'disconnected';
