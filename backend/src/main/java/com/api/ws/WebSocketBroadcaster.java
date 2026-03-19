@@ -1,43 +1,61 @@
 package com.api.ws;
 
-
 import org.springframework.stereotype.Component;
-import org.springframework.web.socket.BinaryMessage;
-import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.*;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Set;
-import java.util.UUID;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class WebSocketBroadcaster {
 
-    private final Set<WebSocketSession> sessions = ConcurrentHashMap.newKeySet();
+    private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
+    private final Map<String, Object> locks = new ConcurrentHashMap<>();
 
     public void add(WebSocketSession session) {
-        sessions.add(session);
+        String sessionId = getSessionId(session);
+
+        WebSocketSession existing = sessions.put(sessionId, session);
+
+        if (existing != null && existing.isOpen()) {
+            try {
+                existing.close();
+                System.out.println("Closed duplicate session: " + sessionId);
+            } catch (IOException ignored) {}
+        }
+
+        System.out.println("Connected: " + sessionId);
     }
 
     public void remove(WebSocketSession session) {
-        sessions.remove(session);
+        String sessionId = getSessionId(session);
+
+        sessions.remove(sessionId);
+        locks.remove(sessionId);
+
+        System.out.println("Disconnected: " + sessionId);
     }
 
-    public void broadcast(UUID sessionId, ByteBuffer data) {
-        for (WebSocketSession s : sessions) {
-            try {
-                if (s.isOpen()) {
-                    s.sendMessage(new BinaryMessage(data.asReadOnlyBuffer()));
-                }
-            } catch (IOException | IllegalStateException e) {
-                remove(s);
-            }
+    public void send(String sessionId, ByteBuffer data) {
+        WebSocketSession session = sessions.get(sessionId);
+        if (session == null || !session.isOpen()) return;
+
+        try {
+            ByteBuffer copy = ByteBuffer.allocate(data.remaining());
+            copy.put(data.duplicate());
+            copy.flip();
+
+            session.sendMessage(new BinaryMessage(copy));
+
+        } catch (IOException | IllegalStateException e) {
+            System.out.println("Send failed: " + e.getMessage());
+            remove(session);
         }
     }
 
-
-    public void clear() {
-        sessions.clear();
+    private String getSessionId(WebSocketSession session) {
+        return (String) session.getAttributes().get("sessionId");
     }
 }

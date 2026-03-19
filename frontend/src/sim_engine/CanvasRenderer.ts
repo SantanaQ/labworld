@@ -99,10 +99,10 @@ export class CanvasRenderer {
     }
 
 
-    public resize(w: number, h: number) {
+    /*public resize(w: number, h: number) {
         this.canvas.width = w;
         this.canvas.height = h;
-    }
+    }*/
 
     private applyCamera(){
         const ctx = this.ctx

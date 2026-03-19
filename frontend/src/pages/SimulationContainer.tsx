@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { SimEngine } from './sim_engine/SimEngine';
-import type { SimSettings } from './sim_engine/SimEngine';
-import { EditorSlider } from "./components/EditorSlider";
+import { SimEngine } from '../sim_engine/SimEngine.ts';
+import type { SimSettings } from '../sim_engine/SimEngine.ts';
+import { EditorSlider } from "../components/EditorSlider.tsx";
 import type { WorldConfig } from "./Dashboard.tsx";
-import { useDebouncedCallback } from "./hooks/UseDebouncedCallback.ts";
-import { useCanvasCamera } from "./hooks/UseCanvasCamera.ts";
+import { useDebouncedCallback } from "../hooks/UseDebouncedCallback.ts";
+import { useCanvasCamera } from "../hooks/UseCanvasCamera.ts";
 
 interface Props {
     config: WorldConfig | null;
@@ -14,6 +14,7 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const engineRef = useRef<SimEngine | null>(null);
+    const hasConnected = useRef(false);
 
     const worldWidth = config?.width ?? 100;
     const worldHeight = config?.height ?? 100;
@@ -39,10 +40,18 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
     }, 200);
 
     useEffect(() => {
-        if (!canvasRef.current || !containerRef.current) return;
+        if (!canvasRef.current) return;
 
         const engine = new SimEngine(canvasRef.current, cameraRef);
         engineRef.current = engine;
+
+        return () => {
+            engine.stop();
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!canvasRef.current || !containerRef.current) return;
 
         // Initial Zoom
         const cam = cameraRef.current;
@@ -56,23 +65,30 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
             canvasRef.current.width = rect.width;
             canvasRef.current.height = rect.height;
 
-            // Fit world to canvas
             cam.zoom = Math.min(rect.width / worldWidth, rect.height / worldHeight);
         });
 
         observer.observe(canvasRef.current.parentElement!);
 
         return () => {
-            engine.stop();
             observer.disconnect();
         };
-    }, [canvasRef, worldWidth, worldHeight, cameraRef]);
+    }, [worldWidth, worldHeight]);
 
     useEffect(() => {
-        if (config && engineRef.current) {
-            engineRef.current.reconfigure(config);
-        }
-    }, [config]);
+        if (!config || !engineRef.current) return;
+        if (hasConnected.current) return;
+
+        const engine = engineRef.current;
+
+        engine.stop();
+        engine.reconfigure(config);
+        engine.connect(config.sessionId);
+        engine.start();
+
+        setSimState("idle");
+
+    }, [config?.sessionId]);
 
 
     const handleSliderChange = (value: number) => {
@@ -82,7 +98,6 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
 
     const handleSimulation = async (action: 'start' | 'pause' | 'resume' | 'stop') => {
         if (!engineRef.current || !config) return;
-        if (action === 'start') engineRef.current.connect(config.sessionId);
 
         const response = await fetch(`/api/sim/${action}/${config.sessionId}`, { method: 'POST' });
         if (!response.ok) return console.error(`Simulation ${action} failed!`);
@@ -90,8 +105,8 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
         switch (action) {
             case 'start':
             case 'resume': engineRef.current.start(); setSimState('running'); break;
-            case 'pause': engineRef.current.pause(); setSimState('paused'); break;
-            case 'stop': engineRef.current.stop(); setSimState('stopped'); config = null; break;
+            case 'pause': setSimState('paused'); break;
+            case 'stop': engineRef.current.stop(); setSimState('stopped'); break;
         }
     };
 
@@ -102,12 +117,12 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
     };
 
     return (
-        <div className="h-screen w-full flex items-center justify-center bg-slate-900 p-3">
+        <div className="h-screen w-full flex bg-slate-900 p-3">
 
-            <div ref={containerRef} className="h-screen w-full flex gap-4 p-4">
+            <div ref={containerRef} className="h-screen w-full flex gap-4 p-4 items-center">
 
                 {/* LEFT: Canvas */}
-                <div className="flex-none aspect-square w-full max-w-[600px] relative overflow-hidden rounded-2xl border border-slate-800 bg-black">
+                <div className="flex-none aspect-square w-full max-w-[600px] max-h-[600px] relative overflow-hidden rounded-2xl border border-slate-800 bg-black">
                     <canvas
                         ref={canvasRef}
                         className="w-full h-full"
@@ -115,8 +130,9 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
                     />
                 </div>
 
+                <div className="w-full h-full max-h-[600px]">
                 {/* RIGHT: Bento Panel */}
-                <div className="flex-1 flex-col gap-3 h-full max-w-[400px] min-w-[200px]">
+                <div className="flex-1 flex-col gap-3 max-w-[400px] min-w-[200px]">
 
                     <div className="grid grid-cols-1 gap-3">
                         {/* Layer Visibility */}
@@ -186,6 +202,7 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
                         }
                     </div>
 
+                </div>
                 </div>
 
             </div>

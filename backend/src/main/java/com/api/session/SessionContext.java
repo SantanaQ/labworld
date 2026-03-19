@@ -16,9 +16,9 @@ public class SessionContext {
 
     private final UUID id;
 
-    private World world;
-    private WorldSnapshot snapshot;
-    private FrameEncoder encoder;
+    private final World world;
+    private final WorldSnapshot snapshot;
+    private final FrameEncoder encoder;
 
     private final WebSocketBroadcaster broadcaster;
 
@@ -62,7 +62,7 @@ public class SessionContext {
         long lastTime = System.nanoTime();
         long accumulator = 0;
 
-        while (running.get()) {
+        while (isRunning()) {
             long now = System.nanoTime();
             long delta = now - lastTime;
             lastTime = now;
@@ -79,7 +79,7 @@ public class SessionContext {
 
             if (ticked) {
                 snapshot.refresh(world);
-                broadcaster.broadcast(id, encoder.encode(snapshot));
+                broadcaster.send(id.toString(), encoder.encode(snapshot));
             }
         }
     }
@@ -118,9 +118,9 @@ public class SessionContext {
     }
 
     public void sendInitialFrame() {
-        WorldSnapshot snapshot = new WorldSnapshot(world);
+        snapshot.refresh(world);
         ByteBuffer frame = encoder.encode(snapshot);
-        broadcaster.broadcast(id, frame);
+        broadcaster.send(id.toString(), frame);
     }
 
 }

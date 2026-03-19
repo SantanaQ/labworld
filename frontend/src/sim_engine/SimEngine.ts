@@ -1,7 +1,7 @@
 import {LayerContainer, type LayerName} from "./LayerContainer.ts";
 import { CanvasRenderer } from "./CanvasRenderer.ts";
 import {SimWebSocket} from "./SimWebsocket.ts";
-import type {WorldConfig} from "../Dashboard.tsx";
+import type {WorldConfig} from "../pages/Dashboard.tsx";
 import type {Camera} from "../hooks/UseCanvasCamera.ts";
 import React from "react";
 
@@ -22,7 +22,6 @@ export class SimEngine {
     private ws: SimWebSocket | null = null;
     private animationFrameId = 0;
 
-    //private agentBuffer = new Array<AgentProps>();
 
     public settings: SimSettings = {
         showHeat: true,
@@ -37,17 +36,21 @@ export class SimEngine {
     }
 
     public reconfigure(config: WorldConfig) {
-        ['heat', 'scent', 'supply', 'agents'].forEach((name) => {
+        ['heat', 'scent', 'supply'].forEach((name) => {
             this.layers.setLayer(name as LayerName, config.width, config.height);
         });
-
-        //console.log(`Engine reconfigured to ${width}x${height}`);
     }
 
-    public connect(worldId: number) {
-        this.ws = new SimWebSocket(worldId, (frame) => this.handleBinaryFrame(frame), (status) => console.log('WS status:', status));
+    public connect(sessionId: string) {
+        if (this.ws?.isOpen()) return;
+        this.ws = new SimWebSocket(sessionId, (frame) => this.handleBinaryFrame(frame), (status) => this.logStatus(status));
         this.ws.connect();
     }
+
+    private async logStatus(status : ConnectionStatus) {
+        console.log('WS status:', status);
+    }
+
 
     private formatUUID = (msb: bigint, lsb: bigint): string => {
         const s = msb.toString(16).padStart(16, '0') + lsb.toString(16).padStart(16, '0');
@@ -148,17 +151,15 @@ export class SimEngine {
         this.animationFrameId = requestAnimationFrame(this.draw);
     }
 
-    public start() { this.draw(); }
+    public start() {
+        this.draw();
+    }
+
     public stop() {
+        this.renderer.clear();
         cancelAnimationFrame(this.animationFrameId);
         this.ws?.disconnect();
     }
-
-    public pause() {
-        cancelAnimationFrame(this.animationFrameId);
-    }
-
-    public resize(w: number, h: number) { this.renderer.resize(w, h); }
 
 
 }

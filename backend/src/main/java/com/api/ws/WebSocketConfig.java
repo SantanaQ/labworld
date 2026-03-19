@@ -8,14 +8,18 @@ import org.springframework.web.socket.config.annotation.*;
 public class WebSocketConfig implements WebSocketConfigurer {
 
     private final SimulationSocket socket;
+    private final SessionIdInterceptor interceptor;
 
-    public WebSocketConfig(SimulationSocket socket) {
+    public WebSocketConfig(SimulationSocket socket,
+                           SessionIdInterceptor interceptor) {
         this.socket = socket;
+        this.interceptor = interceptor;
     }
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(socket, "/ws/sim/{sessionId}")
+                .addInterceptors(interceptor)
                 .setAllowedOrigins("*");
     }
 }

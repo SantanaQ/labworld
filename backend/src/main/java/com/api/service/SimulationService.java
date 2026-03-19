@@ -47,7 +47,9 @@ public class SimulationService {
     }
 
     public void sendPreview(UUID sessionId) {
-        sessions.get(sessionId).sendInitialFrame();
+        if(sessions.containsKey(sessionId)) {
+            sessions.get(sessionId).sendInitialFrame();
+        }
     }
 
     public SessionContext get(UUID id) {

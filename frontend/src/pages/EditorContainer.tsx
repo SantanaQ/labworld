@@ -1,18 +1,19 @@
 import {useEffect, useState} from "react";
 import type {Edge} from "@xyflow/react";
-import {EditorSidebar} from "./node_editor/EditorSidebar.tsx";
-import NodeEditor from "./node_editor/NodeEditor.tsx";
+import {EditorSidebar} from "../node_editor/EditorSidebar.tsx";
+import NodeEditor from "../node_editor/NodeEditor.tsx";
 
 import {
     type Node
 } from '@xyflow/react';
 
-import {nodeRegistry, type NodeType} from "./node_editor/nodes/NodeDefinitions.ts";
-import {createNodeData} from "./node_editor/nodes/NodeFactory.ts";
-import FetchButton from "./components/FetchButton.tsx";
-import TemplateSelector from "./node_editor/templates/TemplateSelector.tsx";
-import {createEmptyCanvasTemplate} from "./node_editor/templates/EmptyCanvasTemplate.ts";
-import type {NodeGraphJSON} from "./node_editor/NodeJSON.ts";
+import {nodeRegistry, type NodeType} from "../node_editor/nodes/NodeDefinitions.ts";
+import {createNodeData} from "../node_editor/nodes/NodeFactory.ts";
+import FetchButton from "../components/FetchButton.tsx";
+import TemplateSelector from "../node_editor/templates/TemplateSelector.tsx";
+import {createEmptyCanvasTemplate} from "../node_editor/templates/EmptyCanvasTemplate.ts";
+import type {NodeGraphJSON} from "../node_editor/NodeJSON.ts";
+import type {WorldConfig} from "./Dashboard.tsx";
 
 interface EditorProps {
     onGenerateSuccess: (config: any) => void
@@ -83,9 +84,9 @@ export const  EditorContainer: React.FC<EditorProps> = ({ onGenerateSuccess }) =
         });
         if (!response.ok) throw new Error(`Error: ${response.statusText}`);
 
-        const preview = await response.json();
+        const worldData = await response.json();
 
-        onGenerateSuccess(preview);
+        onGenerateSuccess(worldData);
     };
 
     return (

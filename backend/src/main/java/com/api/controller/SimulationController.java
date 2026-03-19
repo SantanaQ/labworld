@@ -48,10 +48,4 @@ public class SimulationController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/preview/{sessionId}")
-    public ResponseEntity<byte[]> preview(@PathVariable String sessionId) {
-        UUID uuid = UUID.fromString(sessionId);
-        simulationService.sendPreview(uuid);
-        return ResponseEntity.ok().build();
-    }
 }

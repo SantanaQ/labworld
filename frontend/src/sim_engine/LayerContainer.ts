@@ -52,11 +52,6 @@ export class LayerContainer {
         return this.agents;
     }
 
-    public getLayerNames(): LayerName[] {
-        return Object.keys(this.layers) as LayerName[];
-    }
 
-    public getDimensions(): WorldDimensions {
-        return this.dimensions;
-    }
+
 }

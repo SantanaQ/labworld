@@ -10,6 +10,8 @@ export class SimWebSocket {
     private onFrame: (frame: ArrayBuffer) => void;
     private onStatus: (status: ConnectionStatus) => void;
 
+    private intentionalClose = false;
+
     constructor(
         sessionId: string,
         onFrame: (frame: ArrayBuffer) => void,
@@ -21,7 +23,8 @@ export class SimWebSocket {
     }
 
     public connect() {
-        if (this.socket) this.socket.close();
+        if (this.socket?.readyState === WebSocket.OPEN) return;
+        this.intentionalClose = true;
         const wsUrl = getWsUrl(`/ws/sim/${this.sessionId}`);
         this.socket = new WebSocket(wsUrl);
         this.socket.binaryType = 'arraybuffer';
@@ -36,11 +39,21 @@ export class SimWebSocket {
         };
 
         this.socket.onclose = (event) => {
-            if (event.code !== 1000 && this.retries < this.maxRetries) {
+            if (this.intentionalClose) {
+                this.onStatus('disconnected');
+                return;
+            }
+
+            const shouldReconnect =
+                event.code !== 1000 &&
+                event.code !== 1001 &&
+                this.retries < this.maxRetries;
+
+            if (shouldReconnect) {
                 this.retries++;
-                const delay = Math.min(this.retries * 3000, 30000);
                 this.onStatus('reconnecting');
-                this.reconnectTimeout = setTimeout(() => this.connect(), delay);
+
+                this.reconnectTimeout = setTimeout(() => this.connect(), 3000);
             } else {
                 this.onStatus('disconnected');
             }
@@ -50,7 +63,13 @@ export class SimWebSocket {
     }
 
     public disconnect() {
+        this.intentionalClose = true;
         if (this.socket) this.socket.close();
         if (this.reconnectTimeout) clearTimeout(this.reconnectTimeout);
     }
+
+    public isOpen() {
+        return this.socket?.readyState === WebSocket.OPEN;
+    }
+
 }
