@@ -10,6 +10,8 @@ import com.sim.world.World;
 
 import java.nio.ByteBuffer;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SessionContext {
@@ -17,24 +19,33 @@ public class SessionContext {
     private final UUID id;
 
     private final World world;
-    private final WorldSnapshot snapshot;
+
+    private final Object bufferLock = new Object();
+    private volatile  WorldSnapshot frontBuffer;
+    private  WorldSnapshot backBuffer;
+
     private final FrameEncoder encoder;
 
     private final WebSocketBroadcaster broadcaster;
 
     private final AtomicBoolean running = new AtomicBoolean(false);
-    private Thread thread;
+
+    private ExecutorService simExecutor;
+    private ExecutorService broadcastExecutor;
 
     private final int tickBase = 30;
-    private int ticksPerSecond = tickBase;
-    private long tickNanos = 1_000_000_000L / ticksPerSecond;
+    private long tickNanos = 1_000_000_000L / tickBase;
+    private final int broadcastFps = 20;
+    private final long broadcastNanos = 1_000_000_000L / broadcastFps;
 
     public SessionContext(WorldConfig config, WebSocketBroadcaster broadcaster) {
         this.id = UUID.randomUUID();
         this.broadcaster = broadcaster;
 
         world = new World(config);
-        snapshot = new WorldSnapshot(world);
+        frontBuffer = new WorldSnapshot(world);
+        backBuffer = new WorldSnapshot(world);
+
 
         encoder = new FrameEncoder(
                 new WorldLayout(
@@ -45,6 +56,7 @@ public class SessionContext {
                         AgentLayout.STRIDE
                 )
         );
+
     }
 
     public UUID id() {
@@ -52,36 +64,58 @@ public class SessionContext {
     }
 
     public void start() {
+        if (running.get()) return;
         running.set(true);
 
-        thread = new Thread(this::loop);
-        thread.start();
+        simExecutor = Executors.newSingleThreadExecutor();
+        broadcastExecutor = Executors.newSingleThreadExecutor();
+
+        simExecutor.submit(this::runSimulation);
+        broadcastExecutor.submit(this::runBroadcast);
     }
 
-    private void loop() {
-        long lastTime = System.nanoTime();
-        long accumulator = 0;
+    private void runSimulation() {
+        while (running.get()) {
+            long startTime = System.nanoTime();
 
-        while (isRunning()) {
-            long now = System.nanoTime();
-            long delta = now - lastTime;
-            lastTime = now;
+            world.tick();
+            backBuffer.refresh(world);
 
-            accumulator += delta;
-
-            boolean ticked = false;
-
-            while (accumulator >= tickNanos) {
-                world.tick();
-                accumulator -= tickNanos;
-                ticked = true;
+            synchronized (bufferLock) {
+                swapBuffers();
             }
 
-            if (ticked) {
-                snapshot.refresh(world);
-                broadcaster.send(id.toString(), encoder.encode(snapshot));
+            long elapsed = System.nanoTime() - startTime;
+            long sleepNanos = tickNanos - elapsed;
+
+            if (sleepNanos > 0) {
+                sleepPrecise(sleepNanos);
             }
         }
+    }
+
+    private void runBroadcast() {
+        while (running.get()) {
+            long startTime = System.nanoTime();
+
+            synchronized (bufferLock) {
+                ByteBuffer buffer = encoder.encode(frontBuffer);
+                broadcaster.send(id.toString(), buffer);
+            }
+
+            long elapsed = System.nanoTime() - startTime;
+            long sleepNanos = broadcastNanos - elapsed;
+
+            if (sleepNanos > 0) {
+                sleepPrecise(sleepNanos);
+            }
+        }
+    }
+
+    private void swapBuffers() {
+        WorldSnapshot tmp = frontBuffer;
+        frontBuffer = backBuffer;
+        backBuffer = tmp;
     }
 
     public void pause() {
@@ -90,36 +124,38 @@ public class SessionContext {
 
     public void resume() {
         if(!isRunning()) {
-            running.set(true);
-            thread = new Thread(() -> {
-                try {
-                    loop();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
-            thread.start();
+            start();
         }
     }
 
     public void stop() {
         running.set(false);
-        if (thread != null) thread.interrupt();
+        if (simExecutor != null) simExecutor.shutdownNow();
+        if (broadcastExecutor != null) broadcastExecutor.shutdownNow();
     }
 
     public boolean isRunning() {
         return running.get();
     }
 
+    private void sleepPrecise(long nanos) {
+        try {
+            long millis = nanos / 1_000_000;
+            int remainingNanos = (int) (nanos % 1_000_000);
+            Thread.sleep(millis, remainingNanos);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
     public void applySpeed(double speed) {
-        speed = Math.clamp(speed, 0.1, 2);
-        this.ticksPerSecond = (int) (speed * tickBase);
-        this.tickNanos = 1_000_000_000L / ticksPerSecond;
+        speed = Math.clamp(speed, 0.1, 2.0);
+        this.tickNanos = (long) (1_000_000_000L / (tickBase * speed));
     }
 
     public void sendInitialFrame() {
-        snapshot.refresh(world);
-        ByteBuffer frame = encoder.encode(snapshot);
+        frontBuffer.refresh(world);
+        ByteBuffer frame = encoder.encode(frontBuffer);
         broadcaster.send(id.toString(), frame);
     }
 
