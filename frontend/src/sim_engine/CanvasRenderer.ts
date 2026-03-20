@@ -1,6 +1,7 @@
-import type {AgentData, LayerData} from "./LayerContainer.ts";
+import type {LayerData} from "./LayerContainer.ts";
 import type {Camera} from "../hooks/useCanvasCamera.ts";
 import React from "react";
+import type {AgentData} from "./FrameDecoder.ts";
 
 export class CanvasRenderer {
     private canvas: HTMLCanvasElement;
@@ -62,12 +63,12 @@ export class CanvasRenderer {
 
         for (const agent of agents) {
 
-            const x = agent.x
-            const y = agent.y
+            const x = agent.posX
+            const y = agent.posY
 
-            const r = Math.min(255, agent.fear * 255)
-            const g = Math.min(255, agent.curiosity * 255)
-            const b = Math.min(255, agent.hunger * 255)
+            const r = Math.min(255, agent.fear)
+            const g = Math.min(255, agent.curiosity)
+            const b = Math.min(255, agent.hunger)
 
             ctx.fillStyle = `rgb(${r},${g},${b})`
 

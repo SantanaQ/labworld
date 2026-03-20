@@ -47,10 +47,26 @@ public class WebSocketBroadcaster {
             copy.put(data.duplicate());
             copy.flip();
 
+
+
             session.sendMessage(new BinaryMessage(copy));
 
         } catch (IOException | IllegalStateException e) {
             System.out.println("Send failed: " + e.getMessage());
+            remove(session);
+        }
+    }
+
+    public void send(String sessionId, byte[] data) {
+        WebSocketSession session = sessions.get(sessionId);
+        if (session == null || !session.isOpen()) return;
+
+        try {
+            session.sendMessage(new BinaryMessage(data));
+
+        } catch (IOException | IllegalStateException e) {
+            System.out.println("Send failed: " + e.getMessage());
+            e.printStackTrace();
             remove(session);
         }
     }

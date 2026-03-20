@@ -1,6 +1,7 @@
 package com.api.session;
 
 import com.api.service.FrameEncoder;
+import com.api.service.Gzip;
 import com.api.service.frame_layouts.AgentLayout;
 import com.api.service.frame_layouts.WorldLayout;
 import com.api.ws.WebSocketBroadcaster;
@@ -8,11 +9,13 @@ import com.sim.config.WorldConfig;
 import com.sim.snapshot.WorldSnapshot;
 import com.sim.world.World;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.zip.Deflater;
 
 public class SessionContext {
 
@@ -47,7 +50,7 @@ public class SessionContext {
         backBuffer = new WorldSnapshot(world);
 
 
-        encoder = new FrameEncoder(
+        /*encoder = new FrameEncoder(
                 new WorldLayout(
                         config.layerCount(),
                         config.width(),
@@ -55,7 +58,8 @@ public class SessionContext {
                         config.agentCount(),
                         AgentLayout.STRIDE
                 )
-        );
+        );*/
+        encoder = new FrameEncoder(config);
 
     }
 
@@ -96,19 +100,23 @@ public class SessionContext {
 
     private void runBroadcast() {
         while (running.get()) {
-            long startTime = System.nanoTime();
+            try {
+                long startTime = System.nanoTime();
 
-            synchronized (bufferLock) {
-                ByteBuffer buffer = encoder.encode(frontBuffer);
-                broadcaster.send(id.toString(), buffer);
+                byte[] payload = copyAndCompressBuffer();
+
+                broadcaster.send(id.toString(), payload);
+
+                long elapsed = System.nanoTime() - startTime;
+                long sleepNanos = broadcastNanos - elapsed;
+
+                if (sleepNanos > 0) {
+                    sleepPrecise(sleepNanos);
+                }
+            } catch (Exception e) {
+                System.err.println("Broadcast loop crashed: " + e.getMessage());
             }
 
-            long elapsed = System.nanoTime() - startTime;
-            long sleepNanos = broadcastNanos - elapsed;
-
-            if (sleepNanos > 0) {
-                sleepPrecise(sleepNanos);
-            }
         }
     }
 
@@ -154,9 +162,29 @@ public class SessionContext {
     }
 
     public void sendInitialFrame() {
-        frontBuffer.refresh(world);
-        ByteBuffer frame = encoder.encode(frontBuffer);
-        broadcaster.send(id.toString(), frame);
+        backBuffer.refresh(world);
+        swapBuffers();
+        try {
+            byte[] payload = copyAndCompressBuffer();
+            broadcaster.send(id.toString(), payload);
+        } catch (IOException e) {
+            System.err.println("Failed to send initial frame: " + e.getMessage());
+        }
+
+    }
+
+    private byte[] copyAndCompressBuffer() throws IOException {
+        byte[] data;
+
+        synchronized (bufferLock) {
+            ByteBuffer buffer = encoder.encode(frontBuffer);
+
+            ByteBuffer copy = buffer.asReadOnlyBuffer();
+            data = new byte[copy.remaining()];
+            copy.get(data);
+        }
+
+        return Gzip.compress(data);
     }
 
 }

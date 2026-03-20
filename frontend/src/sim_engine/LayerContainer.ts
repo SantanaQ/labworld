@@ -1,22 +1,11 @@
+import type {AgentData} from "./FrameDecoder.ts";
+
 export type LayerName = 'heat' | 'scent' | 'supply';
 
 export interface LayerData {
     width: number;
     height: number;
-    data: Float32Array;
-}
-
-export interface AgentData {
-    x: number;
-    y: number;
-    vx: number;
-    vy: number;
-    speed: number;
-    energy: number;
-    hunger: number;
-    heat: number;
-    curiosity: number;
-    fear: number;
+    data: Uint8Array;
 }
 
 export interface WorldDimensions {
@@ -29,11 +18,11 @@ export class LayerContainer {
     private agents: Array<AgentData> = []
     private dimensions: WorldDimensions = {} as WorldDimensions;
 
-    public setLayer(name: LayerName, width: number, height: number, data?: Float32Array) {
+    public setLayer(name: LayerName, width: number, height: number, data?: Uint8Array) {
         this.layers[name] = {
             width,
             height,
-            data: data ?? new Float32Array(width * height),
+            data: data ?? new Uint8Array(width * height),
         };
         this.dimensions.width = width;
         this.dimensions.height = height;

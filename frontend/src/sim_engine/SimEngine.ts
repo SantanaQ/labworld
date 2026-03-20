@@ -4,6 +4,7 @@ import {SimWebSocket} from "./SimWebsocket.ts";
 import type {WorldConfig} from "../pages/Dashboard.tsx";
 import type {Camera} from "../hooks/useCanvasCamera.ts";
 import React from "react";
+import {handleBinaryFrame, setFrameHandler} from "./FrameDecoder.ts";
 
 export type ConnectionStatus = 'connected' | 'reconnecting' | 'disconnected';
 
@@ -43,98 +44,25 @@ export class SimEngine {
 
     public connect(sessionId: string) {
         if (this.ws?.isOpen()) return;
-        this.ws = new SimWebSocket(sessionId, (frame) => this.handleBinaryFrame(frame), (status) => this.logStatus(status));
+        this.ws = new SimWebSocket(sessionId, (frame) => handleBinaryFrame(frame), (status) => this.logStatus(status));
+
+        setFrameHandler((frameData) => {
+            this.layers.getLayer("heat").data.set(frameData.heat);
+            this.layers.getLayer("supply").data.set(frameData.supply);
+            this.layers.getLayer("scent").data.set(frameData.scent);
+            this.layers.setAgents(frameData.agents);
+        })
+
         this.ws.connect();
     }
+
 
     private async logStatus(status : ConnectionStatus) {
         console.log('WS status:', status);
     }
 
 
-    private formatUUID = (msb: bigint, lsb: bigint): string => {
-        const s = msb.toString(16).padStart(16, '0') + lsb.toString(16).padStart(16, '0');
 
-        return [
-            s.slice(0, 8),
-            s.slice(8, 12),
-            s.slice(12, 16),
-            s.slice(16, 20),
-            s.slice(20)
-        ].join('-');
-    };
-
-
-    private handleBinaryFrame(buffer: ArrayBuffer) {
-
-        const view = new DataView(buffer);
-
-        let offset = 0;
-
-        //view.getInt32(offset, true); // worldId
-        const msb = view.getBigUint64(offset, false); // false = Big Endian (Standard für Java-Netzwerk)
-        offset += 8;
-        const lsb = view.getBigUint64(offset, false);
-        offset += 8;
-
-        const worldId = this.formatUUID(msb, lsb);
-
-        const width = view.getInt32(offset, true);
-        offset += 4;
-        const height = view.getInt32(offset, true);
-        offset += 4;
-
-        const cellCount = width * height;
-
-        const heat = new Float32Array(buffer, offset, cellCount);
-        offset += cellCount * 4;
-
-        const supply = new Float32Array(buffer, offset, cellCount);
-        offset += cellCount * 4;
-
-        const scent = new Float32Array(buffer, offset, cellCount);
-        offset += cellCount * 4;
-
-        this.layers.getLayer("heat").data.set(heat);
-        this.layers.getLayer("supply").data.set(supply);
-        this.layers.getLayer("scent").data.set(scent);
-
-        this.decodeAgents(buffer, offset);
-    }
-
-    private decodeAgents(buffer: ArrayBuffer, offset: number) {
-
-        const stride = 40;
-
-        const agentCount = (buffer.byteLength - offset) / stride;
-
-        const view = new DataView(buffer);
-
-        const agents = [];
-
-        for(let i=0;i<agentCount;i++){
-
-            const base = offset + i * stride;
-
-            const x = view.getFloat32(base, true);
-            const y = view.getFloat32(base + 4, true);
-
-            const vx = view.getFloat32(base + 8, true);
-            const vy = view.getFloat32(base + 12, true);
-
-            const speed = view.getFloat64(base + 16, true);
-            const energy = view.getFloat64(base + 20, true);
-
-            const hunger = view.getFloat32(base + 24, true);
-            const heat = view.getFloat32(base + 28, true);
-            const curiosity = view.getFloat32(base + 32, true);
-            const fear = view.getFloat32(base + 36, true);
-
-            agents.push({x,y,vx,vy,speed,energy, hunger,heat,curiosity,fear});
-        }
-
-        this.layers.setAgents(agents)
-    }
 
     public updateSettings(settings: Partial<SimSettings>) {
         this.settings = { ...this.settings, ...settings };
@@ -143,9 +71,9 @@ export class SimEngine {
     private draw = () => {
         this.renderer.clear();
 
-        if (this.settings.showHeat) this.renderer.drawLayer(this.layers.getLayer('heat'), (v) => [255, 50, 50, v*255]);
-        if (this.settings.showSupply) this.renderer.drawLayer(this.layers.getLayer('supply'), (v) => [0, 0, 255, v*255]);
-        if (this.settings.showScent) this.renderer.drawLayer(this.layers.getLayer('scent'), (v) => [0, 255, 0, v*255]);
+        if (this.settings.showHeat) this.renderer.drawLayer(this.layers.getLayer('heat'), (v) => [255, 50, 50, v]);
+        if (this.settings.showSupply) this.renderer.drawLayer(this.layers.getLayer('supply'), (v) => [0, 0, 255, v]);
+        if (this.settings.showScent) this.renderer.drawLayer(this.layers.getLayer('scent'), (v) => [0, 255, 0, v]);
         if (this.settings.showAgents) this.renderer.drawAgents(this.layers.getAgents()) ;
 
         this.animationFrameId = requestAnimationFrame(this.draw);
