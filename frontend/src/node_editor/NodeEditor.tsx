@@ -8,7 +8,7 @@ import {
     type Edge,
     type OnConnect,
     type OnNodesChange,
-    type OnEdgesChange, getIncomers, getOutgoers, getConnectedEdges, Background, BackgroundVariant,
+    type OnEdgesChange, Background, BackgroundVariant,
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
@@ -71,31 +71,40 @@ export default function NodeEditor({ nodes, setNodes, edges, setEdges }: NodeEdi
     }
 
     const onNodesDelete = useCallback(
-        (deleted : Node[]) => {
-            let remainingNodes = [...nodes];
-            setEdges(
-                deleted.reduce((acc, node: Node) => {
-                    const incomers = getIncomers(node, remainingNodes, acc);
-                    const outgoers = getOutgoers(node, remainingNodes, acc);
-                    const connectedEdges = getConnectedEdges([node], acc);
+        (deletedNodes: Node[]) => {
+            let currentEdges = [...edges];
+            let currentNodes = [...nodes];
 
-                    const remainingEdges = acc.filter((edge : Edge) => !connectedEdges.includes(edge));
+            deletedNodes.forEach((node) => {
+                const incomingEdges = currentEdges.filter((e) => e.target === node.id);
+                const outgoingEdges = currentEdges.filter((e) => e.source === node.id);
 
-                    const createdEdges = incomers.flatMap(({ id: source }) =>
-                        outgoers.map(({ id: target }) => ({
-                            id: `${source}->${target}`,
-                            source,
-                            target,
-                        })),
-                    );
+                const newEdges: Edge[] = [];
 
-                    remainingNodes = remainingNodes.filter((rn) => rn.id !== node.id);
+                incomingEdges.forEach((inEdge) => {
+                    outgoingEdges.forEach((outEdge) => {
+                        newEdges.push({
+                            id: `reconnect-${inEdge.source}-${outEdge.target}`,
+                            source: inEdge.source,
+                            sourceHandle: inEdge.sourceHandle,
+                            target: outEdge.target,
+                            targetHandle: outEdge.targetHandle,
+                        });
+                    });
+                });
 
-                    return [...remainingEdges, ...createdEdges];
-                }, edges),
-            );
+                currentEdges = currentEdges.filter(
+                    (e) => e.target !== node.id && e.source !== node.id
+                );
+
+                currentEdges = [...currentEdges, ...newEdges];
+
+                currentNodes = currentNodes.filter((n) => n.id !== node.id);
+            });
+
+            setEdges(currentEdges);
         },
-        [nodes, edges],
+        [nodes, edges, setEdges]
     );
 
     return (

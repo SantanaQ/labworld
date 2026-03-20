@@ -12,7 +12,7 @@ export interface WorldConfig {
 }
 
 const Dashboard: React.FC = () => {
-    const [leftWidth, setLeftWidth] = useState<number>(50);
+    const [leftWidth, setLeftWidth] = useState<number>(90);
     const [worldConfig, setWorldConfig] = useState<WorldConfig | null>(null);
     const isResizing = useRef<boolean>(false);
 
@@ -33,7 +33,7 @@ const Dashboard: React.FC = () => {
 
         const newWidth = (e.clientX / window.innerWidth) * 100;
 
-        if (newWidth > 1 && newWidth < 90) {
+        if (newWidth >= 0 && newWidth <= 90) {
             setLeftWidth(newWidth);
         }
     }, []);

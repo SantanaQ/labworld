@@ -1037,7 +1037,7 @@ export const entityRegistry = {
     agents: {
         label: "Agent",
         category: "Entity",
-        deletable: true,
+        deletable: false,
 
         inputs: [
 
@@ -1057,8 +1057,8 @@ export const entityRegistry = {
             amount: {
                 type: "int",
                 default: 128,
-                min: 1,
-                max: 2048,
+                min: 0,
+                max: 1024,
                 step: 1,
                 inline: false,
             },
@@ -1102,8 +1102,7 @@ export const modifierRegistry = {
     ...signalRegistry,
     ... compositingRegistry,
     ...stateUpdateRegistry,
-    ...baseUpdateRegistry,
-    ...entityRegistry
+    ...baseUpdateRegistry
 }
 
 export const nodeRegistry = {
