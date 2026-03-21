@@ -6,14 +6,14 @@ import {createNode} from "./CreateNode.ts";
 export function createDefaultWorldTemplate(): { nodes: Node[]; edges: Edge[] } {
     const nodes: Node[] = [
         // --- Heat Layer ---
-        createNode("fractalNoise", "heatSignal", -100, -500, {
+        createNode("fractalNoise", "heatSignal", 100, -500, {
             seed: "create-with-this",
             cellSize: 30,
             octaves: 2,
             persistence: 0.4,
         }),
 
-        createNode("defaultPotentialUpdater", "heatBaseUpdate", 100, -300),
+        createNode("defaultPotentialUpdater", "heatBaseUpdate", -50, -300),
 
         createNode("softThreshold", "heatCompositing", -50, -200, {
             threshold: 0.2,
@@ -35,7 +35,7 @@ export function createDefaultWorldTemplate(): { nodes: Node[]; edges: Edge[] } {
             patchSoftness: 0.08,
             holeStrength: 0.35,
         }),
-        createNode("defaultPotentialUpdater", "supplyBaseUpdate", 200, 275),
+        createNode("defaultPotentialUpdater", "supplyBaseUpdate", 220, 275),
         createNode("diffusionGrowthUpdater", "supplyStateUpdate", -50, 510, {
             diffusion: 0.05,
             growth: 0.12,
