@@ -169,15 +169,15 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
                     </div>
                     <div
                         className="absolute gap-1 flex bottom-2 left-2 text-[9px] text-white uppercase tracking-tighter">
-                        <button className="bg-transparent cursor-pointer" onClick={resetCamera}>
+                        <button title="reset zoom" className="bg-transparent cursor-pointer" onClick={resetCamera}>
                             <ScanSearch/>
                         </button>
 
-                        <button className="bg-transparent cursor-pointer" onClick={() => applyZoom(1)}>
+                        <button title="zoom out" className="bg-transparent cursor-pointer" onClick={() => applyZoom(1)}>
                             <ZoomOut/>
                         </button>
 
-                        <button className="bg-transparent cursor-pointer" onClick={() => applyZoom(-1)}>
+                        <button title="zoom in" className="bg-transparent cursor-pointer" onClick={() => applyZoom(-1)}>
                             <ZoomIn/>
                         </button>
                     </div>
