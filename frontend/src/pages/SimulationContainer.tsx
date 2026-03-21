@@ -4,8 +4,9 @@ import type { SimSettings } from '../sim_engine/SimEngine.ts';
 import { EditorSlider } from "../components/EditorSlider.tsx";
 import type { WorldConfig } from "./Dashboard.tsx";
 import { useDebouncedCallback } from "../hooks/useDebouncedCallback.ts";
-import { useCanvasCamera } from "../hooks/useCanvasCamera.ts";
+import {type Camera, useCanvasCamera} from "../hooks/useCanvasCamera.ts";
 import FetchButton from "../components/FetchButton.tsx";
+import {Hand, ScanSearch, View, ZoomIn, ZoomOut} from "lucide-react";
 
 interface Props {
     config: WorldConfig | null;
@@ -117,9 +118,31 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
         engineRef.current?.updateSettings({ [key]: newVal });
     };
 
+    const resetCamera = () => {
+        if(!canvasRef.current) return;
+        const cam = cameraRef.current;
+        cam.zoom = Math.min(canvasRef.current.width / worldWidth, canvasRef.current.height / worldHeight);
+        cam.x = worldWidth / 2;
+        cam.y = worldHeight / 2;
+    }
+
+    const applyZoom = (zoom: number) => {
+        if(!canvasRef.current) return;
+        const cam = cameraRef.current;
+        cam.zoom *= zoom > 0 ? 0.9 : 1.1;
+        cameraRef.current = clamp(cam);
+    }
+
+    const clamp = (cam: Camera) => ({
+        ...cam,
+        x: Math.max(0, Math.min(worldWidth, cam.x)),
+        y: Math.max(0, Math.min(worldHeight, cam.y)),
+        zoom: Math.min(20, Math.max(0.2, cam.zoom))
+    });
+
     return (
         <div className="flex flex-col h-screen w-full bg-zinc-900 overflow-hidden">
-            {/* Header - fest fixiert */}
+            {/* Header */}
             <header className="flex-none flex flex-row justify-between border-b border-zinc-700 h-15 w-full p-2 gap-2 items-center bg-zinc-900 shadow-md z-20">
                 <h1 className="text-white font-bold tracking-wide text-sm md:text-base">Simulation</h1>
                 <div className="text-[10px] text-zinc-500 uppercase font-mono bg-zinc-800 p-3 rounded text-nowrap overflow-hidden">
@@ -127,26 +150,46 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
                 </div>
             </header>
 
-            {/* Main Content Area - darf niemals scrollen */}
+            {/* Main Content Area */}
             <div
                 ref={containerRef}
                 className="flex-1 flex flex-col md:flex-row gap-4 p-4 md:p-6 bg-zinc-800/50 items-start justify-center overflow-hidden"
             >
                 {/* LEFT: Canvas Container */}
-                {/* Erklärt: aspect-square sorgt für die Form, max-h-full verhindert das Herausragen */}
-                <div className="relative h-full max-h-9/10 aspect-square flex-none rounded-2xl border border-zinc-700 bg-black shadow-2xl overflow-hidden self-center md:self-start">
+                <div
+                    className="relative h-full max-h-9/10 aspect-square flex-none rounded-2xl border border-zinc-700 bg-black  overflow-hidden self-center md:self-start">
                     <canvas
                         ref={canvasRef}
                         className="w-full h-full object-cover"
-                        style={{ imageRendering: "pixelated" }}
+                        style={{imageRendering: "pixelated"}}
                     />
-                    <div className="absolute bottom-2 right-2 text-[9px] text-white pointer-events-none uppercase tracking-tighter">
+                    <div
+                        className="absolute bottom-2 right-2 text-[9px] text-white pointer-events-none uppercase tracking-tighter">
                         Viewport
+                    </div>
+                    <div
+                        className="absolute gap-1 flex bottom-2 left-2 text-[9px] text-white uppercase tracking-tighter">
+                        <button className="bg-transparent cursor-pointer" onClick={resetCamera}>
+                            <ScanSearch/>
+                        </button>
+
+                        <button className="bg-transparent cursor-pointer" onClick={() => applyZoom(1)}>
+                            <ZoomOut/>
+                        </button>
+
+                        <button className="bg-transparent cursor-pointer" onClick={() => applyZoom(-1)}>
+                            <ZoomIn/>
+                        </button>
+                    </div>
+                    <div
+                        className="absolute gap-1 flex top-2 left-2 text-[9px] text-white uppercase tracking-tighter">
+                        {simState === 'paused' ? <Hand /> : <View />}
                     </div>
                 </div>
 
                 {/* RIGHT: Bento Panel - Scrollt nur intern wenn nötig */}
-                <div className="w-full min-w-[200px]  md:w-[280px] lg:w-[350px] flex flex-col gap-4 self-start max-h-full overflow-y-auto pr-1 custom-scrollbar">
+                <div
+                    className="w-full min-w-[200px]  md:w-[280px] lg:w-[350px] flex flex-col gap-4 self-start max-h-full overflow-y-auto pr-1 custom-scrollbar">
 
                     <div className="grid grid-cols-1 gap-3">
                         {/* Layer Visibility */}
@@ -200,14 +243,14 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
                             <div className="flex gap-2">
                                 {simState !== 'stopped' ? (
                                     <>
-                                        <FetchButton
-                                            baseStyle={"flex-1 py-3 text-white  text-[11px] font-black uppercase rounded-lg border border-zinc-600 transition-all active:scale-95"}
-                                            styleOnLoad={"cursor-not-allowed"}
-                                            styleOnReady={"bg-zinc-700 hover:bg-zinc-600 cursor-pointer delay-50 duration-300"}
-                                            onClick={() => handleSimulation(simState === 'running' ? 'pause' : 'resume')}
-                                        >
-                                            {simState === 'running' ? 'Pause' : 'Resume'}
-                                        </FetchButton>
+                                    <FetchButton
+                                        baseStyle={"flex-1 py-3 text-white  text-[11px] font-black uppercase rounded-lg border border-zinc-600 transition-all active:scale-95"}
+                                        styleOnLoad={"cursor-not-allowed"}
+                                        styleOnReady={"bg-zinc-700 hover:bg-zinc-600 cursor-pointer delay-50 duration-300"}
+                                        onClick={() => handleSimulation(simState === 'running' ? 'pause' : 'resume')}
+                                    >
+                                        {simState === 'running' ? 'Pause' : 'Resume'}
+                                    </FetchButton>
                                     <FetchButton
                                         baseStyle={"px-4 py-3 bg-red-500/10 hover:bg-red-600 text-red-500 hover:text-white text-[11px] font-black uppercase rounded-lg border border-red-500/20 transition-all active:scale-95"}
                                         styleOnLoad={"bg-grey cursor-not-allowed"}
