@@ -5,6 +5,7 @@ import { EditorSlider } from "../components/EditorSlider.tsx";
 import type { WorldConfig } from "./Dashboard.tsx";
 import { useDebouncedCallback } from "../hooks/useDebouncedCallback.ts";
 import { useCanvasCamera } from "../hooks/useCanvasCamera.ts";
+import FetchButton from "../components/FetchButton.tsx";
 
 interface Props {
     config: WorldConfig | null;
@@ -117,11 +118,11 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
     };
 
     return (
-        <div className="flex flex-col h-screen w-full bg-slate-900 overflow-hidden">
+        <div className="flex flex-col h-screen w-full bg-zinc-900 overflow-hidden">
             {/* Header - fest fixiert */}
-            <header className="flex-none flex flex-row justify-between border-b border-slate-700 h-14 w-full p-3 items-center bg-slate-900 shadow-md z-20">
+            <header className="flex-none flex flex-row justify-between border-b border-zinc-500 h-15 w-full p-2 items-center bg-zinc-900 shadow-md z-20">
                 <h1 className="text-white font-bold tracking-wide text-sm md:text-base">Simulation</h1>
-                <div className="text-[10px] text-slate-500 uppercase font-mono bg-slate-800 px-2 py-1 rounded">
+                <div className="text-[10px] text-zinc-500 uppercase font-mono bg-zinc-800 p-3 rounded">
                     Status: {simState}
                 </div>
             </header>
@@ -129,18 +130,18 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
             {/* Main Content Area - darf niemals scrollen */}
             <div
                 ref={containerRef}
-                className="flex-1 flex flex-col md:flex-row gap-4 p-4 md:p-6 bg-slate-800/50 items-start justify-center overflow-hidden"
+                className="flex-1 flex flex-col md:flex-row gap-4 p-4 md:p-6 bg-zinc-800/50 items-start justify-center overflow-hidden"
             >
                 {/* LEFT: Canvas Container */}
                 {/* Erklärt: aspect-square sorgt für die Form, max-h-full verhindert das Herausragen */}
-                <div className="relative h-full max-h-9/10 aspect-square flex-none rounded-2xl border border-slate-700 bg-black shadow-2xl overflow-hidden self-center md:self-start">
+                <div className="relative h-full max-h-9/10 aspect-square flex-none rounded-2xl border border-zinc-700 bg-black shadow-2xl overflow-hidden self-center md:self-start">
                     <canvas
                         ref={canvasRef}
                         className="w-full h-full object-cover"
                         style={{ imageRendering: "pixelated" }}
                     />
-                    <div className="absolute bottom-2 right-2 text-[9px] text-white/20 pointer-events-none uppercase tracking-tighter">
-                        Fixed Ratio Viewport
+                    <div className="absolute bottom-2 right-2 text-[9px] text-white pointer-events-none uppercase tracking-tighter">
+                        Viewport
                     </div>
                 </div>
 
@@ -149,16 +150,16 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
 
                     <div className="grid grid-cols-1 gap-3">
                         {/* Layer Visibility */}
-                        <div className="bg-slate-900 p-4 rounded-xl border border-slate-700 shadow-lg">
-                            <p className="text-[10px] text-slate-500 font-bold uppercase border-b border-slate-800 pb-2 mb-3 tracking-widest">
+                        <div className="bg-zinc-900 p-4 rounded-xl border border-zinc-700 shadow-lg">
+                            <p className="text-[10px] text-zinc-500 font-bold uppercase border-b border-zinc-800 pb-2 mb-3 tracking-widest">
                                 Layer Visibility
                             </p>
                             <div className="flex flex-col gap-2">
                                 {['showHeat','showSupply','showScent','showAgents'].map((key) => (
-                                    <label key={key} className="flex items-center gap-3 text-[11px] text-slate-300 cursor-pointer hover:text-white transition-colors">
+                                    <label key={key} className="flex items-center gap-3 text-[11px] text-zinc-300 cursor-pointer hover:text-white transition-colors">
                                         <input
                                             type="checkbox"
-                                            className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-blue-500 focus:ring-0 transition-all"
+                                            className="w-4 h-4 rounded border-zinc-700 bg-zinc-800 text-blue-500 focus:ring-0 transition-all"
                                             checked={settings[key as keyof SimSettings] as boolean}
                                             onChange={() => toggleLayer(key as keyof SimSettings)}
                                         />
@@ -169,8 +170,8 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
                         </div>
 
                         {/* Simulation Controls */}
-                        <div className="bg-slate-900/90 p-4 rounded-xl border border-slate-700 shadow-lg">
-                            <p className="text-[10px] text-slate-500 font-bold uppercase border-b border-slate-800 pb-2 mb-4 tracking-widest">
+                        <div className="bg-zinc-900/90 p-4 rounded-xl border border-zinc-700 shadow-lg">
+                            <p className="text-[10px] text-zinc-500 font-bold uppercase border-b border-zinc-800 pb-2 mb-4 tracking-widest">
                                 Simulation
                             </p>
                             <EditorSlider
@@ -187,25 +188,34 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
                     {/* Buttons Container */}
                     <div className="flex flex-col gap-2 sticky bottom-0 bg-transparent pt-2">
                         {simState === 'idle' ? (
-                            <button
+                            <FetchButton
+                                baseStyle={"w-full py-3  text-white  font-black uppercase rounded-lg border border-green-500/20 transition-all active:scale-95 shadow-lg cursor-pointer"}
+                                styleOnLoad={"cursor-not-allowed"}
+                                styleOnReady={"bg-emerald-800 hover:bg-emerald-600 hover:text-white text-[11px] cursor-pointer delay-50 duration-300"}
                                 onClick={() => handleSimulation('start')}
-                                className="w-full py-3 bg-green-500/10 hover:bg-green-600 text-green-500 hover:text-white text-[11px] font-black uppercase rounded-lg border border-green-500/20 transition-all active:scale-95 shadow-lg">
+                            >
                                 Start
-                            </button>
+                            </FetchButton>
                         ) : (
                             <div className="flex gap-2">
                                 {simState !== 'stopped' ? (
                                     <>
-                                    <button
-                                        onClick={() => handleSimulation(simState === 'running' ? 'pause' : 'resume')}
-                                        className="flex-1 py-3 bg-slate-700 hover:bg-slate-600 text-white text-[11px] font-black uppercase rounded-lg border border-slate-600 transition-all active:scale-95">
-                                        {simState === 'running' ? 'Pause' : 'Resume'}
-                                    </button>
-                                    <button
+                                        <FetchButton
+                                            baseStyle={"flex-1 py-3 text-white  text-[11px] font-black uppercase rounded-lg border border-zinc-600 transition-all active:scale-95"}
+                                            styleOnLoad={"cursor-not-allowed"}
+                                            styleOnReady={"bg-zinc-700 hover:bg-zinc-600 cursor-pointer delay-50 duration-300"}
+                                            onClick={() => handleSimulation(simState === 'running' ? 'pause' : 'resume')}
+                                        >
+                                            {simState === 'running' ? 'Pause' : 'Resume'}
+                                        </FetchButton>
+                                    <FetchButton
+                                        baseStyle={"px-4 py-3 bg-red-500/10 hover:bg-red-600 text-red-500 hover:text-white text-[11px] font-black uppercase rounded-lg border border-red-500/20 transition-all active:scale-95"}
+                                        styleOnLoad={"bg-grey cursor-not-allowed"}
+                                        styleOnReady={"bg-red-500/10 cursor-pointer hover:bg-red-700 delay-50 duration-300"}
                                         onClick={() => handleSimulation('stop')}
-                                        className="px-4 py-3 bg-red-500/10 hover:bg-red-600 text-red-500 hover:text-white text-[11px] font-black uppercase rounded-lg border border-red-500/20 transition-all active:scale-95">
+                                    >
                                         Stop
-                                    </button>
+                                    </FetchButton>
                                     </>
                                     ) : ""}
                             </div>

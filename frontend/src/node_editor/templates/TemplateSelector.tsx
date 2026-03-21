@@ -49,7 +49,7 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({ setNodes, setEdges 
                 id="templateSelect"
                 value={selected}
                 onChange={handleChange}
-                className="border rounded p-1 bg-slate-800 text-white border border-slate-700 rounded"
+                className="border rounded p-2 bg-zinc-800 text-white border border-zinc-700 rounded"
             >
                 {templates.map((t) => (
                     <option key={t.value} value={t.value}>

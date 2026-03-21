@@ -102,18 +102,18 @@ export const  EditorContainer: React.FC<EditorProps> = ({ onGenerateSuccess }) =
     };
 
     return (
-        <div className="flex h-full w-full overflow-hidden bg-slate-700 ">
+        <div className="flex h-full w-full overflow-hidden bg-zinc-700 ">
             <EditorSidebar onAddNode={addNode}/>
 
             <div className="flex-1 h-full relative">
-                <div className="flex flex-row justify-between border-b border-slate-500 w-full h-15 p-2 items-center bg-slate-900 shadow-md gap-1">
+                <div className="flex flex-row justify-between border-b border-zinc-500 w-full h-15 p-2 items-center bg-zinc-900 shadow-md gap-1">
 
                     <TemplateSelector setNodes={setNodes} setEdges={setEdges} />
 
                     <FetchButton
                         baseStyle={"font-bold flex flex-row p-2 text-white rounded focus:outline-none"}
                         styleOnLoad={"bg-grey cursor-not-allowed"}
-                        styleOnReady={"bg-blue-600 cursor-pointer hover:bg-blue-800 delay-50 duration-300"}
+                        styleOnReady={"bg-emerald-900 cursor-pointer hover:bg-emerald-700 delay-50 duration-300"}
                         onClick={handleGenerate}
                     >
                         Build

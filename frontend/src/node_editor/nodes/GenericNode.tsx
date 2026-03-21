@@ -65,7 +65,7 @@ export function GenericNode({ id, type, data, selected }: NodeProps) {
                         max={param.max}
                         value={value}
                         onChange={(e) => updateParam(key, Number(e.target.value))}
-                        className="w-full bg-slate-800 border border-slate-700 rounded px-2 py-1 text-xs text-white"
+                        className="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-xs text-lime-300"
                     />
                 );
 
@@ -74,7 +74,7 @@ export function GenericNode({ id, type, data, selected }: NodeProps) {
                     <select
                         value={value}
                         onChange={(e) => updateParam(key, e.target.value)}
-                        className="w-full bg-slate-800 border border-slate-700 rounded px-2 py-1 text-xs text-white"
+                        className="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-xs text-lime-300"
                     >
                         {param.options?.map((o: string) => (
                             <option key={o} value={o}>
@@ -102,7 +102,7 @@ export function GenericNode({ id, type, data, selected }: NodeProps) {
                         {value && (
                             <img
                                 src={value}
-                                className="w-20 h-20 object-cover rounded border border-slate-700"
+                                className="w-20 h-20 object-cover rounded border border-zinc-700"
                              alt={"image-preview"}/>
                         )}
 
@@ -122,7 +122,7 @@ export function GenericNode({ id, type, data, selected }: NodeProps) {
 
                                 reader.readAsDataURL(file)
                             }}
-                            className="text-[8px] p-1 text-slate-400 max-w-[100px] border border-dashed border-slate-200 cursor-pointer rounded-md hover:bg-slate-700"
+                            className="text-[8px] p-1 text-zinc-400 max-w-[100px] border border-dashed border-zinc-200 cursor-pointer rounded-md hover:bg-zinc-700"
                         />
 
                     </div>
@@ -130,7 +130,7 @@ export function GenericNode({ id, type, data, selected }: NodeProps) {
 
             case "text":
                 return (
-                    <input className="w-full bg-slate-800 border border-slate-700 rounded px-2 py-1 text-xs text-white"
+                    <input className="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-xs text-lime-300"
                            type="text"
                            value={value}
                            placeholder={param.default}
@@ -179,12 +179,12 @@ export function GenericNode({ id, type, data, selected }: NodeProps) {
 
     return (
         <div
-            className={`bg-slate-900 border ${
-                selected ? "border-green-400" : "border-slate-700"
+            className={`bg-zinc-900 border ${
+                selected ? "border-lime-300" : "border-zinc-700"
             } rounded-md min-w-[140px] relative`}
         >
             {/* Header */}
-            <div className="flex flex-col px-3 py-2 border-b border-slate-700 font-semibold text-slate-200 text-xs">
+            <div className="flex flex-col px-3 py-2 border-b border-zinc-700 font-semibold text-zinc-200 text-xs">
                 <p className="text-[8px]">{def.category}</p>
                 {def.label}
             </div>
@@ -204,7 +204,7 @@ export function GenericNode({ id, type, data, selected }: NodeProps) {
                         id={input.id}
                         connectionCount={input.connectionCount}
                     />
-                    <span className="ml-2 text-[10px] text-slate-400">{input.label}</span>
+                    <span className="ml-2 text-[10px] text-zinc-400">{input.label}</span>
                 </div>
             ))}
 
@@ -217,7 +217,7 @@ export function GenericNode({ id, type, data, selected }: NodeProps) {
                         top: handleOffset + idx * handleSpacing,
                     }}
                 >
-          <span className="mr-2 text-[10px] text-slate-400">
+          <span className="mr-2 text-[10px] text-zinc-400">
             {output.label}
           </span>
                     <ConnectionLimitHandle
@@ -245,7 +245,7 @@ export function GenericNode({ id, type, data, selected }: NodeProps) {
                     >
                         {row.map(([key, param]) => (
                             <div key={key} className="flex flex-col gap-1">
-                                {param.hideLabel ? "" :  <label className="text-slate-400 text-xs">{key}</label>}
+                                {param.hideLabel ? "" :  <label className="text-zinc-400 text-xs">{key}</label>}
                                 {param.hideInput ? "" : renderParam(key, param)}
                             </div>
                         ))}
