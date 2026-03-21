@@ -64,7 +64,7 @@ const Dashboard: React.FC = () => {
             )}
 
             <header className="flex-none p-2 border-b border-zinc-700 bg-zinc-800/50 backdrop-blur-sm">
-                <h1 className="pl-2 text-xl font-bold tracking-tight">Labworld 🔬 🌍</h1>
+                <h1 className="pl-2 text-xl font-bold tracking-tight">Labworld 🔬🌍</h1>
             </header>
 
             <main
