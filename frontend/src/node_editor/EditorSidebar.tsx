@@ -34,10 +34,10 @@ export const EditorSidebar: React.FC<EditorSidebarProps> = ({ onAddNode }) => {
     }
 
     return (
-        <div className={`h-full bg-zinc-900 border-r border-zinc-500 flex flex-col shrink-0 shadow-xl transition-all duration-300 ${collapsed ? 'w-14' : 'w-55'}`}>
+        <div className={`h-full bg-zinc-900 border-r border-zinc-700 flex flex-col shrink-0 shadow-xl transition-all duration-300 ${collapsed ? 'w-14' : 'w-55'}`}>
 
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-zinc-500 h-15 shrink-0">
+            <div className="flex items-center justify-between p-4 border-b border-zinc-700 h-15 shrink-0">
                 {!collapsed && (
                     <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider truncate">
                     Modifier

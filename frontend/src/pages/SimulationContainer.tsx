@@ -120,7 +120,7 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
     return (
         <div className="flex flex-col h-screen w-full bg-zinc-900 overflow-hidden">
             {/* Header - fest fixiert */}
-            <header className="flex-none flex flex-row justify-between border-b border-zinc-500 h-15 w-full p-2 gap-2 items-center bg-zinc-900 shadow-md z-20">
+            <header className="flex-none flex flex-row justify-between border-b border-zinc-700 h-15 w-full p-2 gap-2 items-center bg-zinc-900 shadow-md z-20">
                 <h1 className="text-white font-bold tracking-wide text-sm md:text-base">Simulation</h1>
                 <div className="text-[10px] text-zinc-500 uppercase font-mono bg-zinc-800 p-3 rounded text-nowrap overflow-hidden">
                     Status: {simState}
