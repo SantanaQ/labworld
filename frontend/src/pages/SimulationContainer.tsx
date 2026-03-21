@@ -182,12 +182,12 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
                         </button>
                     </div>
                     <div
-                        className="absolute gap-1 flex top-2 left-2 text-[9px] text-white uppercase tracking-tighter">
+                        className="absolute gap-1 text-zinc-100/20 flex top-2 left-2 text-[9px] text-white uppercase tracking-tighter">
                         {simState === 'paused' ? <Hand /> : <View />}
                     </div>
                 </div>
 
-                {/* RIGHT: Bento Panel - Scrollt nur intern wenn nötig */}
+                {/* RIGHT: Bento Panel*/}
                 <div
                     className="w-full min-w-[200px]  md:w-[280px] lg:w-[350px] flex flex-col gap-4 self-start max-h-full overflow-y-auto pr-1 custom-scrollbar">
 
