@@ -12,7 +12,7 @@ export interface WorldConfig {
 }
 
 const Dashboard: React.FC = () => {
-    const [leftWidth, setLeftWidth] = useState<number>(90);
+    const [leftWidth, setLeftWidth] = useState<number>(85);
     const [worldConfig, setWorldConfig] = useState<WorldConfig | null>(null);
     const isResizing = useRef<boolean>(false);
 
@@ -59,41 +59,51 @@ const Dashboard: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col h-screen w-full overflow-hidden bg-slate-800">
-            <div className="w-99/100 m-auto">
-                <div className="w-fit p-2 border border-slate-700 rounded-lg shadow-md">
-                    <h1 className="w-full text-white font-bold text-xl">Labworld &#128300; &#127757;</h1>
-                </div>
-            </div>
-            <div className="flex h-92/100 w-99/100 overflow-hidden m-auto mt-0 border border-slate-700 rounded-lg shadow-md">
+        <div className="flex flex-col h-screen w-full overflow-hidden bg-slate-900 text-slate-100">
 
-                {/* Left Page */}
+            {/* Integrierter Header */}
+            <header className="flex-none p-2 border-b border-slate-700 bg-slate-800/50 backdrop-blur-sm">
+                <div className="flex items-center ">
+                    <h1 className="pl-2 text-xl font-bold tracking-tight">
+                        Labworld <span className="text-lg">🔬 🌍</span>
+                    </h1>
+                </div>
+            </header>
+
+            {/* Main Content Area */}
+            <main className="flex-1 flex flex-col md:flex-row overflow-hidden p-2 gap-2">
+
+                {/* Left Page (Editor) */}
                 <div
-                    className="overflow-auto bg-slate-800"
-                    style={{ width: `${leftWidth}%` }}
+                    className="overflow-auto bg-slate-800 rounded-xl border border-slate-700 shadow-lg transition-all"
+                    style={{
+                        width: typeof window !== 'undefined' && window.innerWidth > 768 ? `${leftWidth}%` : '100%',
+                        height: typeof window !== 'undefined' && window.innerWidth <= 768 ? '40%' : '100%'
+                    }}
                 >
                     <EditorContainer onGenerateSuccess={handleWorldGenerated} />
                 </div>
 
-                {/* Divider / Resizer */}
+                {/* Divider / Resizer (Nur sichtbar/aktiv ab md-Breakpoint) */}
                 <div
                     onMouseDown={startResizing}
-                    className="w-1.5 h-full bg-black hover:bg-blue-500 cursor-col-resize transition-colors flex items-center justify-center relative z-10"
+                    className="hidden md:flex w-1.5 h-full bg-slate-950 hover:bg-blue-600 cursor-col-resize transition-colors items-center justify-center relative z-10 rounded-full"
                 >
-                    {/* Handle */}
-                    <div className="absolute h-12 w-1 bg-gray-600 rounded-full"></div>
+                    <div className="absolute h-10 w-1 bg-slate-600 rounded-full"></div>
                 </div>
 
-                {/* Right Page */}
-                <div className=" flex-1 overflow-auto bg-slate-900">
-                    <div className="h-full flex-1 overflow-hidden relative">
-                        {worldConfig && (
-                            <SimulationContainer config={worldConfig}/>
-                        )}
-                    </div>
+                {/* Right Page (Simulation) */}
+                <div className="flex-1 overflow-hidden bg-slate-950 rounded-xl border border-slate-700 shadow-2xl relative">
+                    {worldConfig ? (
+                        <SimulationContainer config={worldConfig} />
+                    ) : (
+                        <div className="flex items-center justify-center h-full text-slate-500 italic">
+                            Waiting for world configuration...
+                        </div>
+                    )}
                 </div>
 
-            </div>
+            </main>
         </div>
     );
 };

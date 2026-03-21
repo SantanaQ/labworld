@@ -117,94 +117,99 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
     };
 
     return (
-        <div className="h-full w-full bg-slate-900">
-            <div className="flex flex-row justify-between border-b border-slate-500 h-15 w-full p-2 items-center bg-slate-900 shadow-md gap-1">
-                <h1 className="text-white font-bold">Simulation</h1>
-            </div>
+        <div className="flex flex-col h-screen w-full bg-slate-900 overflow-hidden">
+            {/* Header - fest fixiert */}
+            <header className="flex-none flex flex-row justify-between border-b border-slate-700 h-14 w-full p-3 items-center bg-slate-900 shadow-md z-20">
+                <h1 className="text-white font-bold tracking-wide text-sm md:text-base">Simulation</h1>
+                <div className="text-[10px] text-slate-500 uppercase font-mono bg-slate-800 px-2 py-1 rounded">
+                    Status: {simState}
+                </div>
+            </header>
 
-
-            <div ref={containerRef} className="h-full w-full flex gap-4 p-3 items-center bg-slate-700">
-
-                {/* LEFT: Canvas */}
-                <div className="flex-none aspect-square w-full max-w-[600px] max-h-[600px] relative overflow-hidden rounded-2xl border border-slate-800 bg-black">
+            {/* Main Content Area - darf niemals scrollen */}
+            <div
+                ref={containerRef}
+                className="flex-1 flex flex-col md:flex-row gap-4 p-4 md:p-6 bg-slate-800/50 items-start justify-center overflow-hidden"
+            >
+                {/* LEFT: Canvas Container */}
+                {/* Erklärt: aspect-square sorgt für die Form, max-h-full verhindert das Herausragen */}
+                <div className="relative h-full max-h-9/10 aspect-square flex-none rounded-2xl border border-slate-700 bg-black shadow-2xl overflow-hidden self-center md:self-start">
                     <canvas
                         ref={canvasRef}
-                        className="w-full h-full"
+                        className="w-full h-full object-cover"
                         style={{ imageRendering: "pixelated" }}
                     />
+                    <div className="absolute bottom-2 right-2 text-[9px] text-white/20 pointer-events-none uppercase tracking-tighter">
+                        Fixed Ratio Viewport
+                    </div>
                 </div>
 
-                <div className="w-full h-full max-h-[600px]">
-                    {/* RIGHT: Bento Panel */}
-                    <div className="flex-1 flex-col gap-3 max-w-[400px] min-w-[200px]">
+                {/* RIGHT: Bento Panel - Scrollt nur intern wenn nötig */}
+                <div className="w-full min-w-[200px]  md:w-[280px] lg:w-[350px] flex flex-col gap-4 self-start max-h-full overflow-y-auto pr-1 custom-scrollbar">
 
-                        <div className="grid grid-cols-1 gap-3">
-                            {/* Layer Visibility */}
-                            <div className="bg-slate-900 p-3 rounded-lg border border-slate-700 shadow-xl">
-                                <p className="text-[10px] text-slate-500 font-bold uppercase border-b border-slate-800 pb-1 mb-2 tracking-widest">
-                                    Layer Visibility
-                                </p>
-                                <div className="flex flex-col gap-1">
-                                    {['showHeat','showSupply','showScent','showAgents'].map((key) => (
-                                        <label key={key} className="flex items-center gap-2 text-[11px] text-slate-300 cursor-pointer">
-                                            <input
-                                                type="checkbox"
-                                                className="w-3.5 h-3.5 rounded bg-slate-800 border-slate-700 text-blue-600 focus:ring-0"
-                                                checked={settings[key as keyof SimSettings] as boolean}
-                                                onChange={() => toggleLayer(key as keyof SimSettings)}
-                                            />
-                                            {key.replace('show','')}
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Simulation Settings */}
-                            <div className="bg-slate-900/90 p-3 rounded-lg border border-slate-700 shadow-xl">
-                                <p className="text-[10px] text-slate-500 font-bold uppercase border-b border-slate-800 pb-1 mb-2 tracking-widest">
-                                    Simulation
-                                </p>
-                                <EditorSlider
-                                    label="Speed"
-                                    value={sliderValue}
-                                    min={0.1}
-                                    max={2}
-                                    step={0.1}
-                                    onChange={handleSliderChange}
-                                />
+                    <div className="grid grid-cols-1 gap-3">
+                        {/* Layer Visibility */}
+                        <div className="bg-slate-900 p-4 rounded-xl border border-slate-700 shadow-lg">
+                            <p className="text-[10px] text-slate-500 font-bold uppercase border-b border-slate-800 pb-2 mb-3 tracking-widest">
+                                Layer Visibility
+                            </p>
+                            <div className="flex flex-col gap-2">
+                                {['showHeat','showSupply','showScent','showAgents'].map((key) => (
+                                    <label key={key} className="flex items-center gap-3 text-[11px] text-slate-300 cursor-pointer hover:text-white transition-colors">
+                                        <input
+                                            type="checkbox"
+                                            className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-blue-500 focus:ring-0 transition-all"
+                                            checked={settings[key as keyof SimSettings] as boolean}
+                                            onChange={() => toggleLayer(key as keyof SimSettings)}
+                                        />
+                                        {key.replace('show', '')}
+                                    </label>
+                                ))}
                             </div>
                         </div>
 
-                        {/* Buttons */}
-                        <div className="flex flex-col gap-2 mt-2">
-                            {simState === 'idle' &&
-                                <button
-                                    onClick={() => handleSimulation('start')}
-                                    className="w-full py-2 bg-green-600/20 hover:bg-green-600 text-green-500 hover:text-white text-[10px] font-bold uppercase rounded border border-green-600/30 transition-all cursor-pointer">
-                                    Play
-                                </button>}
-                            {simState === 'running' &&
-                                <button
-                                    onClick={() => handleSimulation('pause')}
-                                    className="w-full py-2 bg-yellow-600/20 hover:bg-yellow-600 text-yellow-500 hover:text-white text-[10px] font-bold uppercase rounded border border-yellow-600/30 transition-all cursor-pointer">
-                                    Pause
-                                </button>
-                            }
-                            {simState === 'paused' &&
-                                <button
-                                    onClick={() => handleSimulation('resume')}
-                                    className="w-full py-2 bg-green-600/20 hover:bg-green-600 text-green-500 hover:text-white text-[10px] font-bold uppercase rounded border border-green-600/30 transition-all cursor-pointer">
-                                    Resume
-                                </button>
-                            }
-                            {(simState === 'running' || simState === 'paused') &&
-                                <button
-                                    onClick={() => handleSimulation('stop')}
-                                    className="w-full py-2 bg-red-600/20 hover:bg-red-600 text-red-500 hover:text-white text-[10px] font-bold uppercase rounded border border-red-600/30 transition-all cursor-pointer">
-                                    Stop
-                                </button>
-                            }
+                        {/* Simulation Controls */}
+                        <div className="bg-slate-900/90 p-4 rounded-xl border border-slate-700 shadow-lg">
+                            <p className="text-[10px] text-slate-500 font-bold uppercase border-b border-slate-800 pb-2 mb-4 tracking-widest">
+                                Simulation
+                            </p>
+                            <EditorSlider
+                                label="Speed"
+                                value={sliderValue}
+                                min={0.1}
+                                max={2}
+                                step={0.1}
+                                onChange={handleSliderChange}
+                            />
                         </div>
+                    </div>
+
+                    {/* Buttons Container */}
+                    <div className="flex flex-col gap-2 sticky bottom-0 bg-transparent pt-2">
+                        {simState === 'idle' ? (
+                            <button
+                                onClick={() => handleSimulation('start')}
+                                className="w-full py-3 bg-green-500/10 hover:bg-green-600 text-green-500 hover:text-white text-[11px] font-black uppercase rounded-lg border border-green-500/20 transition-all active:scale-95 shadow-lg">
+                                Start
+                            </button>
+                        ) : (
+                            <div className="flex gap-2">
+                                {simState !== 'stopped' ? (
+                                    <>
+                                    <button
+                                        onClick={() => handleSimulation(simState === 'running' ? 'pause' : 'resume')}
+                                        className="flex-1 py-3 bg-slate-700 hover:bg-slate-600 text-white text-[11px] font-black uppercase rounded-lg border border-slate-600 transition-all active:scale-95">
+                                        {simState === 'running' ? 'Pause' : 'Resume'}
+                                    </button>
+                                    <button
+                                        onClick={() => handleSimulation('stop')}
+                                        className="px-4 py-3 bg-red-500/10 hover:bg-red-600 text-red-500 hover:text-white text-[11px] font-black uppercase rounded-lg border border-red-500/20 transition-all active:scale-95">
+                                        Stop
+                                    </button>
+                                    </>
+                                    ) : ""}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
