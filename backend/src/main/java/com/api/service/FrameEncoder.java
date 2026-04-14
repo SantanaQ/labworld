@@ -1,29 +1,31 @@
 package com.api.service;
 
 import com.sim.config.WorldConfig;
+import com.sim.snapshot.LayerDelta;
 import com.sim.snapshot.WorldSnapshot;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.UUID;
-import java.util.zip.Deflater;
 
 public class FrameEncoder {
 
     private final ByteBuffer buffer;
 
     public FrameEncoder(WorldConfig config) {
-        // Header (UUID=16, Ints=8) + 3 Layer (1 Byte/Pixel) + Agents
         int layerSize = config.width() * config.height();
         int agentSize = config.agentCount() * 22; // x,y(float), vX,vY (float),speed,energy,4 needs(byte)
-        int totalSize = 16 + 8 + (3 * layerSize) + agentSize;
+        //int totalSize = 16 + 8 + (3 * layerSize) + agentSize;
+
+        int worstLayer = 5 * layerSize;
+        int totalSize = 25 + (3 * worstLayer) + agentSize;
 
         this.buffer = ByteBuffer
                 .allocateDirect(totalSize)
                 .order(ByteOrder.LITTLE_ENDIAN);
     }
 
-    public ByteBuffer encode(WorldSnapshot snap) {
+    public ByteBuffer encode(WorldSnapshot snap, boolean fullFrame) {
         buffer.clear();
 
         // Header
@@ -32,11 +34,18 @@ public class FrameEncoder {
         buffer.putLong(uuid.getLeastSignificantBits());
         buffer.putInt(snap.width());
         buffer.putInt(snap.height());
+        buffer.put((byte) (fullFrame ? 1 : 0));
 
         // Layers (0.0 - 1.0 float -> unsigned byte)
-        encodeLayer(snap.heat());
-        encodeLayer(snap.food());
-        encodeLayer(snap.scent());
+        if(fullFrame) {
+            encodeLayer(snap.heat());
+            encodeLayer(snap.food());
+            encodeLayer(snap.scent());
+        } else {
+            encodeLayerDelta(snap.heatDelta());
+            encodeLayerDelta(snap.foodDelta());
+            encodeLayerDelta(snap.scentDelta());
+        }
 
         // Agents
         float[] agents = snap.agents();
@@ -66,10 +75,26 @@ public class FrameEncoder {
 
     private void encodeLayer(float[] data) {
         for (float f : data) {
-            int val = (int) (f * 255.0f);
-            if (val < 0) val = 0;
-            if (val > 255) val = 255;
-            buffer.put((byte) val);
+            encodeAsByte(f);
         }
     }
+
+    private void encodeLayerDelta(LayerDelta layerDelta) {
+        int size = layerDelta.size();
+        int[] indexes = layerDelta.indexes();
+        float[] values = layerDelta.values();
+        buffer.putInt(size);
+        for(int i = 0; i < size; i++) {
+            buffer.putInt(indexes[i]);
+            encodeAsByte(values[i]);
+        }
+    }
+
+    private void encodeAsByte(float value) {
+        value = (int) (value * 255.0f);
+        if (value < 0) value = 0;
+        if (value > 255) value = 255;
+        buffer.put((byte) value);
+    }
+
 }

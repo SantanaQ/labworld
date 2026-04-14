@@ -103,7 +103,7 @@ public class SessionContext {
             try {
                 long startTime = System.nanoTime();
 
-                byte[] payload = copyAndCompressBuffer();
+                byte[] payload = copyAndCompressBuffer(false);
 
                 broadcaster.send(id.toString(), payload);
 
@@ -165,7 +165,7 @@ public class SessionContext {
         backBuffer.refresh(world);
         swapBuffers();
         try {
-            byte[] payload = copyAndCompressBuffer();
+            byte[] payload = copyAndCompressBuffer(true);
             broadcaster.send(id.toString(), payload);
         } catch (IOException e) {
             System.err.println("Failed to send initial frame: " + e.getMessage());
@@ -173,11 +173,11 @@ public class SessionContext {
 
     }
 
-    private byte[] copyAndCompressBuffer() throws IOException {
+    private byte[] copyAndCompressBuffer(boolean fullFrame) throws IOException {
         byte[] data;
 
         synchronized (bufferLock) {
-            ByteBuffer buffer = encoder.encode(frontBuffer);
+            ByteBuffer buffer = encoder.encode(frontBuffer, fullFrame);
 
             ByteBuffer copy = buffer.asReadOnlyBuffer();
             data = new byte[copy.remaining()];

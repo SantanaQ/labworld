@@ -1,3 +1,5 @@
+import type {LayerContainer} from "./LayerContainer.ts";
+
 export interface AgentData {
     posX: number
     posY: number
@@ -11,7 +13,6 @@ export interface AgentData {
     fear: number
 }
 
-
 export interface FrameData {
     sessionId: string
     heat: Uint8Array
@@ -20,40 +21,27 @@ export interface FrameData {
     agents: AgentData[]
 }
 
-let latestBuffer: ArrayBuffer | null = null;
+
+const queue: ArrayBuffer[] = [];
 let processing = false;
 
-let onFrame: ((frame: FrameData) => void) | null = null;
-
-export const setFrameHandler = (cb: (frame: FrameData) => void) => {
-    onFrame = cb;
-};
-
-export const handleBinaryFrame = (buffer: ArrayBuffer) => {
-    latestBuffer = buffer;
+export const handleBinaryFrame = (buffer: ArrayBuffer, layers: LayerContainer) => {
+    queue.push(buffer);
 
     if (!processing) {
-        processLoop();
+        processLoop(layers);
     }
 };
 
-const processLoop = async () => {
+const processLoop = async (layers: LayerContainer) => {
     processing = true;
 
-    while (latestBuffer) {
-        const buffer = latestBuffer;
-        latestBuffer = null;
+    while (queue.length > 0) {
+        const buffer = queue.shift()!;
 
         try {
-            const ds = new DecompressionStream("gzip");
-            const stream = new Response(buffer).body!.pipeThrough(ds);
-            const decompressed = await new Response(stream).arrayBuffer();
-
-            const frame = parseFrame(decompressed);
-
-            if (onFrame) {
-                onFrame(frame);
-            }
+            const decompressed = await decompress(buffer);
+            parseFrame(decompressed, layers);
 
         } catch (e) {
             console.warn("Frame failed", e);
@@ -63,43 +51,64 @@ const processLoop = async () => {
     processing = false;
 };
 
+const decompress = async (buffer: ArrayBuffer): Promise<ArrayBuffer> => {
+    const ds = new DecompressionStream("gzip");
+    const stream = new Response(buffer).body!.pipeThrough(ds);
+    return await new Response(stream).arrayBuffer();
+};
 
-
-const parseFrame = (buffer: ArrayBuffer): FrameData => {
+const parseFrame = (buffer: ArrayBuffer, layers: LayerContainer): FrameData => {
     const view = new DataView(buffer);
-
     let offset = 0;
 
-    const msb = view.getBigUint64(offset, false);
-    offset += 8;
-    const lsb = view.getBigUint64(offset, false);
-    offset += 8;
+    const require = (bytes: number) => {
+        if (offset + bytes > buffer.byteLength) {
+            throw new Error("Buffer underflow");
+        }
+    };
+
+    require(16);
+    const msb = view.getBigUint64(offset, false); offset += 8;
+    const lsb = view.getBigUint64(offset, false); offset += 8;
 
     const sessionId = formatUUID(msb, lsb);
 
-    const width = view.getInt32(offset, true);
-    offset += 4;
-    const height = view.getInt32(offset, true);
-    offset += 4;
+    require(8);
+    const width = view.getInt32(offset, true); offset += 4;
+    const height = view.getInt32(offset, true); offset += 4;
+
+    require(1);
+    const isFullFrame = view.getUint8(offset) === 1;
+    offset += 1;
 
     const cellCount = width * height;
 
-    const heat = new Uint8Array(buffer, offset, cellCount);
-    offset += cellCount;
+    if (isFullFrame) {
+        require(cellCount * 3);
 
-    const supply = new Uint8Array(buffer, offset, cellCount);
-    offset += cellCount;
+        copyLayer(buffer, offset, cellCount, layers.getLayer("heat").data);
+        offset += cellCount;
 
-    const scent = new Uint8Array(buffer, offset, cellCount);
-    offset += cellCount;
+        copyLayer(buffer, offset, cellCount, layers.getLayer("supply").data);
+        offset += cellCount;
+
+        copyLayer(buffer, offset, cellCount, layers.getLayer("scent").data);
+        offset += cellCount;
+
+    } else {
+        offset = applyDelta(view, offset, layers.getLayer("heat").data);
+        offset = applyDelta(view, offset, layers.getLayer("supply").data);
+        offset = applyDelta(view, offset, layers.getLayer("scent").data);
+    }
 
     const agents = decodeAgents(buffer, offset);
+    layers.setAgents(agents);
 
     return {
         sessionId,
-        heat,
-        supply,
-        scent,
+        heat: layers.getLayer("heat").data,
+        supply: layers.getLayer("supply").data,
+        scent: layers.getLayer("scent").data,
         agents,
     };
 };
@@ -116,40 +125,76 @@ const formatUUID = (msb: bigint, lsb: bigint): string => {
     ].join('-');
 };
 
-const decodeAgents = (buffer: ArrayBuffer, offset: number) => {
+const copyLayer = (
+    buffer: ArrayBuffer,
+    offset: number,
+    size: number,
+    target: Uint8Array
+) => {
+    target.set(new Uint8Array(buffer, offset, size));
+};
 
-    const stride = 22;
+const applyDelta = (
+    view: DataView,
+    offset: number,
+    target: Uint8Array
+): number => {
 
-    if ((buffer.byteLength - offset) % stride !== 0) {
-        console.warn("Agent buffer misaligned");
+    if (offset + 4 > view.byteLength) return offset;
+
+    const size = view.getInt32(offset, true);
+    offset += 4;
+
+    if (size < 0 || size > target.length) {
+        console.warn("Invalid delta size", size);
+        return offset;
     }
 
-    const agentCount = Math.floor((buffer.byteLength - offset) / stride);
+    for (let i = 0; i < size; i++) {
+        if (offset + 5 > view.byteLength) break;
 
+        const index = view.getInt32(offset, true);
+        offset += 4;
+
+        const value = view.getUint8(offset);
+        offset += 1;
+
+        if (index >= 0 && index < target.length) {
+            target[index] = value;
+        }
+    }
+
+    return offset;
+};
+
+const decodeAgents = (buffer: ArrayBuffer, offset: number): AgentData[] => {
+    const stride = 22;
+    const remaining = buffer.byteLength - offset;
+
+    if (remaining < 0) return [];
+
+    const count = Math.floor(remaining / stride);
     const view = new DataView(buffer);
 
-    const agents = [] as AgentData[];
+    const agents: AgentData[] = [];
 
-    for(let i = 0; i < agentCount; i++){
-
+    for (let i = 0; i < count; i++) {
         const base = offset + i * stride;
 
-        const posX = view.getFloat32(base, true);
-        const posY = view.getFloat32(base + 4, true);
-
-        const vX = view.getFloat32(base + 8, true);
-        const vY = view.getFloat32(base + 12, true);
-
-        const speed = view.getUint8(base + 16);
-        const energy = view.getUint8(base + 17);
-
-        const hunger = view.getUint8(base + 18);
-        const heat = view.getUint8(base + 19);
-        const curiosity = view.getUint8(base + 20);
-        const fear = view.getUint8(base + 21);
-
-        agents.push({posX,posY,vX,vY,speed,energy, hunger,heat,curiosity,fear});
+        agents.push({
+            posX: view.getFloat32(base, true),
+            posY: view.getFloat32(base + 4, true),
+            vX: view.getFloat32(base + 8, true),
+            vY: view.getFloat32(base + 12, true),
+            speed: view.getUint8(base + 16),
+            energy: view.getUint8(base + 17),
+            hunger: view.getUint8(base + 18),
+            heat: view.getUint8(base + 19),
+            curiosity: view.getUint8(base + 20),
+            fear: view.getUint8(base + 21),
+        });
     }
 
     return agents;
-}
+};
+

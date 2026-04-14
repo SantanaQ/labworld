@@ -4,7 +4,7 @@ import {SimWebSocket} from "./SimWebsocket.ts";
 import type {WorldConfig} from "../pages/Dashboard.tsx";
 import type {Camera} from "../hooks/useCanvasCamera.ts";
 import React from "react";
-import {handleBinaryFrame, setFrameHandler} from "./FrameDecoder.ts";
+import {handleBinaryFrame} from "./FrameDecoder.ts";
 
 export type ConnectionStatus = 'connected' | 'reconnecting' | 'disconnected';
 
@@ -32,7 +32,8 @@ export class SimEngine {
         speed: 1,
     };
 
-    constructor(canvas: HTMLCanvasElement, cameraRef : React.RefObject<Camera>) {
+    constructor(canvas: HTMLCanvasElement,
+                cameraRef : React.RefObject<Camera>) {
         this.renderer = new CanvasRenderer(canvas, cameraRef);
     }
 
@@ -44,14 +45,7 @@ export class SimEngine {
 
     public connect(sessionId: string) {
         if (this.ws?.isOpen()) return;
-        this.ws = new SimWebSocket(sessionId, (frame) => handleBinaryFrame(frame), (status) => this.logStatus(status));
-
-        setFrameHandler((frameData) => {
-            this.layers.getLayer("heat").data.set(frameData.heat);
-            this.layers.getLayer("supply").data.set(frameData.supply);
-            this.layers.getLayer("scent").data.set(frameData.scent);
-            this.layers.setAgents(frameData.agents);
-        })
+        this.ws = new SimWebSocket(sessionId, (frame) => handleBinaryFrame(frame, this.layers), (status) => this.logStatus(status));
 
         this.ws.connect();
     }
@@ -60,8 +54,6 @@ export class SimEngine {
     private async logStatus(status : ConnectionStatus) {
         console.log('WS status:', status);
     }
-
-
 
 
     public updateSettings(settings: Partial<SimSettings>) {

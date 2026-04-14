@@ -10,13 +10,22 @@ public class WorldSnapshot {
 
     public static int AGENT_PROPS = AgentProps.values().length;
 
+    private static final float CHANGE_THRESHOLD = 0.01f;
+
     private final UUID worldId;
     private final int width;
     private final int height;
 
-    private final float[] heatBuffer;
-    private final float[] foodBuffer;
-    private final float[] scentBuffer;
+    private final int[] indexBuffer;
+    private final float[] deltaBuffer;
+
+    private final float[] lastHeat;
+    private final float[] lastFood;
+    private final float[] lastScent;
+
+    private LayerDelta heatDelta;
+    private LayerDelta foodDelta;
+    private LayerDelta scentDelta;
 
     private final List<float[]> agentSnaps;
 
@@ -28,9 +37,16 @@ public class WorldSnapshot {
         this.width = world.width();
         this.height = world.height();
 
-        this.heatBuffer = new float[width * height];
-        this.foodBuffer = new float[width * height];
-        this.scentBuffer = new float[width * height];
+        this.indexBuffer = new int[width * height];
+        this.deltaBuffer = new float[width * height];
+
+        this.heatDelta = new LayerDelta();
+        this.foodDelta = new LayerDelta();
+        this.scentDelta = new LayerDelta();
+
+        this.lastHeat = new float[width * height];
+        this.lastFood = new float[width * height];
+        this.lastScent = new float[width * height];
 
         this.agentBuffer = new float[world.agentCount() *  AGENT_PROPS];
 
@@ -40,9 +56,17 @@ public class WorldSnapshot {
     public void refresh(World world) {
         agentSnaps.clear();
 
-        copyLayer(world, LayerID.FOOD, foodBuffer);
-        copyLayer(world, LayerID.SCENT, scentBuffer);
-        copyLayer(world, LayerID.HEAT, heatBuffer);
+        float[] currentFood = world.layer(LayerID.FOOD).values();
+        float[] currentScent = world.layer(LayerID.SCENT).values();
+        float[] currentHeat = world.layer(LayerID.HEAT).values();
+
+        computeDelta(foodDelta, lastFood, currentFood);
+        computeDelta(scentDelta, lastScent, currentScent);
+        computeDelta(heatDelta, lastHeat, currentHeat);
+
+        copyLayer(currentFood, lastFood);
+        copyLayer(currentScent, lastScent);
+        copyLayer(currentHeat, lastHeat);
 
         int base = 0;
         for(Agent agent : world.agents()) {
@@ -60,9 +84,23 @@ public class WorldSnapshot {
         }
     }
 
-    private void copyLayer(World world, LayerID layerId, float[] buffer) {
-        float[] src = world.layer(layerId).values();
-        System.arraycopy(src, 0, buffer, 0, src.length);
+    private void copyLayer(float[] values,  float[] buffer) {
+        System.arraycopy(values, 0, buffer, 0, values.length);
+    }
+
+    private void computeDelta(LayerDelta delta, float[] lastValues, float[] currentValues) {
+        int count = 0;
+        for(int i = 0; i < currentValues.length; i++) {
+
+            if(Math.abs(lastValues[i] - currentValues[i]) > CHANGE_THRESHOLD) {
+                indexBuffer[count] = i;
+                deltaBuffer[count++] = currentValues[i];
+            }
+        }
+
+        delta.setSize(count);
+        delta.setValues(Arrays.copyOf(deltaBuffer, count));
+        delta.setIndexes(Arrays.copyOf(indexBuffer, count));
     }
 
     public UUID worldId() {
@@ -82,20 +120,31 @@ public class WorldSnapshot {
     }
 
     public float[] heat() {
-        return heatBuffer;
+        return lastHeat;
     }
 
     public float[] food() {
-        return foodBuffer;
+        return lastFood;
+    }
+
+    public float[] scent() {
+        return lastScent;
+    }
+
+    public LayerDelta heatDelta() {
+        return heatDelta;
+    }
+
+    public LayerDelta foodDelta() {
+        return foodDelta;
+    }
+
+    public LayerDelta scentDelta() {
+        return scentDelta;
     }
 
     public float[] agents() {
         return agentBuffer;
     }
-
-    public float[] scent() {
-        return scentBuffer;
-    }
-
 
 }

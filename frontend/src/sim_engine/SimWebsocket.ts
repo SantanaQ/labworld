@@ -1,5 +1,6 @@
 import {getWsUrl} from "./getWsUrl.ts";
 import type {ConnectionStatus} from "./SimEngine.ts";
+
 export class SimWebSocket {
     private socket: WebSocket | null = null;
     private retries = 0;
