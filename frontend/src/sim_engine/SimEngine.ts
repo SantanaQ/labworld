@@ -63,10 +63,17 @@ export class SimEngine {
     private draw = () => {
         this.renderer.clear();
 
-        if (this.settings.showHeat) this.renderer.drawLayer(this.layers.getLayer('heat'), (v) => [255, 50, 50, v]);
-        if (this.settings.showSupply) this.renderer.drawLayer(this.layers.getLayer('supply'), (v) => [0, 0, 255, v]);
-        if (this.settings.showScent) this.renderer.drawLayer(this.layers.getLayer('scent'), (v) => [0, 255, 0, v]);
-        if (this.settings.showAgents) this.renderer.drawAgents(this.layers.getAgents()) ;
+        if (this.settings.showHeat)
+            this.renderer.drawLayer(this.layers.getLayer("heat"), this.renderer.heatLUT, "lighter");
+
+        if (this.settings.showSupply)
+            this.renderer.drawLayer(this.layers.getLayer("supply"), this.renderer.supplyLUT, "screen");
+
+        if (this.settings.showScent)
+            this.renderer.drawLayer(this.layers.getLayer("scent"), this.renderer.scentLUT, "lighter");
+
+        if (this.settings.showAgents)
+            this.renderer.drawAgents(this.layers.getAgents()) ;
 
         this.animationFrameId = requestAnimationFrame(this.draw);
     }

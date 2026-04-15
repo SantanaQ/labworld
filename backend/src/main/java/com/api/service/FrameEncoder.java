@@ -8,6 +8,10 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.UUID;
 
+/*TODO: refactor to chunk system
+    HEADER: id, width, height,
+    CHUNK: type, size, stride, payload
+ */
 public class FrameEncoder {
 
     private final ByteBuffer buffer;

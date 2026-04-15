@@ -2,8 +2,6 @@ package com.api.session;
 
 import com.api.service.FrameEncoder;
 import com.api.service.Gzip;
-import com.api.service.frame_layouts.AgentLayout;
-import com.api.service.frame_layouts.WorldLayout;
 import com.api.ws.WebSocketBroadcaster;
 import com.sim.config.WorldConfig;
 import com.sim.snapshot.WorldSnapshot;
@@ -15,7 +13,6 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.zip.Deflater;
 
 public class SessionContext {
 
@@ -26,6 +23,7 @@ public class SessionContext {
     private final Object bufferLock = new Object();
     private volatile  WorldSnapshot frontBuffer;
     private  WorldSnapshot backBuffer;
+    private volatile boolean sendable = false;
 
     private final FrameEncoder encoder;
 
@@ -49,16 +47,6 @@ public class SessionContext {
         frontBuffer = new WorldSnapshot(world);
         backBuffer = new WorldSnapshot(world);
 
-
-        /*encoder = new FrameEncoder(
-                new WorldLayout(
-                        config.layerCount(),
-                        config.width(),
-                        config.height(),
-                        config.agentCount(),
-                        AgentLayout.STRIDE
-                )
-        );*/
         encoder = new FrameEncoder(config);
 
     }
@@ -99,13 +87,23 @@ public class SessionContext {
     }
 
     private void runBroadcast() {
+        int deltasSent = 0;
         while (running.get()) {
             try {
                 long startTime = System.nanoTime();
 
-                byte[] payload = copyAndCompressBuffer(false);
-
-                broadcaster.send(id.toString(), payload);
+                if(sendable) {
+                    byte[] payload;
+                    payload = copyAndCompressBuffer(false);
+                    // update with fullframe every 5 seconds
+                    /*if(deltasSent++ >= 20 * broadcastFps) {
+                        payload = copyAndCompressBuffer(true);
+                        deltasSent = 0;
+                    } else {
+                        payload = copyAndCompressBuffer(false);
+                    }*/
+                    broadcaster.send(id.toString(), payload);
+                }
 
                 long elapsed = System.nanoTime() - startTime;
                 long sleepNanos = broadcastNanos - elapsed;
@@ -124,6 +122,7 @@ public class SessionContext {
         WorldSnapshot tmp = frontBuffer;
         frontBuffer = backBuffer;
         backBuffer = tmp;
+        sendable = true;
     }
 
     public void pause() {
