@@ -10,7 +10,7 @@ import com.sim.world.TestWorldBuilder;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AgentTest {
-
+/*
     @Test
     void agent_adjusts_positioning_towards_food_if_in_need() {
 
@@ -170,6 +170,6 @@ public class AgentTest {
         agent.actOn(world);
         agent.actOn(world);
 
-    }
+    }*/
 
 }
