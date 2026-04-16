@@ -6,10 +6,10 @@ public class Needs {
     public static final float MIN = 0;
     public static final float HEAT_OPTIMUM = 0.5f;
 
-    private final float energyCost = 0.002f;
+    private final float energyCost = 0.02f;
     private final float heatAbsorption = 0.05f;
     private final float foodAbsorption = 0.5f;
-    private final float curiosityFactor = 0.4f;
+    private final float curiosityFactor = 0.02f;
 
     // ascending
     private float hunger;
@@ -67,7 +67,7 @@ public class Needs {
 
 
     public float interestFood() {
-        return hunger;
+        return Math.max(0f, hunger - 0.3f);
     }
 
     public float interestHeat() {
@@ -99,7 +99,7 @@ public class Needs {
 
     public void reactToFood(float val) {
 
-        float eat = val * foodAbsorption;
+        float eat = val;// * foodAbsorption;
 
         foodConsumption = eat;
 
@@ -123,7 +123,7 @@ public class Needs {
         curiosity = Math.clamp(curiosity + curiosityGain * 0.1f, MIN, MAX);
 
         if (val > 0.7f) {
-            fear = Math.clamp(fear + val * 0.2f, MIN, MAX);
+            fear = Math.clamp(fear + val, MIN, MAX);
         } else {
             fear = Math.clamp(fear - 0.01f, MIN, MAX);
         }

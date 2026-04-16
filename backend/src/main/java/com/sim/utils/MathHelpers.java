@@ -4,6 +4,12 @@ public class MathHelpers {
 
     public static final float TWO_PI  = (float) ((float) 2*Math.PI);
 
+    public static final float[][] gaussian3x3 = new float[][]{
+            {0.25f, 0.5f, 0.25f},
+            {0.5f, 1f, 0.5f},
+            {0.25f, 0.5f, 0.25f}
+    };
+
     public static float lerp(float a, float b, float t) {
         return a + (b - a) * t;
     }

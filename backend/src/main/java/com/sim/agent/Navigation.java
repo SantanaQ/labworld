@@ -7,9 +7,9 @@ import java.util.Random;
 
 public class Navigation {
 
-    static Vector towardsTargetValue(WorldLayer layer,
-                                     Position position,
-                                     float targetVal) {
+    static Vector navigateAllNeighbors(WorldLayer layer,
+                                       Position position,
+                                       float targetVal) {
         float eps = 0.5f;
 
         float agentX = position.x();
@@ -61,6 +61,63 @@ public class Navigation {
                 (float)Math.cos(angle),
                 (float)Math.sin(angle)
         );
+    }
+
+
+    static Vector navigateWithRays(WorldLayer layer,
+                                   Position position,
+                                   Vector forward,
+                                   float targetVal,
+                                   float rayDistance) {
+
+        float angleOffset = 0.5f; // ~30°
+        int steps = 5;
+
+        Vector left = forward.copy().rotate(-angleOffset);
+        Vector right = forward.copy().rotate(angleOffset);
+
+        float centerVal = sampleRay(layer, position.x(), position.y(), forward, rayDistance, steps);
+        float leftVal   = sampleRay(layer, position.x(), position.y(), left, rayDistance, steps);
+        float rightVal  = sampleRay(layer, position.x(), position.y(), right, rayDistance, steps);
+
+        float direction = Math.signum(targetVal - centerVal);
+
+        float errorCenter = Math.abs(targetVal - centerVal);
+        float errorLeft   = Math.abs(targetVal - leftVal);
+        float errorRight  = Math.abs(targetVal - rightVal);
+
+        Vector bestDir = forward;
+        float bestError = errorCenter;
+
+        if (errorLeft < bestError) {
+            bestError = errorLeft;
+            bestDir = left;
+        }
+
+        if (errorRight < bestError) {
+            bestError = errorRight;
+            bestDir = right;
+        }
+
+        return bestDir.normalize().scale(direction);
+    }
+
+
+    static float sampleRay(WorldLayer layer, float startX, float startY,
+                           Vector dir, float distance, int steps) {
+
+        float sum = 0f;
+
+        for (int i = 1; i <= steps; i++) {
+            float t = (i / (float) steps) * distance;
+
+            float x = startX + dir.vx() * t;
+            float y = startY + dir.vy() * t;
+
+            sum += sampleBilinear(layer, x, y);
+        }
+
+        return sum / steps;
     }
 
 

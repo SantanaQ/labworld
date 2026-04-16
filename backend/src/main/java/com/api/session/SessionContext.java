@@ -94,14 +94,13 @@ public class SessionContext {
 
                 if(sendable) {
                     byte[] payload;
-                    payload = copyAndCompressBuffer(false);
-                    // update with fullframe every 5 seconds
-                    /*if(deltasSent++ >= 20 * broadcastFps) {
+                    // update with fullframe every 0.5 seconds
+                    if(deltasSent++ >= 0.5 * broadcastFps) {
                         payload = copyAndCompressBuffer(true);
                         deltasSent = 0;
                     } else {
                         payload = copyAndCompressBuffer(false);
-                    }*/
+                    }
                     broadcaster.send(id.toString(), payload);
                 }
 

@@ -7,34 +7,34 @@ import com.sim.world.World;
 public class Agent {
 
     Position pos;
+    Position lastPos;
     Vector velocity;
-    Vector lastVelocity;
     float speed;
 
     Needs needs;
 
-    private final float baseSpeed = 0.3f;
-    private float actualSpeed;
+    private final float BASE_SPEED = 0.3f;
+
+    private final float MAX_SPEED_FOR_INTERACTION = 0.1f;
 
     public Agent(Position pos) {
         this.pos = pos;
+        this.lastPos = pos;
         this.velocity = new Vector(0,0);
-        this.lastVelocity = new Vector(0,0);
         this.speed = 0.2f;
         this.needs = new Needs();
     }
 
     public Agent(Position pos, Needs needs) {
         this.pos = pos;
-        this.velocity = new Vector(0,0);
-        this.lastVelocity = new Vector(0,0);
+        this.lastPos = pos;
+        this.velocity = new Vector(0.5f,0.5f);
         this.speed = 0.2f;
         this.needs = needs;
     }
 
     public float speed() {
-        return baseSpeed * (0.2f + 0.8f * needs.energy());
-        //return baseSpeed * needs.energy() * (0.5 + needs.hunger());
+        return speed;
     }
 
     public Position position() {
@@ -52,7 +52,7 @@ public class Agent {
     public void actOn(World world) {
         Coordinate c = pos.nearestCoordinate(world);
         Senses s = sense(world, c);
-        decide(world);
+        decide(s, world);
         move(world);
         metabolism(s);
         interact(world, c);
@@ -63,26 +63,19 @@ public class Agent {
         float heatHere = world.layerAt(LayerID.HEAT, c);
         float scentHere = world.layerAt(LayerID.SCENT, c);
 
-        float foodSlowdown =
-                1f - needs.hunger() * foodHere * 0.8f;
+        float foodSlow = needs.interestFood() * foodHere * 0.5f;
 
-        float heatDiff =
-                Math.abs(heatHere - Needs.HEAT_OPTIMUM);
+        float energySlow = (1f - needs.energy()) * 0.5f;
 
-        float heatSpeed =
-                1f + heatDiff * 0.8f;
+        float stressSpeed = needs.interestAvoid() * 0.5f;
 
-        float fearBoost =
-                1f + needs.fear() * scentHere * 1.5f;
+        speed = BASE_SPEED * (1f - foodSlow - energySlow) + stressSpeed;
+        if(needs.interestAvoid() > 0.9f) {
+            speed += needs.interestAvoid() * 0.3f;
+        }
 
-        float energyFactor =
-                0.3f + needs.energy() * 0.7f;
+        speed = Math.max(0.05f, speed);
 
-        actualSpeed = baseSpeed
-                        * energyFactor
-                        * foodSlowdown
-                        * heatSpeed
-                        * fearBoost;
         return new Senses(
                 foodHere,
                 heatHere,
@@ -90,63 +83,72 @@ public class Agent {
         );
     }
 
-    private void decide(World world) {
-        velocity.set(0,0);
+    private void decide(Senses s, World world) {
 
-        Vector vFood = Navigation.towardsTargetValue(
+        float rayDistance = 7f;
+
+        Vector forward = velocity.length() > 0.01f
+                ? velocity.copy().normalize()
+                : Navigation.randomVector(world.random());
+
+        Vector steering = new Vector(0, 0);
+
+        Vector vFood = Navigation.navigateWithRays(
                 world.layer(LayerID.FOOD),
                 pos,
-                Needs.MAX
+                forward,
+                Needs.MAX,
+                rayDistance
         ).multiply(needs.interestFood());
 
-        Vector vHeat = Navigation.towardsTargetValue(
+
+        Vector vHeat = Navigation.navigateWithRays(
                 world.layer(LayerID.HEAT),
                 pos,
-                Needs.HEAT_OPTIMUM
-        ).multiply(needs.interestHeat() * 0.6f);
+                forward,
+                Needs.HEAT_OPTIMUM,
+                rayDistance
+        ).multiply(needs.interestHeat());
 
-        Vector vTrail = Navigation.towardsTargetValue(
+        Vector vTrail = Navigation.navigateWithRays(
                 world.layer(LayerID.SCENT),
                 pos,
-                Needs.MAX
-        ).multiply(needs.curiosity() * 0.6f);
+                forward,
+                0.2f,
+                rayDistance
+        ).multiply(needs.interestExplore());
 
-        Vector vExplore = Navigation.towardsTargetValue(
-                world.layer(LayerID.SCENT),
-                pos,
-                Needs.MAX
-        ).multiply(needs.interestExplore() * 0.4f);
-
-
-        Vector vAvoid = Navigation.towardsTargetValue(
+        Vector vAvoid = Navigation.navigateAllNeighbors(
                 world.layer(LayerID.SCENT),
                 pos,
                 Needs.MIN
-        ).multiply(needs.interestAvoid() * 0.7f);
+        ).multiply(needs.interestAvoid());
 
-        velocity
-                .add(vFood)
-                .add(vHeat)
-                //.add(vTrail)
-                //.add(vExplore)
-                .add(vAvoid);
-
-        if (velocity.length() < 0.05f) {
-            velocity.add(
-                    Navigation.randomVector(world.random())
-                            .multiply(0.2f)
-            );
+        if (needs.fear() > 0.6f) {
+            steering.add(vAvoid.multiply(1.5f));
+        }
+        else if (needs.hunger() > 0.7f) {
+            steering.add(vFood);
+        } else if (needs.interestHeat() > 0.3f) {
+            steering.add(vHeat);
+        }
+        else {
+            steering.add(vTrail.multiply(0.5f));
         }
 
-        velocity.add(lastVelocity.multiply(0.4f));
+        steering.add(wallAvoidance(world).multiply(2f));
 
-        Vector vWall = wallAvoidance(world);
-        velocity.add(vWall);
+        steering.add(velocity.multiply(0.3f));
 
-
-        if (velocity.length() > 1f) {
-            velocity.normalize();
+        if (steering.length() < 0.5f) {
+            steering.add(Navigation.randomVector(world.random()).multiply(0.2f));
         }
+
+        if (steering.length() > 1f) {
+            steering.normalize();
+        }
+
+        velocity = steering;
     }
 
     private Vector wallAvoidance(World world) {
@@ -173,10 +175,10 @@ public class Agent {
     }
 
     private void move(World world) {
-        float pX = (float) (pos.x() + velocity().vx() * actualSpeed);
-        float pY = (float) (pos.y() + velocity().vy() * actualSpeed);
+        this.lastPos = pos;
+        float pX = pos.x() + velocity().vx() * speed;
+        float pY = pos.y() + velocity().vy() * speed;
         this.pos = new Position(pX,pY);
-        this.lastVelocity.copyOf(velocity);
     }
 
     private void metabolism(Senses s) {
@@ -187,28 +189,26 @@ public class Agent {
         needs.applyHunger(movement);
 
         needs.reactToHeat(s.heat());
-        needs.reactToFood(s.food());
-        /*if (movement < 0.05f) {
+
+        if (speed < MAX_SPEED_FOR_INTERACTION) {
             needs.reactToFood(s.food());
-        }*/
+        }
 
         needs.reactToScent(s.scent());
+
     }
 
 
     private void interact(World world, Coordinate c) {
+        Coordinate lastCoordinate  = lastPos.nearestCoordinate(world);
 
-        float scentDeposit = 0.2f;
+        float scentDeposit = 0.1f;
 
-        // stronger scent when food found
-        if(world.layerAt(LayerID.FOOD, c) > 0.4f) {
-            scentDeposit += 0.6f;
-        }
+        world.affect(LayerID.SCENT, lastCoordinate, scentDeposit);
 
-        world.affect(LayerID.SCENT, c, scentDeposit);
-        //world.affect(LayerID.FOOD, c, -needs.foodConsumption());
-        if (velocity.length() < 0.10f) {
-            world.affect(LayerID.FOOD, c, -1);
+        if (velocity.length() < MAX_SPEED_FOR_INTERACTION) {
+            //world.affect(LayerID.FOOD, c, -0.5f);
+            world.affectKernel(LayerID.FOOD , c);
         }
     }
 }

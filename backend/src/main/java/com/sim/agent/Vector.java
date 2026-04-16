@@ -54,7 +54,16 @@ public class Vector {
 
         float newX = vx * cos - vy * sin;
         float newY = vx * sin + vy * cos;
+        this.vx = newX;
+        this.vy = newY;
 
+
+        return this;
+    }
+
+    public Vector scale(float scale) {
+        this.vx *= scale;
+        this.vy *= scale;
         return this;
     }
 

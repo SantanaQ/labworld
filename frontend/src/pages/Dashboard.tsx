@@ -90,7 +90,7 @@ const Dashboard: React.FC = () => {
                 {/* Right Page (Simulation) */}
                 <div className="flex-1 overflow-hidden bg-zinc-950 rounded-xl border border-zinc-700 shadow-2xl">
                     {worldConfig ? (
-                        <SimulationContainer config={worldConfig} />
+                        <SimulationContainer key={worldConfig.sessionId} config={worldConfig} />
                     ) : (
                         <div className="flex items-center justify-center h-full text-zinc-500 italic">
                             Waiting for world configuration...

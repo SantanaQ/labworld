@@ -48,7 +48,8 @@ public class DiffusionGrowthStateUpdater implements StateUpdater {
                     s += growthRate * p * (1 - s);
                 }
 
-                s += influence[idx];
+                //s += influence[idx];
+                s += influence[idx] * (1f - s);
 
                 s *= stateDecay;
 

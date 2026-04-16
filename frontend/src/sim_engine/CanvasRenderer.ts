@@ -107,20 +107,21 @@ export class CanvasRenderer {
             const b = a.hunger;
 
 
-            const pulse = 1 + Math.sin(Date.now() * 0.002 + x * 0.001) * 0.2;
-            const size = (1 + speed * 2) * pulse;
+            //const pulse = 1 + Math.sin(Date.now() * 0.002 + x * 0.001) * 0.2;
+            //const size = (1 + speed * 2) * pulse;
+            const size = 0.5;
             //const size = 1.5 + speed * 2;
 
             //const vx = a.vX * 6;
             //const vy = a.vY * 6;
 
             // outer glow
-            ctx.beginPath();
+            /*ctx.beginPath();
             ctx.fillStyle = `rgba(${r},${g},${b},0.15)`;
             ctx.shadowBlur = 12;
             ctx.shadowColor = `rgba(${r},${g},${b},0.6)`;
             ctx.arc(x, y, size * 2.2, 0, Math.PI * 2);
-            ctx.fill();
+            ctx.fill();*/
 
             // body
             ctx.shadowBlur = 0;

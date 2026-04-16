@@ -42,7 +42,7 @@ public class DiffusionRelaxationStateUpdater implements StateUpdater {
                 s += relaxation * (p - s);
 
                 // influence
-                s += influence[idx];
+                s += influence[idx] * (1f - s);
                 s = Math.clamp(s, 0f, 1f);
 
                 // decay
