@@ -56,7 +56,7 @@ public class WorldSnapshot {
     public void refresh(World world) {
         agentSnaps.clear();
 
-        float[] currentFood = world.layer(LayerID.FOOD).values();
+        float[] currentFood = world.layer(LayerID.SUPPLY).values();
         float[] currentScent = world.layer(LayerID.SCENT).values();
         float[] currentHeat = world.layer(LayerID.HEAT).values();
 

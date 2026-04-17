@@ -37,9 +37,9 @@ public class EditorGraph {
 
     public List<EditorNode> executionOrderOfLayer(LayerID layerID) {
         switch (layerID) {
-            case FOOD -> {
-                EditorGraphNode foodLayer = nodeMap.get("supplyLayer");
-                return executionOrder(foodLayer);
+            case SUPPLY -> {
+                EditorGraphNode supplyLayer = nodeMap.get("supplyLayer");
+                return executionOrder(supplyLayer);
             }
             case HEAT -> {
                 EditorGraphNode heatLayer = nodeMap.get("heatLayer");

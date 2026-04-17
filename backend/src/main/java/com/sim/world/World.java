@@ -33,7 +33,7 @@ public class World {
         rand = new Random(config.seed());
 
         addRuntime(LayerID.HEAT, config.heatConfig);
-        addRuntime(LayerID.FOOD, config.foodConfig);
+        addRuntime(LayerID.SUPPLY, config.supplyConfig);
         addRuntime(LayerID.SCENT, config.scentConfig);
 
         rebuildAll();

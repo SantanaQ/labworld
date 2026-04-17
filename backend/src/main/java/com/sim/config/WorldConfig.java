@@ -18,7 +18,7 @@ public class WorldConfig {
     private int layerCount;
 
     public LayerConfig heatConfig;
-    public LayerConfig foodConfig;
+    public LayerConfig supplyConfig;
     public LayerConfig scentConfig;
 
     public WorldConfig() {
@@ -37,8 +37,8 @@ public class WorldConfig {
         this.layerCount++;
     }
 
-    public void setFoodConfig(LayerConfig foodConfig) {
-        this.foodConfig = foodConfig;
+    public void setSupplyConfig(LayerConfig supplyConfig) {
+        this.supplyConfig = supplyConfig;
         this.layerCount++;
     }
 
@@ -49,7 +49,7 @@ public class WorldConfig {
 
     public void setDefaults() {
         setHeatConfig(DefaultCfgs.defaultHeat(width, height, seed));
-        setFoodConfig(DefaultCfgs.defaultFood(width, height, seed));
+        setSupplyConfig(DefaultCfgs.defaultFood(width, height, seed));
         setScentConfig(DefaultCfgs.defaultScent(width, height, seed));
     }
 
@@ -94,7 +94,7 @@ public class WorldConfig {
     public LayerConfig configOf(LayerID id) {
         return switch (id) {
             case HEAT -> heatConfig;
-            case FOOD -> foodConfig;
+            case SUPPLY -> supplyConfig;
             case SCENT -> scentConfig;
         };
     }
@@ -109,7 +109,7 @@ public class WorldConfig {
 
     public void addStateLayer(String id, StateLayerConfig stateLayer) {
         switch (id) {
-            case "food": setFoodConfig(stateLayer); break;
+            case "food": setSupplyConfig(stateLayer); break;
             case "scent": setScentConfig(stateLayer); break;
             default: throw new IllegalArgumentException("Potential layer " + id + " not supported");
         }

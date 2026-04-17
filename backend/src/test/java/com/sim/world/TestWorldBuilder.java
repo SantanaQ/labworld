@@ -53,7 +53,7 @@ public class TestWorldBuilder {
         foodCfg.setTimeBehavior(new Fixed());
         foodCfg.setPotentialUpdater(new DefaultPotentialUpdater());
         foodCfg.setStateUpdater(new CopyStateUpdater());
-        config.setFoodConfig(foodCfg);
+        config.setSupplyConfig(foodCfg);
 
         PotentialLayerConfig heatCfg = new PotentialLayerConfig(width, height);
         heatCfg.setSignalSource(new GridSignal(heat));

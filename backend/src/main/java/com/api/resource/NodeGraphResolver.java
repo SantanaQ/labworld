@@ -27,8 +27,8 @@ public class NodeGraphResolver {
         LayerConfig heatConfig = layerFromGraph(LayerID.HEAT, width, height);
         worldConfig.setHeatConfig(heatConfig);
 
-        LayerConfig supplyConfig = layerFromGraph(LayerID.FOOD, width, height);
-        worldConfig.setFoodConfig(supplyConfig);
+        LayerConfig supplyConfig = layerFromGraph(LayerID.SUPPLY, width, height);
+        worldConfig.setSupplyConfig(supplyConfig);
 
         LayerConfig scentConfig = layerFromGraph(LayerID.SCENT, width, height);
         worldConfig.setScentConfig(scentConfig);
@@ -42,8 +42,8 @@ public class NodeGraphResolver {
                 List<EditorNode> order = editorGraph.executionOrderOfLayer(LayerID.HEAT);
                 return LayerAssembler.buildPotentialLayerConfig(order, width, height);
             }
-            case FOOD -> {
-                List<EditorNode> order = editorGraph.executionOrderOfLayer(LayerID.FOOD);
+            case SUPPLY -> {
+                List<EditorNode> order = editorGraph.executionOrderOfLayer(LayerID.SUPPLY);
                 return LayerAssembler.buildStateLayerConfig(order, width, height);
             }
             case SCENT -> {

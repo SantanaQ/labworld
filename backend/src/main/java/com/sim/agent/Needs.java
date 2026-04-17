@@ -8,7 +8,7 @@ public class Needs {
 
     private final float energyCost = 0.02f;
     private final float heatAbsorption = 0.05f;
-    private final float foodAbsorption = 0.5f;
+    private final float supplyAbsorption = 0.5f;
     private final float curiosityFactor = 0.02f;
 
     // ascending
@@ -23,7 +23,7 @@ public class Needs {
     private float heat;
 
     // consumption
-    float foodConsumption;
+    float supplyConsumption;
 
     public Needs(float hunger,
                  float curiosity,
@@ -66,7 +66,7 @@ public class Needs {
     }
 
 
-    public float interestFood() {
+    public float interestSupply() {
         return Math.max(0f, hunger - 0.3f);
     }
 
@@ -97,11 +97,11 @@ public class Needs {
         );
     }
 
-    public void reactToFood(float val) {
+    public void reactToSupply(float val) {
 
-        float eat = val;// * foodAbsorption;
+        float eat = val;// * supplyAbsorption;
 
-        foodConsumption = eat;
+        supplyConsumption = eat;
 
         hunger = Math.max(hunger - eat, MIN);
         energy = Math.min(energy + eat, MAX);

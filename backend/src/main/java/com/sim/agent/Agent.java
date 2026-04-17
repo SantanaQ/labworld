@@ -59,17 +59,17 @@ public class Agent {
     }
 
     private Senses sense(World world, Coordinate c) {
-        float foodHere = world.layerAt(LayerID.FOOD, c);
+        float supplyHere = world.layerAt(LayerID.SUPPLY, c);
         float heatHere = world.layerAt(LayerID.HEAT, c);
         float scentHere = world.layerAt(LayerID.SCENT, c);
 
-        float foodSlow = needs.interestFood() * foodHere * 0.5f;
+        float supplySlow = needs.interestSupply() * supplyHere * 0.5f;
 
         float energySlow = (1f - needs.energy()) * 0.5f;
 
         float stressSpeed = needs.interestAvoid() * 0.5f;
 
-        speed = BASE_SPEED * (1f - foodSlow - energySlow) + stressSpeed;
+        speed = BASE_SPEED * (1f - supplySlow - energySlow) + stressSpeed;
         if(needs.interestAvoid() > 0.9f) {
             speed += needs.interestAvoid() * 0.3f;
         }
@@ -77,7 +77,7 @@ public class Agent {
         speed = Math.max(0.05f, speed);
 
         return new Senses(
-                foodHere,
+                supplyHere,
                 heatHere,
                 scentHere
         );
@@ -93,13 +93,13 @@ public class Agent {
 
         Vector steering = new Vector(0, 0);
 
-        Vector vFood = Navigation.navigateWithRays(
-                world.layer(LayerID.FOOD),
+        Vector vSupply = Navigation.navigateWithRays(
+                world.layer(LayerID.SUPPLY),
                 pos,
                 forward,
                 Needs.MAX,
                 rayDistance
-        ).multiply(needs.interestFood());
+        ).multiply(needs.interestSupply());
 
 
         Vector vHeat = Navigation.navigateWithRays(
@@ -128,7 +128,7 @@ public class Agent {
             steering.add(vAvoid.multiply(1.5f));
         }
         else if (needs.hunger() > 0.7f) {
-            steering.add(vFood);
+            steering.add(vSupply);
         } else if (needs.interestHeat() > 0.3f) {
             steering.add(vHeat);
         }
@@ -187,11 +187,10 @@ public class Agent {
 
         needs.applyEnergyCost(movement);
         needs.applyHunger(movement);
-
         needs.reactToHeat(s.heat());
 
         if (speed < MAX_SPEED_FOR_INTERACTION) {
-            needs.reactToFood(s.food());
+            needs.reactToSupply(s.supply());
         }
 
         needs.reactToScent(s.scent());
@@ -207,8 +206,8 @@ public class Agent {
         world.affect(LayerID.SCENT, lastCoordinate, scentDeposit);
 
         if (velocity.length() < MAX_SPEED_FOR_INTERACTION) {
-            //world.affect(LayerID.FOOD, c, -0.5f);
-            world.affectKernel(LayerID.FOOD , c);
+            //world.affect(LayerID.SUPPLY, c, -0.5f);
+            world.affectKernel(LayerID.SUPPLY, c);
         }
     }
 }
