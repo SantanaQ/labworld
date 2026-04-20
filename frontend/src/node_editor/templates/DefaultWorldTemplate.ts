@@ -8,7 +8,7 @@ export function createDefaultWorldTemplate(): { nodes: Node[]; edges: Edge[] } {
         // --- Heat Layer ---
         createNode("fractalNoise", "heatSignal", 100, -500, {
             seed: "create-with-this",
-            cellSize: 30,
+            cellSize: 48,
             octaves: 2,
             persistence: 0.4,
         }),
@@ -16,8 +16,8 @@ export function createDefaultWorldTemplate(): { nodes: Node[]; edges: Edge[] } {
         createNode("defaultPotentialUpdater", "heatBaseUpdate", -50, -300),
 
         createNode("softThreshold", "heatCompositing", -50, -200, {
-            threshold: 0.2,
-            softness: 0.1,
+            threshold: 0.4,
+            softness: 0.15,
         }),
 
         createNode("heatLayer", "heatLayer", 500, 50),
@@ -40,7 +40,7 @@ export function createDefaultWorldTemplate(): { nodes: Node[]; edges: Edge[] } {
             diffusion: 0.05,
             growth: 0.12,
             stateDecay: 0.998,
-            influenceDecay: 0.4,
+            influenceDecay: 0.999,
         }),
         createNode("softThreshold", "supplyCompositing1", -500, 550, { threshold: 0.55, softness: 0.08 }),
         createNode("suitabilityMask", "supplyCompositing2", -300, 650, { min: 0.15, max: 0.35 }),
@@ -50,10 +50,10 @@ export function createDefaultWorldTemplate(): { nodes: Node[]; edges: Edge[] } {
         // --- Scent Layer ---
         createNode("defaultPotentialUpdater", "scentBaseUpdate", 150, 850),
         createNode("diffusionRelaxationUpdater", "scentStateUpdate", 150, 1000, {
-            diffusion: 0.5,
+            diffusion: 0.15,
             relaxation: 0,
             stateDecay: 0.995,
-            influenceDecay: 0.3,
+            influenceDecay: 0.25,
         }),
         createNode("scentLayer", "scentLayer", 500, 550),
 

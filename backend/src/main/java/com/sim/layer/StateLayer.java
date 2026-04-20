@@ -60,5 +60,10 @@ public class StateLayer extends PotentialLayer {
         next = temp;
     }
 
+    @Override
+    public boolean hasState() {
+        return true;
+    }
+
 
 }

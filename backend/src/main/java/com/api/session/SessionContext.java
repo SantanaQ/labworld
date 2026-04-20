@@ -155,7 +155,6 @@ public class SessionContext {
     }
 
     public void applySpeed(double speed) {
-        speed = Math.clamp(speed, 0.1, 2.0);
         this.tickNanos = (long) (1_000_000_000L / (tickBase * speed));
     }
 

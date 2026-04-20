@@ -7,6 +7,8 @@ public interface WorldLayer {
     float valueAt(int x, int y);
     float[] values();
 
+    boolean hasState();
+
     default void printValues() {
         for(int y = 0 ; y < height() ; y++) {
             for(int x = 0 ; x < width() ; x++) {

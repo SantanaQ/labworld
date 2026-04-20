@@ -122,7 +122,7 @@ public class Needs {
 
         curiosity = Math.clamp(curiosity + curiosityGain * 0.1f, MIN, MAX);
 
-        if (val > 0.7f) {
+        if (val > 0.5f) {
             fear = Math.clamp(fear + val, MIN, MAX);
         } else {
             fear = Math.clamp(fear - 0.01f, MIN, MAX);

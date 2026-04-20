@@ -221,7 +221,7 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
                                 label="Speed"
                                 value={sliderValue}
                                 min={0.1}
-                                max={2}
+                                max={4}
                                 step={0.1}
                                 onChange={handleSliderChange}
                             />

@@ -144,20 +144,30 @@ public class World {
 
     public void affect(LayerID layerId, Coordinate c, float amount) {
         WorldLayer layer = layer(layerId);
-        if(layer instanceof StateLayer) {
-            ((StateLayer) layer).applyInfluence(c.x(), c.y(), amount);
+
+        if(!layer.hasState()) {
+            throw new IllegalArgumentException("Layer: " + layerId.name() + " has no state");
         }
+
+        ((StateLayer) layer).applyInfluence(c.x(), c.y(), amount);
     }
 
     public void affectKernel(LayerID layerId, Coordinate c) {
         StateLayer layer = (StateLayer) layer(layerId);
+
+        if(!layer.hasState()) {
+            throw new IllegalArgumentException("Layer: " + layerId.name() + " has no state");
+        }
+
         float[][] gaussian = MathHelpers.gaussian3x3;
         int center = 1;
         for(int dy = -1; dy <= 1; dy++) {
             for(int dx = -1; dx <= 1; dx++) {
-                float val = -(layer.valueAt(c.x() + dx,c.y() + dy)
-                        * gaussian[center + dy][center + dx]);
-                layer.applyInfluence(c.x() + dx, c.y() + dy, val);
+                if(rand.nextDouble(0,1) > 0.5) {
+                    float val = -(layer.valueAt(c.x() + dx,c.y() + dy)
+                            * gaussian[center + dy][center + dx]);
+                    layer.applyInfluence(c.x() + dx, c.y() + dy, val);
+                }
             }
         }
     }

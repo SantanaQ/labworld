@@ -75,5 +75,11 @@ public class PotentialLayer implements WorldLayer{
         return x >= 0 && x < width() && y >= 0 && y < height();
     }
 
+    @Override
+    public boolean hasState() {
+        return false;
+    }
+
+
 
 }

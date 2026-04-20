@@ -53,6 +53,9 @@ export interface NodeDefinition {
     params: Record<string, NodeParam>
 }
 
+const minDimension = 64;
+const maxDimension = 256;
+
 export const compositingRegistry = {
     clamp: {
         label: "Clamp",
@@ -375,9 +378,9 @@ export const signalRegistry = {
             },
             width: {
                 type: "int",
-                default: 256,
-                min: 2,
-                max: 2048,
+                default: maxDimension,
+                min: minDimension,
+                max: maxDimension,
                 step: 1,
                 inline: false,
                 hideLabel: true,
@@ -385,9 +388,9 @@ export const signalRegistry = {
             },
             height: {
                 type: "int",
-                default: 256,
-                min: 2,
-                max: 2048,
+                default: maxDimension,
+                min: minDimension,
+                max: maxDimension,
                 step: 1,
                 inline: false,
                 hideLabel: true,
@@ -688,7 +691,7 @@ export const stateUpdateRegistry = {
                 default: 0.05,
                 min: 0,
                 max: 1,
-                step: 0.01,
+                step: 0.001,
                 inline: true,
             },
             growth: {
@@ -696,7 +699,7 @@ export const stateUpdateRegistry = {
                 default: 0.10,
                 min: 0,
                 max: 1,
-                step: 0.01,
+                step: 0.001,
                 inline: true,
             },
             stateDecay: {
@@ -704,7 +707,7 @@ export const stateUpdateRegistry = {
                 default: 1,
                 min: 0,
                 max: 1,
-                step: 0.01,
+                step: 0.001,
                 inline: true,
             },
             influenceDecay: {
@@ -712,7 +715,7 @@ export const stateUpdateRegistry = {
                 default: 1,
                 min: 0,
                 max: 1,
-                step: 0.01,
+                step: 0.001,
                 inline: true,
             },
         },
@@ -741,7 +744,7 @@ export const stateUpdateRegistry = {
                 default: 0.05,
                 min: 0,
                 max: 1,
-                step: 0.01,
+                step: 0.001,
                 inline: true,
             },
             relaxation: {
@@ -749,7 +752,7 @@ export const stateUpdateRegistry = {
                 default: 0,
                 min: 0,
                 max: 1,
-                step: 0.01,
+                step: 0.001,
                 inline: true,
             },
             stateDecay: {
@@ -757,7 +760,7 @@ export const stateUpdateRegistry = {
                 default: 1,
                 min: 0,
                 max: 1,
-                step: 0.01,
+                step: 0.001,
                 inline: true,
             },
             influenceDecay: {
@@ -765,7 +768,7 @@ export const stateUpdateRegistry = {
                 default: 1,
                 min: 0,
                 max: 1,
-                step: 0.01,
+                step: 0.001,
                 inline: true,
             },
         },
@@ -1015,17 +1018,17 @@ export const worldRegistry = {
             },
             width: {
                 type: "int",
-                default: 256,
-                min: 2,
-                max: 2048,
+                default: maxDimension,
+                min: minDimension,
+                max: maxDimension,
                 step: 1,
                 inline: false,
             },
             height: {
                 type: "int",
-                default: 256,
-                min: 2,
-                max: 2048,
+                default: maxDimension,
+                min: minDimension,
+                max: maxDimension,
                 step: 1,
                 inline: false,
             },
@@ -1100,10 +1103,10 @@ export const entityRegistry = {
 
 export const modifierRegistry = {
     ...signalRegistry,
-    ... compositingRegistry,
+    ...compositingRegistry,
     ...stateUpdateRegistry,
     ...baseUpdateRegistry
-}
+} as Record<string, NodeDefinition>;
 
 export const nodeRegistry = {
     ... compositingRegistry,

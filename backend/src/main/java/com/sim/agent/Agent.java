@@ -15,7 +15,7 @@ public class Agent {
 
     private final float BASE_SPEED = 0.3f;
 
-    private final float MAX_SPEED_FOR_INTERACTION = 0.1f;
+    private final float MAX_INTERACTION_VELOCITY = 0.1f;
 
     public Agent(Position pos) {
         this.pos = pos;
@@ -85,7 +85,7 @@ public class Agent {
 
     private void decide(Senses s, World world) {
 
-        float rayDistance = 7f;
+        float rayDistance = 10f;
 
         Vector forward = velocity.length() > 0.01f
                 ? velocity.copy().normalize()
@@ -189,7 +189,7 @@ public class Agent {
         needs.applyHunger(movement);
         needs.reactToHeat(s.heat());
 
-        if (speed < MAX_SPEED_FOR_INTERACTION) {
+        if (movement < MAX_INTERACTION_VELOCITY) {
             needs.reactToSupply(s.supply());
         }
 
@@ -205,8 +205,7 @@ public class Agent {
 
         world.affect(LayerID.SCENT, lastCoordinate, scentDeposit);
 
-        if (velocity.length() < MAX_SPEED_FOR_INTERACTION) {
-            //world.affect(LayerID.SUPPLY, c, -0.5f);
+        if (velocity.length() < MAX_INTERACTION_VELOCITY) {
             world.affectKernel(LayerID.SUPPLY, c);
         }
     }
