@@ -11,6 +11,8 @@ export interface AgentData {
     heat: number
     curiosity: number
     fear: number
+    angle: number | null
+    stretch: number | null
 }
 
 export interface FrameData {
@@ -192,6 +194,8 @@ const decodeAgents = (buffer: ArrayBuffer, offset: number): AgentData[] => {
             heat: view.getUint8(base + 19),
             curiosity: view.getUint8(base + 20),
             fear: view.getUint8(base + 21),
+            angle: null,
+            stretch: null
         });
     }
 
