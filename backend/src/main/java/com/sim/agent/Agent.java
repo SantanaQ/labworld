@@ -14,14 +14,13 @@ public class Agent {
     Needs needs;
 
     private final float BASE_SPEED = 0.3f;
-
     private final float MAX_INTERACTION_VELOCITY = 0.1f;
 
     public Agent(Position pos) {
         this.pos = pos;
         this.lastPos = pos;
         this.velocity = new Vector(0,0);
-        this.speed = 0.2f;
+        this.speed = BASE_SPEED;
         this.needs = new Needs();
     }
 
@@ -29,7 +28,7 @@ public class Agent {
         this.pos = pos;
         this.lastPos = pos;
         this.velocity = new Vector(0.5f,0.5f);
-        this.speed = 0.2f;
+        this.speed = BASE_SPEED;
         this.needs = needs;
     }
 
@@ -209,4 +208,10 @@ public class Agent {
             world.affectKernel(LayerID.SUPPLY, c);
         }
     }
+
+    public void setPosition(Position pos) {
+        this.pos = pos;
+        this.lastPos = pos;
+    }
+
 }

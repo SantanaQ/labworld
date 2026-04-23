@@ -26,7 +26,6 @@ public class StateLayerConfig extends PotentialLayerConfig {
                 .withPotentialUpdater(potentialUpdater)
                 .withStateUpdater(stateUpdater)
                 .withCompositing(compositing)
-                .withCompositingStep(new Normalize(0,1))
                 .withCompositingStep(new Clamp(0,1))
                 .buildStateLayer();
     }

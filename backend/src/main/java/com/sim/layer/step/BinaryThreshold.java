@@ -10,7 +10,7 @@ public class BinaryThreshold implements LayerStep{
 
     @Override
     public float apply(float value, int x, int y) {
-        if (value > threshold) {
+        if (value >= threshold) {
             return 1;
         }
 

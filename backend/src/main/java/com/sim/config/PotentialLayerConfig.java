@@ -25,7 +25,6 @@ public class PotentialLayerConfig extends LayerConfig {
                 .withTimeBehavior(timeBehavior)
                 .withPotentialUpdater(potentialUpdater)
                 .withCompositing(compositing)
-                .withCompositingStep(new Normalize(0,1))
                 .withCompositingStep(new Clamp(0,1))
                 .buildPotentialLayer();
     }

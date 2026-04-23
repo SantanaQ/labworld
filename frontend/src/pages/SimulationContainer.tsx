@@ -183,7 +183,15 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
                     </div>
                     <div
                         className="absolute gap-1 text-zinc-100/20 flex top-2 left-2 text-[9px] text-white uppercase tracking-tighter">
-                        {simState === 'paused' ? <Hand /> : <View />}
+                        {simState === 'paused' ?
+                            <button title="hand of god" className="bg-transparent cursor-pointer">
+                                <Hand />
+                            </button>
+                            :
+                            <button title="view mode" className="bg-transparent">
+                                <View />
+                            </button>
+                        }
                     </div>
                 </div>
 
