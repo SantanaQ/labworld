@@ -1,5 +1,6 @@
 package com.api.service;
 
+import com.api.dto.AgentDTO;
 import com.api.session.SessionContext;
 import com.api.ws.WebSocketBroadcaster;
 import com.sim.config.WorldConfig;
@@ -52,6 +53,10 @@ public class SimulationService {
     public void stop(UUID sessionId) {
         SessionContext session = sessions.remove(sessionId);
         if (session != null) session.stop();
+    }
+
+    public AgentDTO findAgentById(UUID sessionId, short agentId) {
+        return sessions.get(sessionId).agentById(agentId);
     }
 
     public void sendPreview(UUID sessionId) {

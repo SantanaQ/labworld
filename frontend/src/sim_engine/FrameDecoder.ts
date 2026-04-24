@@ -1,6 +1,7 @@
 import type {LayerContainer} from "./LayerContainer.ts";
 
 export interface AgentData {
+    id: number
     posX: number
     posY: number
     vX: number
@@ -70,8 +71,8 @@ const parseFrame = (buffer: ArrayBuffer, layers: LayerContainer): FrameData => {
     };
 
     require(16);
-    const msb = view.getBigUint64(offset, false); offset += 8;
-    const lsb = view.getBigUint64(offset, false); offset += 8;
+    const msb = view.getBigUint64(offset, true); offset += 8;
+    const lsb = view.getBigUint64(offset, true); offset += 8;
 
     const sessionId = formatUUID(msb, lsb);
 
@@ -170,30 +171,36 @@ const applyDelta = (
 };
 
 const decodeAgents = (buffer: ArrayBuffer, offset: number): AgentData[] => {
-    const stride = 22;
+    const view = new DataView(buffer);
+
+    // First byte is byte size per agent
+    const stride = view.getUint8(offset);
+    offset++;
     const remaining = buffer.byteLength - offset;
 
     if (remaining < 0) return [];
 
     const count = Math.floor(remaining / stride);
-    const view = new DataView(buffer);
+
 
     const agents: AgentData[] = [];
 
     for (let i = 0; i < count; i++) {
         const base = offset + i * stride;
 
+
         agents.push({
-            posX: view.getFloat32(base, true),
-            posY: view.getFloat32(base + 4, true),
-            vX: view.getFloat32(base + 8, true),
-            vY: view.getFloat32(base + 12, true),
-            speed: view.getUint8(base + 16),
-            energy: view.getUint8(base + 17),
-            hunger: view.getUint8(base + 18),
-            heat: view.getUint8(base + 19),
-            curiosity: view.getUint8(base + 20),
-            fear: view.getUint8(base + 21),
+            id: view.getUint16(base, true),
+            posX: view.getFloat32(base + 2, true),
+            posY: view.getFloat32(base + 6, true),
+            vX: view.getFloat32(base + 10, true),
+            vY: view.getFloat32(base + 14, true),
+            speed: view.getUint8(base + 18),
+            energy: view.getUint8(base + 19),
+            hunger: view.getUint8(base + 20),
+            heat: view.getUint8(base + 21),
+            curiosity: view.getUint8(base + 22),
+            fear: view.getUint8(base + 23),
             angle: null,
             stretch: null
         });

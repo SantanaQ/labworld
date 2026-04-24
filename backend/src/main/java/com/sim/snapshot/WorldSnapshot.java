@@ -23,9 +23,9 @@ public class WorldSnapshot {
     private final float[] lastFood;
     private final float[] lastScent;
 
-    private LayerDelta heatDelta;
-    private LayerDelta foodDelta;
-    private LayerDelta scentDelta;
+    private final LayerDelta heatDelta;
+    private final LayerDelta foodDelta;
+    private final LayerDelta scentDelta;
 
     private final List<float[]> agentSnaps;
 
@@ -70,16 +70,17 @@ public class WorldSnapshot {
 
         int base = 0;
         for(Agent agent : world.agents()) {
-            agentBuffer[base] = agent.position().x();
-            agentBuffer[base + 1] = agent.position().y();
-            agentBuffer[base + 2] = agent.velocity().vx();
-            agentBuffer[base + 3] = agent.velocity().vy();
-            agentBuffer[base + 4] = agent.speed();
-            agentBuffer[base + 5] = agent.needs().energy();
-            agentBuffer[base + 6] = agent.needs().hunger();
-            agentBuffer[base + 7] = agent.needs().heat();
-            agentBuffer[base + 8] = agent.needs().curiosity();
-            agentBuffer[base + 9] = agent.needs().fear();
+            agentBuffer[base + AgentProps.ID.ordinal()] = agent.id();
+            agentBuffer[base + AgentProps.X.ordinal()] = agent.position().x();
+            agentBuffer[base + AgentProps.Y.ordinal()] = agent.position().y();
+            agentBuffer[base + AgentProps.VX.ordinal()] = agent.velocity().vx();
+            agentBuffer[base + AgentProps.VY.ordinal()] = agent.velocity().vy();
+            agentBuffer[base + AgentProps.SPEED.ordinal()] = agent.speed();
+            agentBuffer[base + AgentProps.ENERGY.ordinal()] = agent.needs().energy();
+            agentBuffer[base + AgentProps.HUNGER.ordinal()] = agent.needs().hunger();
+            agentBuffer[base + AgentProps.HEAT.ordinal()] = agent.needs().heat();
+            agentBuffer[base + AgentProps.CURIOSITY.ordinal()] = agent.needs().curiosity();
+            agentBuffer[base + AgentProps.FEAR.ordinal()] = agent.needs().fear();
             base += AGENT_PROPS;
         }
     }

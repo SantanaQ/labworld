@@ -6,6 +6,8 @@ import com.sim.world.World;
 
 public class Agent {
 
+    short id;
+
     Position pos;
     Position lastPos;
     Vector velocity;
@@ -24,12 +26,13 @@ public class Agent {
         this.needs = new Needs();
     }
 
-    public Agent(Position pos, Needs needs) {
+    public Agent(short id, Position pos, Needs needs) {
         this.pos = pos;
         this.lastPos = pos;
         this.velocity = new Vector(0.5f,0.5f);
         this.speed = BASE_SPEED;
         this.needs = needs;
+        this.id = id;
     }
 
     public float speed() {
@@ -46,6 +49,10 @@ public class Agent {
 
     public Needs needs() {
         return needs;
+    }
+
+    public short id() {
+        return id;
     }
 
     public void actOn(World world) {
@@ -205,7 +212,8 @@ public class Agent {
         world.affect(LayerID.SCENT, lastCoordinate, scentDeposit);
 
         if (velocity.length() < MAX_INTERACTION_VELOCITY) {
-            world.affectKernel(LayerID.SUPPLY, c);
+            //world.affectKernel(LayerID.SUPPLY, c);
+            world.affect(LayerID.SUPPLY, lastCoordinate, -1);
         }
     }
 

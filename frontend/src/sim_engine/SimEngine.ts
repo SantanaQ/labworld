@@ -88,5 +88,21 @@ export class SimEngine {
         this.ws?.disconnect();
     }
 
+    public findAgentByCoordinate(posX: number, posY: number) {
+        const tolerance = 0.5;
+        const agents = this.layers.getAgents();
+
+        for (const agent of agents) {
+            if (
+                Math.abs(posX - agent.posX) <= tolerance &&
+                Math.abs(posY - agent.posY) <= tolerance
+            ) {
+                return agent;
+            }
+        }
+
+        return null;
+    }
+
 
 }

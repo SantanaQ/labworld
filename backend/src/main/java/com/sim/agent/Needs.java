@@ -6,7 +6,7 @@ public class Needs {
     public static final float MIN = 0;
     public static final float HEAT_OPTIMUM = 0.5f;
 
-    private final float energyCost = 0.02f;
+    private final float energyCost = 0.002f;
     private final float heatAbsorption = 0.05f;
     private final float supplyAbsorption = 0.5f;
     private final float curiosityFactor = 0.02f;

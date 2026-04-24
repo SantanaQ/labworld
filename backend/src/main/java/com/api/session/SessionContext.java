@@ -1,8 +1,10 @@
 package com.api.session;
 
+import com.api.dto.AgentDTO;
 import com.api.service.FrameEncoder;
 import com.api.service.Gzip;
 import com.api.ws.WebSocketBroadcaster;
+import com.sim.agent.Agent;
 import com.sim.config.WorldConfig;
 import com.sim.snapshot.WorldSnapshot;
 import com.sim.world.World;
@@ -167,7 +169,20 @@ public class SessionContext {
         } catch (IOException e) {
             System.err.println("Failed to send initial frame: " + e.getMessage());
         }
+    }
 
+    public AgentDTO agentById(short agentId) {
+        for(Agent agent : world.agents()) {
+            if(agent.id() == agentId) {
+                return new AgentDTO(
+                        agent.id(),
+                        agent.position().copy(),
+                        agent.velocity().copy(),
+                        agent.speed(),
+                        agent.needs().copy());
+            }
+        }
+        throw new RuntimeException("Agent with id " + agentId + " not found");
     }
 
     private byte[] copyAndCompressBuffer(boolean fullFrame) throws IOException {

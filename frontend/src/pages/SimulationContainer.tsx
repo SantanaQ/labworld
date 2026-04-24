@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import { SimEngine } from '../sim_engine/SimEngine.ts';
 import type { SimSettings } from '../sim_engine/SimEngine.ts';
 import { EditorSlider } from "../components/EditorSlider.tsx";
@@ -6,7 +6,8 @@ import type { WorldConfig } from "./Dashboard.tsx";
 import { useDebouncedCallback } from "../hooks/useDebouncedCallback.ts";
 import {type Camera, useCanvasCamera} from "../hooks/useCanvasCamera.ts";
 import FetchButton from "../components/FetchButton.tsx";
-import {Hand, ScanSearch, View, ZoomIn, ZoomOut} from "lucide-react";
+import {Activity, Hand, HeartPulse, ScanSearch, Target, View, Zap, ZoomIn, ZoomOut} from "lucide-react";
+import {useAgentInspector} from "../hooks/useAgentInspector.ts";
 
 interface Props {
     config: WorldConfig | null;
@@ -34,6 +35,23 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
         showAgents: true,
         speed: 1,
     });
+
+    const {
+        agentInfo,
+        loading,
+        inspectAgentAt,
+        clearSelection
+    } = useAgentInspector({
+        engineRef,
+        sessionId: config?.sessionId,
+        simState
+    });
+
+    const handleCanvasClick = (x: number, y: number) => {
+        inspectAgentAt(x, y);
+    };
+
+
 
     const changeSpeed = useDebouncedCallback(async (value: number) => {
         const response = await fetch(`/api/sim/speed/${config?.sessionId}/${value}`, { method: 'POST' });
@@ -91,6 +109,36 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
         setSimState("idle");
 
     }, [config?.sessionId]);
+
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const handleClick = (e: MouseEvent) => {
+            if (!engineRef.current) return;
+            if (simState !== "paused") return;
+
+            const rect = canvas.getBoundingClientRect();
+
+            // 🖱️ Mausposition relativ zum Canvas
+            const screenX = e.clientX - rect.left;
+            const screenY = e.clientY - rect.top;
+
+            const cam = cameraRef.current;
+
+            // 🌍 Screen → World transform
+            const worldX = (screenX / cam.zoom) + (cam.x - canvas.width / (2 * cam.zoom));
+            const worldY = (screenY / cam.zoom) + (cam.y - canvas.height / (2 * cam.zoom));
+
+            handleCanvasClick(worldX, worldY);
+        };
+
+        canvas.addEventListener("click", handleClick);
+
+        return () => {
+            canvas.removeEventListener("click", handleClick);
+        };
+    }, [simState, config]);
 
 
     const handleSliderChange = (value: number) => {
@@ -206,8 +254,9 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
                                 Layer Visibility
                             </p>
                             <div className="flex flex-col gap-2">
-                                {['showHeat','showSupply','showScent','showAgents'].map((key) => (
-                                    <label key={key} className="flex items-center gap-3 text-[11px] text-zinc-300 cursor-pointer hover:text-white transition-colors">
+                                {['showHeat', 'showSupply', 'showScent', 'showAgents'].map((key) => (
+                                    <label key={key}
+                                           className="flex items-center gap-3 text-[11px] text-zinc-300 cursor-pointer hover:text-white transition-colors">
                                         <input
                                             type="checkbox"
                                             className="w-4 h-4 rounded border-zinc-700 bg-zinc-800 text-blue-500 focus:ring-0 transition-all"
@@ -217,6 +266,88 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
                                         {key.replace('show', '')}
                                     </label>
                                 ))}
+                            </div>
+                        </div>
+
+                        <div className="bg-zinc-900 p-4 rounded-xl border border-zinc-700 shadow-lg">
+
+                            {/* Header */}
+                            <p className="text-[10px] text-zinc-500 font-bold uppercase border-b border-zinc-800 pb-2 mb-3 tracking-widest">
+                                Agent Information
+                            </p>
+
+                            {/* Grid */}
+                            <div className="grid grid-cols-4 gap-3 w-full">
+
+                                {/* Velocity */}
+                                <div
+                                    className="col-span-2 bg-zinc-90 border border-zinc-800 rounded-xl p-3 hover:border-zinc-600 transition">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <Activity size={14} className="text-blue-400"/>
+                                        <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Velocity</p>
+                                    </div>
+
+                                    <p className="text-sm text-zinc-300">
+                                        {agentInfo ? `x: ${agentInfo.vX.toFixed(2)}` : "-"}
+                                    </p>
+                                    <p className="text-sm text-zinc-300">
+                                        {agentInfo ? `y: ${agentInfo.vY.toFixed(2)}` : "-"}
+                                    </p>
+                                </div>
+
+                                {/* Motion */}
+                                <div
+                                    className="col-span-2 bg-zinc-900 border border-zinc-800 rounded-xl p-3 hover:border-zinc-600 transition">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <Zap size={14} className="text-yellow-400"/>
+                                        <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Motion</p>
+                                    </div>
+
+                                    <p className="text-sm text-zinc-300">
+                                        {agentInfo ? `Speed: ${agentInfo.speed.toFixed(2)}` : "-"}
+                                    </p>
+                                    <p className="text-sm text-zinc-300">
+                                        {agentInfo ? `Energy: ${agentInfo.energy.toFixed(2)}` : "-"}
+                                    </p>
+                                </div>
+
+                                {/* Needs */}
+                                <div
+                                    className="col-span-2 bg-zinc-900 border border-zinc-800 rounded-xl p-3 hover:border-zinc-600 transition">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <HeartPulse size={14} className="text-red-400"/>
+                                        <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Needs</p>
+                                    </div>
+
+                                    <div className="space-y-1">
+                                        <p className="text-[12px] text-zinc-300">
+                                            {agentInfo ? `Hunger: ${agentInfo.hunger.toFixed(2)}` : "-"}
+                                        </p>
+                                        <p className="text-[12px] text-zinc-300">
+                                            {agentInfo ? `Temperature: ${agentInfo.heat.toFixed(2)}` : "-"}
+                                        </p>
+                                        <p className="text-[12px] text-zinc-300">
+                                            {agentInfo ? `Curiosity: ${agentInfo.curiosity.toFixed(2)}` : "-"}
+                                        </p>
+                                        <p className="text-[12px] text-zinc-300">
+                                            {agentInfo ? `Fear: ${agentInfo.fear.toFixed(2)}` : "-"}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Objective */}
+                                <div
+                                    className="col-span-2 bg-zinc-900 border border-zinc-800 rounded-xl p-3 flex flex-col justify-between hover:border-zinc-600 transition">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <Target size={14} className="text-green-400"/>
+                                        <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Objective</p>
+                                    </div>
+
+                                    <p className="text-sm text-zinc-300">
+                                        {agentInfo ? "Current Objective fetched from api" : "-"}
+                                    </p>
+                                </div>
+
                             </div>
                         </div>
 
@@ -251,24 +382,24 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
                             <div className="flex gap-2">
                                 {simState !== 'stopped' ? (
                                     <>
-                                    <FetchButton
-                                        baseStyle={"flex-1 py-3 text-white  text-[11px] font-black uppercase rounded-lg border border-zinc-600 transition-all active:scale-95"}
-                                        styleOnLoad={"cursor-not-allowed"}
-                                        styleOnReady={"bg-zinc-700 hover:bg-zinc-600 cursor-pointer delay-50 duration-300"}
-                                        onClick={() => handleSimulation(simState === 'running' ? 'pause' : 'resume')}
-                                    >
-                                        {simState === 'running' ? 'Pause' : 'Resume'}
-                                    </FetchButton>
-                                    <FetchButton
-                                        baseStyle={"px-4 py-3 bg-red-500/10 hover:bg-red-600 text-red-500 hover:text-white text-[11px] font-black uppercase rounded-lg border border-red-500/20 transition-all active:scale-95"}
-                                        styleOnLoad={"bg-grey cursor-not-allowed"}
-                                        styleOnReady={"bg-red-500/10 cursor-pointer hover:bg-red-700 delay-50 duration-300"}
-                                        onClick={() => handleSimulation('stop')}
-                                    >
-                                        Stop
-                                    </FetchButton>
+                                        <FetchButton
+                                            baseStyle={"flex-1 py-3 text-white  text-[11px] font-black uppercase rounded-lg border border-zinc-600 transition-all active:scale-95"}
+                                            styleOnLoad={"cursor-not-allowed"}
+                                            styleOnReady={"bg-zinc-700 hover:bg-zinc-600 cursor-pointer delay-50 duration-300"}
+                                            onClick={() => handleSimulation(simState === 'running' ? 'pause' : 'resume')}
+                                        >
+                                            {simState === 'running' ? 'Pause' : 'Resume'}
+                                        </FetchButton>
+                                        <FetchButton
+                                            baseStyle={"px-4 py-3 bg-red-500/10 hover:bg-red-600 text-red-500 hover:text-white text-[11px] font-black uppercase rounded-lg border border-red-500/20 transition-all active:scale-95"}
+                                            styleOnLoad={"bg-grey cursor-not-allowed"}
+                                            styleOnReady={"bg-red-500/10 cursor-pointer hover:bg-red-700 delay-50 duration-300"}
+                                            onClick={() => handleSimulation('stop')}
+                                        >
+                                            Stop
+                                        </FetchButton>
                                     </>
-                                    ) : ""}
+                                ) : ""}
                             </div>
                         )}
                     </div>

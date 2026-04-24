@@ -1,6 +1,7 @@
 package com.api.service;
 
 import com.sim.config.WorldConfig;
+import com.sim.snapshot.AgentProps;
 import com.sim.snapshot.LayerDelta;
 import com.sim.snapshot.WorldSnapshot;
 
@@ -18,7 +19,7 @@ public class FrameEncoder {
 
     public FrameEncoder(WorldConfig config) {
         int layerSize = config.width() * config.height();
-        int agentSize = config.agentCount() * 22; // x,y(float), vX,vY (float),speed,energy,4 needs(byte)
+        int agentSize = config.agentCount() * AgentProps.totalBytes();
         //int totalSize = 16 + 8 + (3 * layerSize) + agentSize;
 
         int worstLayer = 5 * layerSize;
@@ -51,24 +52,30 @@ public class FrameEncoder {
             encodeLayerDelta(snap.scentDelta());
         }
 
+        // Agent Stride
+        buffer.put((byte) AgentProps.totalBytes());
+
         // Agents
         float[] agents = snap.agents();
         for (int i = 0; i < agents.length; i += WorldSnapshot.AGENT_PROPS) {
-            // Position (pX, py) as short
-            buffer.putFloat(agents[i]);     // posX
-            buffer.putFloat(agents[i + 1]); // posY
+            // ID
+            buffer.putShort((short) agents[i + AgentProps.ID.ordinal()]);
+
+            // Position (pX, py)
+            buffer.putFloat(agents[i + AgentProps.X.ordinal()]);    // posX
+            buffer.putFloat(agents[i + AgentProps.Y.ordinal()]);    // posY
 
             // Velocity (vX, vY)
-            buffer.putFloat(agents[i + 2]);
-            buffer.putFloat(agents[i + 3]);
+            buffer.putFloat(agents[i + AgentProps.VX.ordinal()]);
+            buffer.putFloat(agents[i + AgentProps.VY.ordinal()]);
 
             // Werte 0.0 - 1.0 als Byte
-            buffer.put((byte) (agents[i + 4] * 255)); // speed
-            buffer.put((byte) (agents[i + 5] * 255)); // energy
-            buffer.put((byte) (agents[i + 6] * 255)); // hunger
-            buffer.put((byte) (agents[i + 7] * 255)); // heat
-            buffer.put((byte) (agents[i + 8] * 255)); // curiosity
-            buffer.put((byte) (agents[i + 9] * 255)); // fear
+            buffer.put((byte) (agents[i + AgentProps.SPEED.ordinal()] * 255)); // speed
+            buffer.put((byte) (agents[i + AgentProps.ENERGY.ordinal()] * 255)); // energy
+            buffer.put((byte) (agents[i + AgentProps.HUNGER.ordinal()] * 255)); // hunger
+            buffer.put((byte) (agents[i + AgentProps.HEAT.ordinal()] * 255)); // heat
+            buffer.put((byte) (agents[i + AgentProps.CURIOSITY.ordinal()] * 255)); // curiosity
+            buffer.put((byte) (agents[i + AgentProps.FEAR.ordinal()] * 255)); // fear
 
 
         }

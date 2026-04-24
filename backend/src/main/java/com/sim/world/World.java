@@ -133,12 +133,14 @@ public class World {
     }
 
     private void spawnAgents(int agentCount, Needs agentNeeds) {
+        short id =  1;
         for(int i = 0; i < agentCount; i++) {
             int x = rand.nextInt(0, config.width());
             int y = rand.nextInt(0, config.height());
             Position pos = new Position(x, y);
-            Agent agent = new Agent(pos, agentNeeds.copy());
+            Agent agent = new Agent(id, pos, agentNeeds.copy());
             agents.add(agent);
+            id++;
         }
     }
 
