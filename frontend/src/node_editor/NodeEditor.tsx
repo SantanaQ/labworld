@@ -27,6 +27,7 @@ export const nodeTypes = {
     fractalNoise: GenericNode,
     clusteredPatchNoise: GenericNode,
     holeMaskNoise: GenericNode,
+    constantValue: GenericNode,
 
     copyStateUpdater: GenericNode,
     diffusionGrowthUpdater: GenericNode,

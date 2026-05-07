@@ -642,6 +642,35 @@ export const signalRegistry = {
             },
         },
     },
+    constantValue: {
+        label: "Constant Value",
+        category: "Signal",
+        deletable: true,
+
+        inputs: [
+        ],
+
+        outputs: [
+            {
+                id: "output",
+                label : "Output",
+                connectionCount: 10,
+                kind: "signal",
+                accepts: ["layer"],
+            }
+        ],
+
+        params: {
+            value: {
+                type: "float",
+                default: 0.5,
+                min: 0,
+                max: 1,
+                step: 0.01,
+                inline: false,
+            }
+        },
+    },
 } as Record<string, NodeDefinition>
 
 export const stateUpdateRegistry = {

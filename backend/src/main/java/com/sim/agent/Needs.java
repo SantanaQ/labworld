@@ -99,7 +99,7 @@ public class Needs {
 
     public void reactToSupply(float val) {
 
-        float eat = val;// * supplyAbsorption;
+        float eat = val * supplyAbsorption;
 
         supplyConsumption = eat;
 
@@ -124,6 +124,7 @@ public class Needs {
 
         if (val > 0.5f) {
             fear = Math.clamp(fear + val, MIN, MAX);
+            curiosity = Math.clamp(curiosity - val * 0.2f, MIN, MAX);
         } else {
             fear = Math.clamp(fear - 0.01f, MIN, MAX);
         }
@@ -131,6 +132,10 @@ public class Needs {
 
     public Needs copy() {
         return new Needs(hunger, curiosity, fear, energy, heat);
+    }
+
+    public float supplyConsumption() {
+        return supplyConsumption;
     }
 
 }

@@ -1,13 +1,7 @@
 package com.sim.json_factories;
 
-import com.api.resource.EditorGraphNode;
 import com.api.resource.nodes.EditorNode;
-import com.api.resource.nodes.signal.ClusteredPatchNoiseNode;
-import com.api.resource.nodes.signal.FractalNoiseNode;
-import com.api.resource.nodes.signal.HoleMaskNoiseNode;
-import com.api.resource.nodes.signal.ImageNode;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.sim.layer.step.LayerStep;
+import com.api.resource.nodes.signal.*;
 import com.sim.signal.*;
 
 import javax.imageio.ImageIO;
@@ -16,7 +10,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -26,7 +19,8 @@ public class SignalFactory {
             "image", SignalFactory::createImageGrid,
             "clusteredPatchNoise", SignalFactory::createClusteredPatchNoise,
             "fractalNoise", SignalFactory::createFractalNoise,
-            "holeMaskNoise", SignalFactory::createHoleMaskNoise
+            "holeMaskNoise", SignalFactory::createHoleMaskNoise,
+            "constantValue", SignalFactory::createConstantValue
     );
 
 
@@ -62,6 +56,12 @@ public class SignalFactory {
         int octaves = fractalNoiseNode.octaves();
         float persistence = fractalNoiseNode.persistence();
         return new FractalNoise(seedCode, cellSize, octaves, persistence);
+    }
+
+    private static SignalSource createConstantValue(EditorNode node) {
+        ConstantValueNode constantValueSignal = (ConstantValueNode) node;
+        float value = constantValueSignal.value();
+        return new ConstantValueSignal(value);
     }
 
     private static SignalSource createClusteredPatchNoise(EditorNode node) {

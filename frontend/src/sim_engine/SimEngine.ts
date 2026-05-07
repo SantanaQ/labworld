@@ -22,7 +22,7 @@ export class SimEngine {
     private renderer: CanvasRenderer;
     private ws: SimWebSocket | null = null;
     private animationFrameId = 0;
-
+    private running = false;
 
     public settings: SimSettings = {
         showHeat: true,
@@ -61,6 +61,8 @@ export class SimEngine {
     }
 
     private draw = () => {
+        if (!this.running) return;
+
         this.renderer.clear();
 
         if (this.settings.showHeat)
@@ -79,12 +81,15 @@ export class SimEngine {
     }
 
     public start() {
+        if (this.running) return;
+        this.running = true;
         this.draw();
     }
 
     public stop() {
-        this.renderer.clear();
+        this.running = false;
         cancelAnimationFrame(this.animationFrameId);
+        this.renderer.clear();
         this.ws?.disconnect();
     }
 

@@ -16,7 +16,7 @@ public class Agent {
     Needs needs;
 
     private final float BASE_SPEED = 0.3f;
-    private final float MAX_INTERACTION_VELOCITY = 0.1f;
+    private final float MAX_INTERACTION_MOVEMENT = 0.1f;
 
     public Agent(Position pos) {
         this.pos = pos;
@@ -78,6 +78,10 @@ public class Agent {
         speed = BASE_SPEED * (1f - supplySlow - energySlow) + stressSpeed;
         if(needs.interestAvoid() > 0.9f) {
             speed += needs.interestAvoid() * 0.3f;
+        }
+
+        if (needs.hunger() > 0.7f && supplyHere > 0.5f) {
+            speed *= 0.2f;
         }
 
         speed = Math.max(0.05f, speed);
@@ -189,13 +193,13 @@ public class Agent {
 
     private void metabolism(Senses s) {
 
-        float movement =  velocity.length();
+        float movement =  velocity.length() * speed;
 
         needs.applyEnergyCost(movement);
         needs.applyHunger(movement);
         needs.reactToHeat(s.heat());
 
-        if (movement < MAX_INTERACTION_VELOCITY) {
+        if (movement < MAX_INTERACTION_MOVEMENT) {
             needs.reactToSupply(s.supply());
         }
 
@@ -211,9 +215,11 @@ public class Agent {
 
         world.affect(LayerID.SCENT, lastCoordinate, scentDeposit);
 
-        if (velocity.length() < MAX_INTERACTION_VELOCITY) {
+        float movement = velocity.length() * speed;
+
+        if (movement < MAX_INTERACTION_MOVEMENT) {
             //world.affectKernel(LayerID.SUPPLY, c);
-            world.affect(LayerID.SUPPLY, lastCoordinate, -1);
+            world.affect(LayerID.SUPPLY, lastCoordinate, -needs.supplyConsumption());
         }
     }
 

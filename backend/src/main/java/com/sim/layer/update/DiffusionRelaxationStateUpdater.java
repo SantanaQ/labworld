@@ -7,10 +7,10 @@ public class DiffusionRelaxationStateUpdater implements StateUpdater {
     private final float crossWeight = 0.20f;
     private final float diagWeight = 0.05f;
 
-    private float diffusion;
-    private float relaxation;
-    private float stateDecay;
-    private float influenceDecay;
+    private final float diffusion;
+    private final float relaxation;
+    private final float stateDecay;
+    private final float influenceDecay;
 
     public DiffusionRelaxationStateUpdater(float diffusion, float relaxation,
                                            float stateDecay, float influenceDecay) {
