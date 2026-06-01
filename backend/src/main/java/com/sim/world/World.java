@@ -37,6 +37,8 @@ public class World {
         addRuntime(LayerID.HEAT, config.heatConfig);
         addRuntime(LayerID.SUPPLY, config.supplyConfig);
         addRuntime(LayerID.SCENT, config.scentConfig);
+        addRuntime(LayerID.TRAIL, config.trailConfig);
+        addRuntime(LayerID.STRESS, config.stressConfig);
 
         rebuildAll();
         spawnAgents(config.agentCount(), config.agentNeeds());

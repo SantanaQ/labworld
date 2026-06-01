@@ -994,6 +994,120 @@ export const layerRegistry = {
 
         },
     },
+    trailLayer: {
+        label: "Trails",
+        category: "Layer",
+        deletable: false,
+
+        inputs: [
+            {
+                id: "signal",
+                label : "Signal",
+                connectionCount: 1,
+                kind: "layer",
+                accepts: ["signal"],
+            },
+            {
+                id: "baseUpdate",
+                label : "Base Update",
+                connectionCount: 1,
+                kind: "layer",
+                accepts: ["baseUpdate"],
+            },
+            {
+                id: "stateUpdate",
+                label : "State Update",
+                connectionCount: 1,
+                kind: "layer",
+                accepts: ["stateUpdate"],
+            },
+            {
+                id: "compositing",
+                label : "Compositing",
+                connectionCount: 1,
+                kind: "layer",
+                accepts: ["compositing"],
+            },
+            {
+                id: "timebehavior",
+                label : "Time Behavior",
+                connectionCount: 1,
+                kind: "layer",
+                accepts: ["timeBehavior"],
+            },
+        ],
+
+        outputs: [
+            {
+                id: "output",
+                label : "Output",
+                connectionCount: 1,
+                kind: "scent",
+                accepts: ["world"],
+            },
+        ],
+
+        params: {
+
+        },
+    },
+    stressLayer: {
+        label: "Stress",
+        category: "Layer",
+        deletable: false,
+
+        inputs: [
+            {
+                id: "signal",
+                label : "Signal",
+                connectionCount: 1,
+                kind: "layer",
+                accepts: ["signal"],
+            },
+            {
+                id: "baseUpdate",
+                label : "Base Update",
+                connectionCount: 1,
+                kind: "layer",
+                accepts: ["baseUpdate"],
+            },
+            {
+                id: "stateUpdate",
+                label : "State Update",
+                connectionCount: 1,
+                kind: "layer",
+                accepts: ["stateUpdate"],
+            },
+            {
+                id: "compositing",
+                label : "Compositing",
+                connectionCount: 1,
+                kind: "layer",
+                accepts: ["compositing"],
+            },
+            {
+                id: "timebehavior",
+                label : "Time Behavior",
+                connectionCount: 1,
+                kind: "layer",
+                accepts: ["timeBehavior"],
+            },
+        ],
+
+        outputs: [
+            {
+                id: "output",
+                label : "Output",
+                connectionCount: 1,
+                kind: "scent",
+                accepts: ["world"],
+            },
+        ],
+
+        params: {
+
+        },
+    },
 } as Record<string, NodeDefinition>
 
 export const worldRegistry = {
@@ -1023,6 +1137,20 @@ export const worldRegistry = {
                 connectionCount: 1,
                 kind: "world",
                 accepts: ["scent"],
+            },
+            {
+                id: "trail",
+                label : "Trail Layer",
+                connectionCount: 1,
+                kind: "world",
+                accepts: ["trail"],
+            },
+            {
+                id: "stress",
+                label : "Stress Layer",
+                connectionCount: 1,
+                kind: "world",
+                accepts: ["stress"],
             },
             {
                 id: "agent",

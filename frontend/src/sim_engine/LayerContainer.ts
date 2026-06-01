@@ -1,6 +1,6 @@
 import type {AgentData} from "./FrameDecoder.ts";
 
-export type LayerName = 'heat' | 'scent' | 'supply';
+export type LayerName = 'heat' | 'scent' | 'supply' | 'trail' | 'stress';
 
 export interface LayerData {
     width: number;

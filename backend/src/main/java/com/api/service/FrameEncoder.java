@@ -23,7 +23,7 @@ public class FrameEncoder {
         //int totalSize = 16 + 8 + (3 * layerSize) + agentSize;
 
         int worstLayer = 5 * layerSize;
-        int totalSize = 25 + (3 * worstLayer) + agentSize;
+        int totalSize = 25 + (5 * worstLayer) + agentSize;
 
         this.buffer = ByteBuffer
                 .allocateDirect(totalSize)
@@ -46,10 +46,14 @@ public class FrameEncoder {
             encodeLayer(snap.heat());
             encodeLayer(snap.food());
             encodeLayer(snap.scent());
+            encodeLayer(snap.trail());
+            encodeLayer(snap.stress());
         } else {
             encodeLayerDelta(snap.heatDelta());
             encodeLayerDelta(snap.foodDelta());
             encodeLayerDelta(snap.scentDelta());
+            encodeLayerDelta(snap.trailDelta());
+            encodeLayerDelta(snap.stressDelta());
         }
 
         // Agent Stride

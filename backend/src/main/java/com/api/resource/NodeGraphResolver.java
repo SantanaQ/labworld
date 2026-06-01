@@ -33,6 +33,12 @@ public class NodeGraphResolver {
         LayerConfig scentConfig = layerFromGraph(LayerID.SCENT, width, height);
         worldConfig.setScentConfig(scentConfig);
 
+        LayerConfig trailConfig = layerFromGraph(LayerID.TRAIL, width, height);
+        worldConfig.setTrailConfig(trailConfig);
+
+        LayerConfig stressConfig = layerFromGraph(LayerID.STRESS, width, height);
+        worldConfig.setStressConfig(stressConfig);
+
         return worldConfig;
     }
 
@@ -42,12 +48,8 @@ public class NodeGraphResolver {
                 List<EditorNode> order = editorGraph.executionOrderOfLayer(LayerID.HEAT);
                 return LayerAssembler.buildPotentialLayerConfig(order, width, height);
             }
-            case SUPPLY -> {
-                List<EditorNode> order = editorGraph.executionOrderOfLayer(LayerID.SUPPLY);
-                return LayerAssembler.buildStateLayerConfig(order, width, height);
-            }
-            case SCENT -> {
-                List<EditorNode> order = editorGraph.executionOrderOfLayer(LayerID.SCENT);
+            case SUPPLY, SCENT, TRAIL, STRESS -> {
+                List<EditorNode> order = editorGraph.executionOrderOfLayer(id);
                 return LayerAssembler.buildStateLayerConfig(order, width, height);
             }
             default -> {

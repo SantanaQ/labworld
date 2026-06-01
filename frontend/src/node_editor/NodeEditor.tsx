@@ -38,6 +38,8 @@ export const nodeTypes = {
     heatLayer: GenericNode,
     supplyLayer: GenericNode,
     scentLayer: GenericNode,
+    trailLayer: GenericNode,
+    stressLayer: GenericNode,
 
     world: GenericNode,
 

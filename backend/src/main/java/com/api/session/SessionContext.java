@@ -96,8 +96,8 @@ public class SessionContext {
 
                 if(sendable) {
                     byte[] payload;
-                    // update with fullframe every 0.5 seconds
-                    if(deltasSent++ >= 0.5 * broadcastFps) {
+                    // update with fullframe every 2 seconds
+                    if(deltasSent++ >= 2 * broadcastFps) {
                         payload = copyAndCompressBuffer(true);
                         deltasSent = 0;
                     } else {

@@ -38,7 +38,7 @@ export class SimEngine {
     }
 
     public reconfigure(config: WorldConfig) {
-        ['heat', 'scent', 'supply'].forEach((name) => {
+        ['heat', 'scent', 'supply', 'trail', "stress"].forEach((name) => {
             this.layers.setLayer(name as LayerName, config.width, config.height);
         });
     }

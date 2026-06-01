@@ -49,6 +49,14 @@ public class EditorGraph {
                 EditorGraphNode scentLayer = nodeMap.get("scentLayer");
                 return executionOrder(scentLayer);
             }
+            case TRAIL -> {
+                EditorGraphNode trailLayer = nodeMap.get("trailLayer");
+                return executionOrder(trailLayer);
+            }
+            case STRESS -> {
+                EditorGraphNode stressLayer = nodeMap.get("stressLayer");
+                return executionOrder(stressLayer);
+            }
             default ->
                 throw new RuntimeException("Unsupported layer ID: " + layerID);
         }

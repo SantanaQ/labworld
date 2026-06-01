@@ -57,9 +57,29 @@ export function createDefaultWorldTemplate(): { nodes: Node[]; edges: Edge[] } {
         }),
         createNode("scentLayer", "scentLayer", 500, 550),
 
+        // --- Trail Layer ---
+        createNode("defaultPotentialUpdater", "trailBaseUpdate", -50, 1000),
+        createNode("diffusionRelaxationUpdater", "trailStateUpdate", 150, 1200, {
+            diffusion: 0.15,
+            relaxation: 0,
+            stateDecay: 0.995,
+            influenceDecay: 0.25,
+        }),
+        createNode("trailLayer", "trailLayer", 500, 800),
+
+        // --- Stress Layer ---
+        createNode("defaultPotentialUpdater", "stressBaseUpdate", -50, 1150),
+        createNode("diffusionRelaxationUpdater", "stressStateUpdate", 150, 1400, {
+            diffusion: 0.15,
+            relaxation: 0,
+            stateDecay: 0.995,
+            influenceDecay: 0.25,
+        }),
+        createNode("stressLayer", "stressLayer", 500, 1050),
+
 
         // --- Agents ---
-        createNode("agents", "agents", 500, 800, {
+        createNode("agents", "agents", 500, 1300, {
             amount: 64,
             hunger: 0.5,
             heat: 0.5,
@@ -85,6 +105,14 @@ export function createDefaultWorldTemplate(): { nodes: Node[]; edges: Edge[] } {
         { id: "e_scentBaseUpdate_scentLayer", source: "scentBaseUpdate", sourceHandle: "output", target: "scentLayer", targetHandle: "baseUpdate" },
         { id: "e_scentStateUpdate_scentLayer", source: "scentStateUpdate", sourceHandle: "output", target: "scentLayer", targetHandle: "stateUpdate" },
 
+        // --- Trail Layer connections ---
+        { id: "e_trailBaseUpdate_scentLayer", source: "trailBaseUpdate", sourceHandle: "output", target: "trailLayer", targetHandle: "baseUpdate" },
+        { id: "e_trailStateUpdate_scentLayer", source: "trailStateUpdate", sourceHandle: "output", target: "trailLayer", targetHandle: "stateUpdate" },
+
+        // --- Stress Layer connections ---
+        { id: "e_stressBaseUpdate_scentLayer", source: "stressBaseUpdate", sourceHandle: "output", target: "stressLayer", targetHandle: "baseUpdate" },
+        { id: "e_stressStateUpdate_scentLayer", source: "stressStateUpdate", sourceHandle: "output", target: "stressLayer", targetHandle: "stateUpdate" },
+
         // --- Supply Layer connections ---
         { id: "e_supplySignal_supplyLayer", source: "supplySignal", sourceHandle: "output", target: "supplyLayer", targetHandle: "signal" },
         { id: "e_supplyBaseUpdate_supplyLayer", source: "supplyBaseUpdate", sourceHandle: "output", target: "supplyLayer", targetHandle: "baseUpdate" },
@@ -97,6 +125,8 @@ export function createDefaultWorldTemplate(): { nodes: Node[]; edges: Edge[] } {
         { id: "e_heatLayer_world", source: "heatLayer", sourceHandle: "output", target: "world", targetHandle: "heat" },
         { id: "e_supplyLayer_world", source: "supplyLayer", sourceHandle: "output", target: "world", targetHandle: "supply" },
         { id: "e_scentLayer_world", source: "scentLayer", sourceHandle: "output", target: "world", targetHandle: "scent" },
+        { id: "e_trailLayer_world", source: "trailLayer", sourceHandle: "output", target: "world", targetHandle: "trail" },
+        { id: "e_stressLayer_world", source: "stressLayer", sourceHandle: "output", target: "world", targetHandle: "stress" },
 
         // --- Agents → World ---
         { id: "e_agents_world", source: "agents", sourceHandle: "output", target: "world", targetHandle: "agent" },

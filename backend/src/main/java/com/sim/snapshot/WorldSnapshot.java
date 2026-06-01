@@ -22,10 +22,14 @@ public class WorldSnapshot {
     private final float[] lastHeat;
     private final float[] lastFood;
     private final float[] lastScent;
+    private final float[] lastTrail;
+    private final float[] lastStress;
 
     private final LayerDelta heatDelta;
     private final LayerDelta foodDelta;
     private final LayerDelta scentDelta;
+    private final LayerDelta trailDelta;
+    private final LayerDelta stressDelta;
 
     private final List<float[]> agentSnaps;
 
@@ -43,10 +47,14 @@ public class WorldSnapshot {
         this.heatDelta = new LayerDelta();
         this.foodDelta = new LayerDelta();
         this.scentDelta = new LayerDelta();
+        this.trailDelta = new LayerDelta();
+        this.stressDelta = new LayerDelta();
 
         this.lastHeat = new float[width * height];
         this.lastFood = new float[width * height];
         this.lastScent = new float[width * height];
+        this.lastTrail = new float[width * height];
+        this.lastStress = new float[width * height];
 
         this.agentBuffer = new float[world.agentCount() *  AGENT_PROPS];
 
@@ -59,14 +67,20 @@ public class WorldSnapshot {
         float[] currentFood = world.layer(LayerID.SUPPLY).values();
         float[] currentScent = world.layer(LayerID.SCENT).values();
         float[] currentHeat = world.layer(LayerID.HEAT).values();
+        float[] currentTrail = world.layer(LayerID.TRAIL).values();
+        float[] currentStress = world.layer(LayerID.STRESS).values();
 
         computeDelta(foodDelta, lastFood, currentFood);
         computeDelta(scentDelta, lastScent, currentScent);
         computeDelta(heatDelta, lastHeat, currentHeat);
+        computeDelta(trailDelta, lastTrail, currentTrail);
+        computeDelta(stressDelta, lastStress, currentStress);
 
         copyLayer(currentFood, lastFood);
         copyLayer(currentScent, lastScent);
         copyLayer(currentHeat, lastHeat);
+        copyLayer(currentTrail, lastTrail);
+        copyLayer(currentStress, lastStress);
 
         int base = 0;
         for(Agent agent : world.agents()) {
@@ -132,6 +146,14 @@ public class WorldSnapshot {
         return lastScent;
     }
 
+    public float[] trail() {
+        return lastTrail;
+    }
+
+    public float[] stress() {
+        return lastStress;
+    }
+
     public LayerDelta heatDelta() {
         return heatDelta;
     }
@@ -142,6 +164,14 @@ public class WorldSnapshot {
 
     public LayerDelta scentDelta() {
         return scentDelta;
+    }
+
+    public LayerDelta trailDelta() {
+        return trailDelta;
+    }
+
+    public LayerDelta stressDelta() {
+        return stressDelta;
     }
 
     public float[] agents() {

@@ -7,9 +7,11 @@ export function createEmptyCanvasTemplate(): {
 } {
     const nodes: Node[] = [
         createNode("heatLayer", "heatLayer", 100, 100),
-        createNode("supplyLayer", "supplyLayer", 100, 350),
-        createNode("scentLayer", "scentLayer", 100, 600),
-        createNode("agents", "agents", 100, 850, {
+        createNode("supplyLayer", "supplyLayer", 100, 250),
+        createNode("scentLayer", "scentLayer", 100, 415),
+        createNode("trailLayer", "trailLayer", 100, 580),
+        createNode("stressLayer", "stressLayer", 100, 745),
+        createNode("agents", "agents", 100, 910, {
             amount: 128,
             hunger: 0.5,
             heat: 0.5,
@@ -17,7 +19,7 @@ export function createEmptyCanvasTemplate(): {
             fear: 0,
         }),
 
-        createNode("world", "world", 400, 300, {
+        createNode("world", "world", 400, 400, {
             seed: "create-with-this",
             width: 256,
             height: 256,
@@ -45,6 +47,20 @@ export function createEmptyCanvasTemplate(): {
             sourceHandle: "output",
             target: "world",
             targetHandle: "scent",
+        },
+        {
+            id: "e_trail_world",
+            source: "trailLayer",
+            sourceHandle: "output",
+            target: "world",
+            targetHandle: "trail",
+        },
+        {
+            id: "e_stress_world",
+            source: "stressLayer",
+            sourceHandle: "output",
+            target: "world",
+            targetHandle: "stress",
         },
         {
             id: "e_agent_world",

@@ -17,6 +17,10 @@ public class WorldConfig {
     public LayerConfig heatConfig;
     public LayerConfig supplyConfig;
     public LayerConfig scentConfig;
+    public LayerConfig trailConfig;
+    public LayerConfig stressConfig;
+
+    private int layerCount = 0;
 
     public WorldConfig(int width, int height, String seed, int agentCount) {
         this.width = width;
@@ -27,15 +31,29 @@ public class WorldConfig {
 
     public void setHeatConfig(LayerConfig heatConfig) {
         this.heatConfig = heatConfig;
+        layerCount++;
     }
 
     public void setSupplyConfig(LayerConfig supplyConfig) {
         this.supplyConfig = supplyConfig;
+        layerCount++;
     }
 
     public void setScentConfig(LayerConfig scentConfig) {
         this.scentConfig = scentConfig;
+        layerCount++;
     }
+
+    public void setTrailConfig(LayerConfig trailConfig) {
+        this.trailConfig = trailConfig;
+        layerCount++;
+    }
+
+    public void setStressConfig(LayerConfig stressConfig) {
+        this.stressConfig = stressConfig;
+        layerCount++;
+    }
+
 
     public UUID worldId() {
         return worldId;
@@ -67,6 +85,10 @@ public class WorldConfig {
 
     public void setWorldId(UUID worldId) {
         this.worldId = worldId;
+    }
+
+    public int layerCount() {
+        return layerCount;
     }
 
 }

@@ -25,9 +25,12 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = DefaultPotentialUpdaterNode.class, name = "defaultPotentialUpdater"),
         @JsonSubTypes.Type(value = CopyStateUpdaterNode.class, name = "copyStateUpdater"),
         @JsonSubTypes.Type(value = FixedNode.class, name = "fixed"),
+
         @JsonSubTypes.Type(value = LayerNode.class, name = "heatLayer"),
         @JsonSubTypes.Type(value = LayerNode.class, name = "scentLayer"),
         @JsonSubTypes.Type(value = LayerNode.class, name = "supplyLayer"),
+        @JsonSubTypes.Type(value = LayerNode.class, name = "trailLayer"),
+        @JsonSubTypes.Type(value = LayerNode.class, name = "stressLayer"),
 
         @JsonSubTypes.Type(value = AgentNode.class, name = "agents"),
         @JsonSubTypes.Type(value = WorldNode.class, name = "world"),

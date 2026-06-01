@@ -98,10 +98,18 @@ const parseFrame = (buffer: ArrayBuffer, layers: LayerContainer): FrameData => {
         copyLayer(buffer, offset, cellCount, layers.getLayer("scent").data);
         offset += cellCount;
 
+        copyLayer(buffer, offset, cellCount, layers.getLayer("trail").data);
+        offset += cellCount;
+
+        copyLayer(buffer, offset, cellCount, layers.getLayer("stress").data);
+        offset += cellCount;
+
     } else {
         offset = applyDelta(view, offset, layers.getLayer("heat").data);
         offset = applyDelta(view, offset, layers.getLayer("supply").data);
         offset = applyDelta(view, offset, layers.getLayer("scent").data);
+        offset = applyDelta(view, offset, layers.getLayer("trail").data);
+        offset = applyDelta(view, offset, layers.getLayer("stress").data);
     }
 
     const agents = decodeAgents(buffer, offset);

@@ -3,7 +3,9 @@ package com.sim.layer;
 public enum LayerID {
     HEAT("heat"),
     SUPPLY("supply"),
-    SCENT("scent"),;
+    SCENT("scent"),
+    TRAIL("trail"),
+    STRESS("stress"),;
 
     final String name;
 
@@ -16,6 +18,8 @@ public enum LayerID {
             case "heatLayer", "heat", "Heat" -> HEAT;
             case "supplyLayer", "supply", "Supply" -> SUPPLY;
             case "scentLayer", "scent", "Scent" -> SCENT;
+            case "trailLayer", "trail", "Trail" -> TRAIL;
+            case "stressLayer", "stress", "Stress" -> STRESS;
             default -> throw new IllegalArgumentException("Invalid layer ID: " + id);
         };
     }
