@@ -21,15 +21,6 @@ public class Agent {
     private final int TICK_INTERVAL = 15;
     int lastTick = 0;
 
-
-    public Agent(Position pos) {
-        this.pos = pos;
-        this.lastPos = pos;
-        this.velocity = new Vector(0,0);
-        this.speed = BASE_SPEED;
-        this.needs = new Needs();
-    }
-
     public Agent(short id, Position pos, Needs needs) {
         this.pos = pos;
         this.lastPos = pos;
@@ -227,14 +218,9 @@ public class Agent {
         float movement = velocity.length() * speed;
 
         if (movement < MAX_INTERACTION_MOVEMENT) {
-            //world.affectKernel(LayerID.SUPPLY, c);
             world.affect(LayerID.SUPPLY, lastCoordinate, -needs.supplyConsumption());
         }
     }
 
-    public void setPosition(Position pos) {
-        this.pos = pos;
-        this.lastPos = pos;
-    }
 
 }

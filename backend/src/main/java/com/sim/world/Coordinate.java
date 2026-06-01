@@ -1,8 +1,5 @@
 package com.sim.world;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public record Coordinate(int x, int y) {
 
 

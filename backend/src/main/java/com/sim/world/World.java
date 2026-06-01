@@ -17,6 +17,7 @@ public class World {
     final WorldConfig config;
     final LayerContext ctx;
     final Map<LayerID, LayerRuntime> runtimes;
+    final OccupancyGrid occupancyGrid;
 
     final Random rand;
     final List<Agent> agents;
@@ -28,6 +29,7 @@ public class World {
         this.ctx = new LayerContext();
         this.config = config;
         this.runtimes = new HashMap<>();
+        this.occupancyGrid = new OccupancyGrid(config.width, config.height);
 
         agents = new ArrayList<>();
         rand = new Random(config.seed());
@@ -82,7 +84,7 @@ public class World {
 
     public void tick() {
         for (var entry : runtimes.entrySet()) {
-            ((PotentialLayer)entry.getValue().layer()).updatePotential(time);
+            ((PotentialLayer) entry.getValue().layer()).updatePotential(time);
         }
 
         for (Agent agent : agents) {
@@ -96,6 +98,8 @@ public class World {
                 ((StateLayer) layer).updateState();
             }
         }
+
+        occupancyGrid.refresh(this, agents);
 
         time++;
         currentTick++;
@@ -158,27 +162,6 @@ public class World {
 
         ((StateLayer) layer).applyInfluence(c.x(), c.y(), amount);
     }
-
-    public void affectKernel(LayerID layerId, Coordinate c) {
-        StateLayer layer = (StateLayer) layer(layerId);
-
-        if(!layer.hasState()) {
-            throw new IllegalArgumentException("Layer: " + layerId.name() + " has no state");
-        }
-
-        float[][] gaussian = MathHelpers.gaussian3x3;
-        int center = 1;
-        for(int dy = -1; dy <= 1; dy++) {
-            for(int dx = -1; dx <= 1; dx++) {
-                if(rand.nextDouble(0,1) > 0.5) {
-                    float val = -(layer.valueAt(c.x() + dx,c.y() + dy)
-                            * gaussian[center + dy][center + dx]);
-                    layer.applyInfluence(c.x() + dx, c.y() + dy, val);
-                }
-            }
-        }
-    }
-
 
 
 }
