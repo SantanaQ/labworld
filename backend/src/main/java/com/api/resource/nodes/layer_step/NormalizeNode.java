@@ -1,4 +1,4 @@
-package com.api.resource.nodes.layerStep;
+package com.api.resource.nodes.layer_step;
 
 import com.api.resource.nodes.EditorNode;
 import com.fasterxml.jackson.annotation.JsonProperty;

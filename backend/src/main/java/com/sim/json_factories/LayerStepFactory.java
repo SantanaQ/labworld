@@ -1,7 +1,7 @@
 package com.sim.json_factories;
 
 import com.api.resource.nodes.EditorNode;
-import com.api.resource.nodes.layerStep.*;
+import com.api.resource.nodes.layer_step.*;
 import com.sim.layer.LayerID;
 import com.sim.layer.step.*;
 

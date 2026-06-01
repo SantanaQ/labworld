@@ -5,7 +5,7 @@ import com.api.resource.nodes.base_update.DefaultPotentialUpdaterNode;
 import com.api.resource.nodes.global.AgentNode;
 import com.api.resource.nodes.global.LayerNode;
 import com.api.resource.nodes.global.WorldNode;
-import com.api.resource.nodes.layerStep.*;
+import com.api.resource.nodes.layer_step.*;
 import com.api.resource.nodes.signal.*;
 import com.api.resource.nodes.state_update.CopyStateUpdaterNode;
 import com.api.resource.nodes.state_update.DiffusionAndGrowthStateUpdaterNode;
@@ -16,8 +16,6 @@ import com.api.resource.nodes.time_behavior.DriftNode;
 import com.api.resource.nodes.time_behavior.FixedNode;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
-import java.util.Map;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
