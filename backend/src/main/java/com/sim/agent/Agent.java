@@ -18,6 +18,10 @@ public class Agent {
     private final float BASE_SPEED = 0.3f;
     private final float MAX_INTERACTION_MOVEMENT = 0.1f;
 
+    private final int TICK_INTERVAL = 15;
+    int lastTick = 0;
+
+
     public Agent(Position pos) {
         this.pos = pos;
         this.lastPos = pos;
@@ -84,6 +88,7 @@ public class Agent {
             speed *= 0.2f;
         }
 
+        //speed = Math.clamp(speed, 0.05f, 1);
         speed = Math.max(0.05f, speed);
 
         return new Senses(
@@ -211,9 +216,13 @@ public class Agent {
     private void interact(World world, Coordinate c) {
         Coordinate lastCoordinate  = lastPos.nearestCoordinate(world);
 
-        float scentDeposit = 0.1f;
+        float scentDeposit = 0.2f;
 
-        world.affect(LayerID.SCENT, lastCoordinate, scentDeposit);
+        if(world.currentTick() >= lastTick + TICK_INTERVAL) {
+            world.affect(LayerID.SCENT, lastCoordinate, scentDeposit);
+            lastTick = world.currentTick();
+        }
+
 
         float movement = velocity.length() * speed;
 

@@ -357,16 +357,84 @@ public class AgentTest {
                 Needs.HEAT_OPTIMUM // heat
         );
         Agent agent = new Agent((short) 1, pos, needs);
-        int ticks = 10;
-        for(int i = 0; i < ticks; i++) {
-            agent.actOn(world);
-            System.out.println(needs.hunger());
-            System.out.println(agent.velocity().length());
-        }
+        agent.actOn(world);
 
         assertTrue(needs.hunger() < Needs.MAX);
     }
 
+    @Test
+    void if_agent_is_overheated_and_in_cool_area_heat_is_reduced() {
+        int size = 10;
+        World world = new TestWorldBuilder(size)
+                .build();
+
+
+        float x = (float) size / 2;
+        float y = (float) size / 2;
+        Position pos = new Position(x, y);
+        Needs needs = new Needs(
+                Needs.MIN, // hunger
+                Needs.MIN, // curiosity
+                Needs.MIN, // fear
+                Needs.MAX, // energy
+                Needs.MAX // heat
+        );
+        Agent agent = new Agent((short) 1, pos, needs);
+        agent.actOn(world);
+
+        assertTrue(needs.heat() < Needs.MAX);
+    }
+
+    @Test
+    void if_agent_is_hypothermic_and_in_warm_area_heat_is_reduced() {
+        int size = 10;
+        World world = new TestWorldBuilder(size)
+                .withHeat(TestWorldBuilder.valueGrid(Needs.MAX, size))
+                .build();
+
+
+        float x = (float) size / 2;
+        float y = (float) size / 2;
+        Position pos = new Position(x, y);
+        Needs needs = new Needs(
+                Needs.MIN, // hunger
+                Needs.MIN, // curiosity
+                Needs.MIN, // fear
+                Needs.MAX, // energy
+                Needs.MIN // heat
+        );
+        Agent agent = new Agent((short) 1, pos, needs);
+        agent.actOn(world);
+
+        assertTrue(needs.heat() > Needs.MIN);
+    }
+    /*
+    @Test
+    void if_light_scent_is_present_and_agent_is_not_fearful_curiosity_increases() {
+        int size = 10;
+        World world = new TestWorldBuilder(size)
+                .withScent(TestWorldBuilder.valueGrid(0.1f, size))
+                .build();
+
+
+        float x = (float) size / 2;
+        float y = (float) size / 2;
+        Position pos = new Position(x, y);
+        Needs needs = new Needs(
+                Needs.MIN, // hunger
+                Needs.MIN, // curiosity
+                Needs.MIN, // fear
+                Needs.MAX, // energy
+                Needs.HEAT_OPTIMUM // heat
+        );
+        Agent agent = new Agent((short) 1, pos, needs);
+        System.out.println(agent.needs().curiosity());
+        agent.actOn(world);
+
+        System.out.println(agent.needs().curiosity());
+
+        assertTrue(needs.curiosity() > Needs.MIN);
+    }*/
 
 
 

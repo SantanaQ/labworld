@@ -160,9 +160,9 @@ export class CanvasRenderer {
             ctx.rotate(a.angle);
             ctx.scale(stretch, squash);
 
-            const r = a.fear;
-            const g = a.curiosity;
-            const b = a.hunger;
+            const r = 187;
+            const g = 244;
+            const b = 81;
 
             // glow
             ctx.beginPath();

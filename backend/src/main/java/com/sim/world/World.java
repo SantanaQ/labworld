@@ -18,11 +18,11 @@ public class World {
     final LayerContext ctx;
     final Map<LayerID, LayerRuntime> runtimes;
 
-
-
     final Random rand;
     final List<Agent> agents;
     private float time = 1;
+
+    private int currentTick = 1;
 
     public World(WorldConfig config) {
         this.ctx = new LayerContext();
@@ -98,6 +98,7 @@ public class World {
         }
 
         time++;
+        currentTick++;
     }
 
     public int agentCount() {
@@ -106,6 +107,10 @@ public class World {
 
     public float time() {
         return time;
+    }
+
+    public int currentTick() {
+        return currentTick;
     }
 
     public WorldLayer layer(LayerID id) {
