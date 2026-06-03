@@ -6,7 +6,7 @@ public class Needs {
     public static final float MIN = 0;
     public static final float HEAT_OPTIMUM = 0.5f;
 
-    private final float energyCost = 0.002f;
+    private final float energyCost = 0.001f;
     private final float heatAbsorption = 0.05f;
     private final float supplyAbsorption = 0.5f;
     private final float curiosityFactor = 0.02f;
@@ -24,6 +24,11 @@ public class Needs {
 
     // consumption
     float supplyConsumption;
+
+    static final float PREFER_AVOID_THRESHOLD = 0.4f;
+    static final float PREFER_SUPPLY_THRESHOLD = 0.7f;
+    static final float PREFER_HEAT_THRESHOLD = 0.3f;
+    static final float PREFER_EXPLORE_THRESHOLD = 0.3f;
 
     public Needs(float hunger,
                  float curiosity,
@@ -150,6 +155,21 @@ public class Needs {
 
     public float supplyConsumption() {
         return supplyConsumption;
+    }
+
+    public Objective currentObjective() {
+        if (fear > PREFER_AVOID_THRESHOLD) {
+            return Objective.AVOID_DANGER;
+        }
+        else if (hunger > PREFER_SUPPLY_THRESHOLD) {
+            return Objective.FIND_SUPPLY;
+        } else if (interestHeat() > PREFER_HEAT_THRESHOLD) {
+            return Objective.ADJUST_TEMPERATURE;
+        }
+        else if(curiosity > PREFER_EXPLORE_THRESHOLD) {
+            return Objective.EXPLORE_PATH;
+        }
+        return Objective.READJUST;
     }
 
 

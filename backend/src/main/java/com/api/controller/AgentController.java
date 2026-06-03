@@ -38,7 +38,8 @@ public class AgentController {
                     found.needs().hunger(),
                     found.needs().heat(),
                     found.needs().curiosity(),
-                    found.needs().fear()
+                    found.needs().fear(),
+                    found.needs().currentObjective().toString()
             );
             return ResponseEntity
                     .ok()

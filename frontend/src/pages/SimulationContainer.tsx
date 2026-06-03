@@ -6,9 +6,20 @@ import type { WorldConfig } from "./Dashboard.tsx";
 import { useDebouncedCallback } from "../hooks/useDebouncedCallback.ts";
 import {type Camera, useCanvasCamera} from "../hooks/useCanvasCamera.ts";
 import FetchButton from "../components/FetchButton.tsx";
-import {Activity, Hand, HeartPulse, ScanSearch, Target, View, Zap, ZoomIn, ZoomOut} from "lucide-react";
+import {
+    Activity,
+    Hand,
+    HeartPulse, Pizza,
+    ScanSearch,
+    Target,
+    View,
+    Zap,
+    ZoomIn,
+    ZoomOut
+} from "lucide-react";
 import {useAgentInspector} from "../hooks/useAgentInspector.ts";
 import Spinner from "../components/Spinner.tsx";
+import {objectiveConfig} from "../configs/AgentObjectives.ts";
 
 interface Props {
     config: WorldConfig | null;
@@ -278,7 +289,6 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
                             </p>
 
                             {/* Grid */}
-                            {loading ? <Spinner />  :
                             <div className="grid grid-cols-4 gap-3 w-full">
 
                                 {/* Velocity */}
@@ -289,12 +299,16 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
                                         <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Velocity</p>
                                     </div>
 
-                                    <p className="text-sm text-zinc-300">
-                                        {agentInfo ? `x: ${agentInfo.vX.toFixed(2)}` : "-"}
-                                    </p>
-                                    <p className="text-sm text-zinc-300">
-                                        {agentInfo ? `y: ${agentInfo.vY.toFixed(2)}` : "-"}
-                                    </p>
+                                    {loading ? <Spinner />  :
+                                        <>
+                                            <p className="text-sm text-zinc-300">
+                                                {agentInfo ? `x: ${agentInfo.vX.toFixed(2)}` : "-"}
+                                            </p>
+                                            <p className="text-sm text-zinc-300">
+                                                {agentInfo ? `y: ${agentInfo.vY.toFixed(2)}` : "-"}
+                                            </p>
+                                        </>
+                                    }
                                 </div>
 
                                 {/* Motion */}
@@ -305,12 +319,16 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
                                         <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Motion</p>
                                     </div>
 
-                                    <p className="text-sm text-zinc-300">
-                                        {agentInfo ? `Speed: ${agentInfo.speed.toFixed(2)}` : "-"}
-                                    </p>
-                                    <p className="text-sm text-zinc-300">
-                                        {agentInfo ? `Energy: ${agentInfo.energy.toFixed(2)}` : "-"}
-                                    </p>
+                                    {loading ? <Spinner />  :
+                                        <>
+                                            <p className="text-sm text-zinc-300">
+                                                {agentInfo ? `Speed: ${agentInfo.speed.toFixed(2)}` : "-"}
+                                            </p>
+                                            <p className="text-sm text-zinc-300">
+                                                {agentInfo ? `Energy: ${agentInfo.energy.toFixed(2)}` : "-"}
+                                            </p>
+                                        </>
+                                    }
                                 </div>
 
                                 {/* Needs */}
@@ -320,20 +338,22 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
                                         <HeartPulse size={14} className="text-red-400"/>
                                         <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Needs</p>
                                     </div>
-                                    <div className="space-y-1">
-                                        <p className="text-[12px] text-zinc-300">
-                                            {agentInfo ? `Hunger: ${agentInfo.hunger.toFixed(2)}` : "-"}
-                                        </p>
-                                        <p className="text-[12px] text-zinc-300">
-                                            {agentInfo ? `Temperature: ${agentInfo.heat.toFixed(2)}` : "-"}
-                                        </p>
-                                        <p className="text-[12px] text-zinc-300">
-                                            {agentInfo ? `Curiosity: ${agentInfo.curiosity.toFixed(2)}` : "-"}
-                                        </p>
-                                        <p className="text-[12px] text-zinc-300">
-                                            {agentInfo ? `Fear: ${agentInfo.fear.toFixed(2)}` : "-"}
-                                        </p>
-                                    </div>
+                                    {loading ? <Spinner />  :
+                                        <div className="space-y-1">
+                                            <p className="text-[12px] text-zinc-300">
+                                                {agentInfo ? `Hunger: ${agentInfo.hunger.toFixed(2)}` : "-"}
+                                            </p>
+                                            <p className="text-[12px] text-zinc-300">
+                                                {agentInfo ? `Temperature: ${agentInfo.heat.toFixed(2)}` : "-"}
+                                            </p>
+                                            <p className="text-[12px] text-zinc-300">
+                                                {agentInfo ? `Curiosity: ${agentInfo.curiosity.toFixed(2)}` : "-"}
+                                            </p>
+                                            <p className="text-[12px] text-zinc-300">
+                                                {agentInfo ? `Fear: ${agentInfo.fear.toFixed(2)}` : "-"}
+                                            </p>
+                                        </div>
+                                    }
                                 </div>
 
                                 {/* Objective */}
@@ -343,14 +363,39 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
                                         <Target size={14} className="text-green-400"/>
                                         <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Objective</p>
                                     </div>
+                                    {
+                                        loading ? (
+                                            <Spinner />
+                                        ) : (
+                                            <div className="flex flex-col items-center gap-2 m-auto">
+                                                {(() => {
+                                                    const config =
+                                                        objectiveConfig[
+                                                            agentInfo?.objective as keyof typeof objectiveConfig
+                                                            ];
 
-                                    <p className="text-sm text-zinc-300">
-                                        {agentInfo ? "Current Objective fetched from api" : "-"}
-                                    </p>
+                                                    const Icon = config?.icon ?? Pizza;
+
+                                                    return (
+                                                        <>
+                                                            { agentInfo ?
+                                                                <>
+                                                                    <Icon  />
+                                                                    <p className="text-xs text-zinc-300 font-bold text-center">
+                                                                        {config?.text ?? "no objective"}
+                                                                    </p>
+                                                                </>
+                                                                : ""
+                                                            }
+                                                        </>
+                                                    );
+                                                })()}
+                                            </div>
+                                        )
+                                    }
                                 </div>
 
                             </div>
-                            }
                         </div>
 
                         {/* Simulation Controls */}

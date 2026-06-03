@@ -7,20 +7,17 @@ import com.sim.world.World;
 public class Agent {
 
     short id;
-
     Position pos;
     Position lastPos;
     Vector velocity;
     float speed;
-
     Needs needs;
+
+    int lastTick = 0;
 
     private final float BASE_SPEED = 0.5f;
     private final float MAX_INTERACTION_MOVEMENT = 0.1f;
-
-    private final int TICK_INTERVAL = 15;
-    int lastTick = 0;
-
+    private final int DECISION_TICK_INTERVAL = 3;
     private final int STRESS_WINDOW = 10;
     private final int STRESS_THRESH = 4;
 
@@ -56,11 +53,12 @@ public class Agent {
     public void actOn(World world) {
         Coordinate c = pos.nearestCoordinate(world);
         Senses s = sense(world, c);
-        if(world.currentTick() >= lastTick + 3) {
+        adjustSpeed(s);
+        if(world.currentTick() >= lastTick + DECISION_TICK_INTERVAL) {
             decide(s, world);
             lastTick = world.currentTick();
         }
-        move(world);
+        move();
         metabolism(s);
         interact(world, c);
     }
@@ -72,25 +70,6 @@ public class Agent {
         float trailHere = world.layerAt(LayerID.TRAIL, c);
         float stressHere = world.layerAt(LayerID.STRESS, c);
 
-        float supplySlow = needs.interestSupply() * supplyHere * 0.5f;
-
-        float energySlow = (1f - needs.energy()) * 0.5f;
-
-        float stressSpeed = needs.interestAvoid();// * 0.5f;
-
-        speed = BASE_SPEED * (1f - supplySlow - energySlow) + stressSpeed;
-
-        if(needs.interestAvoid() > 0.9f) {
-            speed += needs.interestAvoid() * 0.3f;
-        }
-
-        if (needs.hunger() > 0.7f && supplyHere > 0.3f && needs.interestAvoid() < 0.7f) {
-            speed *= 0.2f;
-        }
-
-        //speed = Math.clamp(speed, 0.05f, 1);
-        speed = Math.max(0.05f, speed);
-
         return new Senses(
                 supplyHere,
                 heatHere,
@@ -100,8 +79,29 @@ public class Agent {
         );
     }
 
-    private void decide(Senses s, World world) {
+    private void adjustSpeed(Senses s) {
+        float supplySlow = needs.interestSupply() * s.supply() * 0.5f;
+        float energySlow = (1f - needs.energy()) * 0.5f;
+        float stressSpeed = needs.interestAvoid();// * 0.5f;
 
+        float totalSlow = Math.max(1f - supplySlow - energySlow, 0);
+
+        speed = BASE_SPEED * totalSlow + stressSpeed;
+
+        // Additional boost on high stress
+        if(needs.interestAvoid() > 0.9f) {
+            speed += needs.interestAvoid() * 0.3f;
+        }
+
+        // slow down if supply found and hungry
+        if (needs.currentObjective() == Objective.FIND_SUPPLY && s.supply() > 0.1f) {
+            speed *= 0.2f;
+        }
+
+        speed = Math.max(0.05f, speed);
+    }
+
+    private void decide(Senses s, World world) {
         float rayDistance = 10f;
 
         Vector forward = velocity.length() > 0.01f
@@ -141,16 +141,12 @@ public class Agent {
                 Needs.MIN
         ).multiply(needs.interestAvoid());
 
-        if (needs.fear() > 0.4f) {
-            steering.add(vAvoid.multiply(1.5f));
-        }
-        else if (needs.hunger() > 0.7f) {
-            steering.add(vSupply);
-        } else if (needs.interestHeat() > 0.3f) {
-            steering.add(vHeat);
-        }
-        else {
-            steering.add(vTrail.multiply(0.5f));
+        Objective objective = needs.currentObjective();
+        switch (objective) {
+            case AVOID_DANGER -> steering.add(vAvoid.multiply(1.5f));
+            case FIND_SUPPLY -> steering.add(vSupply);
+            case ADJUST_TEMPERATURE -> steering.add(vHeat);
+            case EXPLORE_PATH -> steering.add(vTrail.multiply(0.5f));
         }
 
         steering.add(wallAvoidance(world).multiply(2f));
@@ -169,7 +165,6 @@ public class Agent {
     }
 
     private Vector wallAvoidance(World world) {
-
         float margin = 3f;
         float strength = 0.4f;
 
@@ -191,7 +186,7 @@ public class Agent {
         return new Vector(vx, vy).multiply(strength);
     }
 
-    private void move(World world) {
+    private void move() {
         this.lastPos = pos;
         float pX = pos.x() + velocity().vx() * speed;
         float pY = pos.y() + velocity().vy() * speed;
@@ -199,7 +194,6 @@ public class Agent {
     }
 
     private void metabolism(Senses s) {
-
         float movement =  velocity.length() * speed;
 
         needs.applyEnergyCost(movement);
@@ -213,7 +207,6 @@ public class Agent {
         needs.reactToScent(s.scent());
         needs.reactToTrail(s.trail());
         needs.reactToStress(s.stress());
-
     }
 
 
@@ -224,14 +217,9 @@ public class Agent {
 
         world.affect(LayerID.TRAIL, lastCoordinate, scentDeposit);
 
-        /*if(world.currentTick() >= lastTick + TICK_INTERVAL) {
-            world.affect(LayerID.SCENT, lastCoordinate, scentDeposit);
-            lastTick = world.currentTick();
-        }*/
-
         int occupancy = world.occupancyGrid().agentCount(STRESS_WINDOW, c);
         if(occupancy >= STRESS_THRESH) {
-            world.affect(LayerID.STRESS, c, 2*scentDeposit);
+            world.affect(LayerID.STRESS, c, 2 * scentDeposit);
         }
 
         float movement = velocity.length() * speed;

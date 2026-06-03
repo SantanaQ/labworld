@@ -11,5 +11,6 @@ public record AgentInfoResponse(
         float hunger,
         float heat,
         float curiosity,
-        float fear
+        float fear,
+        String objective
 ) {}

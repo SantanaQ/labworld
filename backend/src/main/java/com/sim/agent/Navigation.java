@@ -17,6 +17,11 @@ public class Navigation {
 
         float h = sampleBilinear(layer, agentX, agentY);
 
+        float strength = Math.abs(targetVal - h);
+        if (strength < 0.02f) {
+            return new Vector(0, 0);
+        }
+
         float dx = sampleBilinear(layer, agentX + eps, agentY)
                 - sampleBilinear(layer, agentX - eps, agentY);
         float dy = sampleBilinear(layer, agentX, agentY + eps)
@@ -86,9 +91,28 @@ public class Navigation {
         float errorLeft   = Math.abs(targetVal - leftVal);
         float errorRight  = Math.abs(targetVal - rightVal);
 
+        float bestGain = 0;
+        float leftGain = leftVal - centerVal;
+        float rightGain = rightVal - centerVal;
+
+
         Vector bestDir = forward;
         float bestError = errorCenter;
 
+        if (leftGain > bestGain) {
+            bestGain = leftGain;
+            bestDir = left;
+        }
+
+        if (rightGain > bestGain) {
+            bestGain = rightGain;
+            bestDir = right;
+        }
+
+        if (bestGain < 0.001f) {
+            return forward;
+        }
+        /*
         if (errorLeft < bestError) {
             bestError = errorLeft;
             bestDir = left;
@@ -97,7 +121,7 @@ public class Navigation {
         if (errorRight < bestError) {
             bestError = errorRight;
             bestDir = right;
-        }
+        }*/
 
         return bestDir.normalize().scale(direction);
     }
@@ -114,7 +138,12 @@ public class Navigation {
             float x = startX + dir.vx() * t;
             float y = startY + dir.vy() * t;
 
-            sum += sampleBilinear(layer, x, y);
+            //sum += sampleBilinear(layer, x, y);
+
+            float sample = sampleBilinear(layer, x, y);
+
+            float weight = (i / (float) steps); // farther = stronger signal
+            sum += sample * weight;
         }
 
         return sum / steps;

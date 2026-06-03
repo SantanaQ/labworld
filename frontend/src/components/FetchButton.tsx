@@ -30,7 +30,7 @@ function FetchButton(props: FetchButtonProps) {
               disabled={loading}
       >
           {loading ? (
-              <Spinner />
+              <Spinner text={"Loading..."} />
           ) : (
               props.children
           )}

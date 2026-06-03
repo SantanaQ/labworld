@@ -10,7 +10,7 @@ public class WorldSnapshot {
 
     public static int AGENT_PROPS = AgentProps.values().length;
 
-    private static final float CHANGE_THRESHOLD = 0.005f;
+    private static final float CHANGE_THRESHOLD = 0.003f;
 
     private final UUID worldId;
     private final int width;

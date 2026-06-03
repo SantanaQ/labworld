@@ -25,51 +25,42 @@ export function createDefaultWorldTemplate(): { nodes: Node[]; edges: Edge[] } {
         // --- Supply Layer ---
         createNode("clusteredPatchNoise", "supplySignal", -50, 50, {
             seed: "create-with-this",
-            cellSizeBase: 18,
-            cellSizeHoles: 8,
-            octavesBase: 3,
+            cellSizeBase: 5,
+            cellSizeHoles: 50,
+            octavesBase: 2,
             octavesHoles: 2,
             persistenceBase: 0.5,
             persistenceHoles: 0.6,
-            patchThreshold: 0.55,
-            patchSoftness: 0.08,
-            holeStrength: 0.35,
+            patchThreshold: 0.37,
+            patchSoftness: 0.02,
+            holeStrength: 0.8,
         }),
         createNode("defaultPotentialUpdater", "supplyBaseUpdate", 220, 275),
-        createNode("diffusionGrowthUpdater", "supplyStateUpdate", -50, 510, {
-            diffusion: 0.05,
-            growth: 0.12,
+        createNode("diffusionGrowthUpdater", "supplyStateUpdate", -50, 480, {
+            diffusion: 0.015,
+            growth: 0.2,
             stateDecay: 0.998,
             influenceDecay: 0.999,
         }),
-        createNode("softThreshold", "supplyCompositing1", -500, 550, { threshold: 0.55, softness: 0.08 }),
-        createNode("suitabilityMask", "supplyCompositing2", -300, 650, { min: 0.15, max: 0.35 }),
-        createNode("suitabilityDecay", "supplyCompositing3", -50, 750, { min: 0.15, max: 0.65, decay: 0.03 }),
+        createNode("suitabilityMask", "supplyCompositing", -30, 680, { min: 0.55, max: 0.65 }),
         createNode("supplyLayer", "supplyLayer", 500, 300),
 
         // --- Scent Layer ---
-        createNode("defaultPotentialUpdater", "scentBaseUpdate", 150, 850),
-        createNode("diffusionRelaxationUpdater", "scentStateUpdate", 150, 1000, {
-            diffusion: 0.15,
-            relaxation: 0,
-            stateDecay: 0.995,
-            influenceDecay: 0.25,
-        }),
         createNode("scentLayer", "scentLayer", 500, 550),
 
         // --- Trail Layer ---
-        createNode("defaultPotentialUpdater", "trailBaseUpdate", -50, 1000),
-        createNode("diffusionRelaxationUpdater", "trailStateUpdate", 150, 1200, {
-            diffusion: 0.15,
+        createNode("defaultPotentialUpdater", "trailBaseUpdate", 250, 800),
+        createNode("diffusionRelaxationUpdater", "trailStateUpdate", 150, 900, {
+            diffusion: 0.05,
             relaxation: 0,
-            stateDecay: 0.995,
+            stateDecay: 0.924,
             influenceDecay: 0.25,
         }),
         createNode("trailLayer", "trailLayer", 500, 800),
 
         // --- Stress Layer ---
-        createNode("defaultPotentialUpdater", "stressBaseUpdate", -50, 1150),
-        createNode("diffusionRelaxationUpdater", "stressStateUpdate", 150, 1400, {
+        createNode("defaultPotentialUpdater", "stressBaseUpdate", 250, 1100),
+        createNode("diffusionRelaxationUpdater", "stressStateUpdate", 150, 1200, {
             diffusion: 0.15,
             relaxation: 0,
             stateDecay: 0.995,
@@ -102,8 +93,7 @@ export function createDefaultWorldTemplate(): { nodes: Node[]; edges: Edge[] } {
         { id: "e_heatCompositing_heatLayer", source: "heatCompositing", sourceHandle: "output", target: "heatLayer", targetHandle: "compositing" },
 
         // --- Scent Layer connections ---
-        { id: "e_scentBaseUpdate_scentLayer", source: "scentBaseUpdate", sourceHandle: "output", target: "scentLayer", targetHandle: "baseUpdate" },
-        { id: "e_scentStateUpdate_scentLayer", source: "scentStateUpdate", sourceHandle: "output", target: "scentLayer", targetHandle: "stateUpdate" },
+
 
         // --- Trail Layer connections ---
         { id: "e_trailBaseUpdate_scentLayer", source: "trailBaseUpdate", sourceHandle: "output", target: "trailLayer", targetHandle: "baseUpdate" },
@@ -117,9 +107,7 @@ export function createDefaultWorldTemplate(): { nodes: Node[]; edges: Edge[] } {
         { id: "e_supplySignal_supplyLayer", source: "supplySignal", sourceHandle: "output", target: "supplyLayer", targetHandle: "signal" },
         { id: "e_supplyBaseUpdate_supplyLayer", source: "supplyBaseUpdate", sourceHandle: "output", target: "supplyLayer", targetHandle: "baseUpdate" },
         { id: "e_supplyStateUpdate_supplyLayer", source: "supplyStateUpdate", sourceHandle: "output", target: "supplyLayer", targetHandle: "stateUpdate" },
-        { id: "e_supplyCompositing1_supplyCompositing2", source: "supplyCompositing1", sourceHandle: "output", target: "supplyCompositing2", targetHandle: "input" },
-        { id: "e_supplyCompositing2_supplyCompositing3", source: "supplyCompositing2", sourceHandle: "output", target: "supplyCompositing3", targetHandle: "input" },
-        { id: "e_supplyCompositing3_supplyLayer", source: "supplyCompositing3", sourceHandle: "output", target: "supplyLayer", targetHandle: "compositing" },
+        { id: "e_supplyCompositing2_supplyCompositing", source: "supplyCompositing", sourceHandle: "output", target: "supplyLayer", targetHandle: "compositing" },
 
         // --- Layer → World ---
         { id: "e_heatLayer_world", source: "heatLayer", sourceHandle: "output", target: "world", targetHandle: "heat" },
