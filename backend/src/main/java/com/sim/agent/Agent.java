@@ -15,11 +15,14 @@ public class Agent {
 
     Needs needs;
 
-    private final float BASE_SPEED = 0.3f;
+    private final float BASE_SPEED = 0.5f;
     private final float MAX_INTERACTION_MOVEMENT = 0.1f;
 
     private final int TICK_INTERVAL = 15;
     int lastTick = 0;
+
+    private final int STRESS_WINDOW = 10;
+    private final int STRESS_THRESH = 4;
 
     public Agent(short id, Position pos, Needs needs) {
         this.pos = pos;
@@ -53,7 +56,10 @@ public class Agent {
     public void actOn(World world) {
         Coordinate c = pos.nearestCoordinate(world);
         Senses s = sense(world, c);
-        decide(s, world);
+        if(world.currentTick() >= lastTick + 3) {
+            decide(s, world);
+            lastTick = world.currentTick();
+        }
         move(world);
         metabolism(s);
         interact(world, c);
@@ -63,19 +69,22 @@ public class Agent {
         float supplyHere = world.layerAt(LayerID.SUPPLY, c);
         float heatHere = world.layerAt(LayerID.HEAT, c);
         float scentHere = world.layerAt(LayerID.SCENT, c);
+        float trailHere = world.layerAt(LayerID.TRAIL, c);
+        float stressHere = world.layerAt(LayerID.STRESS, c);
 
         float supplySlow = needs.interestSupply() * supplyHere * 0.5f;
 
         float energySlow = (1f - needs.energy()) * 0.5f;
 
-        float stressSpeed = needs.interestAvoid() * 0.5f;
+        float stressSpeed = needs.interestAvoid();// * 0.5f;
 
         speed = BASE_SPEED * (1f - supplySlow - energySlow) + stressSpeed;
+
         if(needs.interestAvoid() > 0.9f) {
             speed += needs.interestAvoid() * 0.3f;
         }
 
-        if (needs.hunger() > 0.7f && supplyHere > 0.5f) {
+        if (needs.hunger() > 0.7f && supplyHere > 0.3f && needs.interestAvoid() < 0.7f) {
             speed *= 0.2f;
         }
 
@@ -85,7 +94,9 @@ public class Agent {
         return new Senses(
                 supplyHere,
                 heatHere,
-                scentHere
+                scentHere,
+                trailHere,
+                stressHere
         );
     }
 
@@ -117,20 +128,20 @@ public class Agent {
         ).multiply(needs.interestHeat());
 
         Vector vTrail = Navigation.navigateWithRays(
-                world.layer(LayerID.SCENT),
+                world.layer(LayerID.TRAIL),
                 pos,
                 forward,
-                0.2f,
+                Needs.MAX,
                 rayDistance
         ).multiply(needs.interestExplore());
 
         Vector vAvoid = Navigation.navigateAllNeighbors(
-                world.layer(LayerID.SCENT),
+                world.layer(LayerID.STRESS),
                 pos,
                 Needs.MIN
         ).multiply(needs.interestAvoid());
 
-        if (needs.fear() > 0.6f) {
+        if (needs.fear() > 0.4f) {
             steering.add(vAvoid.multiply(1.5f));
         }
         else if (needs.hunger() > 0.7f) {
@@ -200,6 +211,8 @@ public class Agent {
         }
 
         needs.reactToScent(s.scent());
+        needs.reactToTrail(s.trail());
+        needs.reactToStress(s.stress());
 
     }
 
@@ -209,11 +222,17 @@ public class Agent {
 
         float scentDeposit = 0.2f;
 
-        if(world.currentTick() >= lastTick + TICK_INTERVAL) {
+        world.affect(LayerID.TRAIL, lastCoordinate, scentDeposit);
+
+        /*if(world.currentTick() >= lastTick + TICK_INTERVAL) {
             world.affect(LayerID.SCENT, lastCoordinate, scentDeposit);
             lastTick = world.currentTick();
-        }
+        }*/
 
+        int occupancy = world.occupancyGrid().agentCount(STRESS_WINDOW, c);
+        if(occupancy >= STRESS_THRESH) {
+            world.affect(LayerID.STRESS, c, 2*scentDeposit);
+        }
 
         float movement = velocity.length() * speed;
 

@@ -130,6 +130,20 @@ public class Needs {
         }
     }
 
+    public void reactToTrail(float val) {
+        float curiosityGain = val * curiosityFactor;
+        curiosity = Math.clamp(curiosity + curiosityGain * 0.1f, MIN, MAX);
+    }
+
+    public void reactToStress(float val) {
+        if (val > 0.5f) {
+            fear = Math.clamp(fear + val, MIN, MAX);
+            curiosity /= 2;
+        } else {
+            fear = Math.clamp(fear - 0.01f, MIN, MAX);
+        }
+    }
+
     public Needs copy() {
         return new Needs(hunger, curiosity, fear, energy, heat);
     }
@@ -137,5 +151,6 @@ public class Needs {
     public float supplyConsumption() {
         return supplyConsumption;
     }
+
 
 }

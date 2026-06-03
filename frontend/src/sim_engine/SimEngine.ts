@@ -11,6 +11,8 @@ export type ConnectionStatus = 'connected' | 'reconnecting' | 'disconnected';
 export interface SimSettings {
     showHeat: boolean;
     showScent: boolean;
+    showTrails: boolean;
+    showStress: boolean;
     showSupply: boolean;
     showAgents: boolean;
     speed: number;
@@ -27,6 +29,8 @@ export class SimEngine {
     public settings: SimSettings = {
         showHeat: true,
         showScent: true,
+        showTrails: true,
+        showStress: true,
         showSupply: true,
         showAgents: true,
         speed: 1,
@@ -70,9 +74,18 @@ export class SimEngine {
 
         if (this.settings.showSupply)
             this.renderer.drawLayer(this.layers.getLayer("supply"), this.renderer.supplyLUT, "screen");
-
-        if (this.settings.showScent)
+        /*
+        if (this.settings.showScent) {
             this.renderer.drawLayer(this.layers.getLayer("scent"), this.renderer.scentLUT, "lighter");
+        }*/
+
+        if (this.settings.showTrails) {
+            this.renderer.drawLayer(this.layers.getLayer("trail"), this.renderer.scentLUT, "lighter");
+        }
+
+        if (this.settings.showStress) {
+            this.renderer.drawLayer(this.layers.getLayer("stress"), this.renderer.stressLUT, "lighter");
+        }
 
         if (this.settings.showAgents)
             this.renderer.drawAgents(this.layers.getAgents()) ;

@@ -1,4 +1,4 @@
 package com.sim.agent;
 
-public record Senses(float supply, float heat, float scent) {
+public record Senses(float supply, float heat, float scent, float trail, float stress) {
 }

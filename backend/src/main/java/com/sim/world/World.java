@@ -131,17 +131,14 @@ public class World {
         return agents;
     }
 
-    public LayerContext layerContext() {
-        return ctx;
+    public OccupancyGrid occupancyGrid() {
+        return occupancyGrid;
     }
 
     public Random random() {
         return rand;
     }
 
-    public Map<LayerID, LayerRuntime>  runtimes() {
-        return runtimes;
-    }
 
     private void spawnAgents(int agentCount, Needs agentNeeds) {
         short id =  1;

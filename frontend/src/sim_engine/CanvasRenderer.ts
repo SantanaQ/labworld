@@ -15,6 +15,8 @@ export class CanvasRenderer {
     public heatLUT = new Uint8ClampedArray(256 * 4);
     public supplyLUT = new Uint8ClampedArray(256 * 4);
     public scentLUT = new Uint8ClampedArray(256 * 4);
+    public trailLUT = new Uint8ClampedArray(256 * 4);
+    public stressLUT = new Uint8ClampedArray(256 * 4);
 
     constructor(canvas: HTMLCanvasElement, camera: React.RefObject<Camera>) {
         this.canvas = canvas;
@@ -44,6 +46,11 @@ export class CanvasRenderer {
             this.scentLUT[i*4+1] = 255;
             this.scentLUT[i*4+2] = Math.floor(120 * t);
             this.scentLUT[i*4+3] = i * 0.6;
+
+            this.stressLUT[i*4+0] = Math.floor(255 * t);
+            this.stressLUT[i*4+1] = 165;
+            this.stressLUT[i*4+2] = 0;
+            this.stressLUT[i*4+3] = i * 0.6;
         }
     }
 

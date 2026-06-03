@@ -8,6 +8,7 @@ import {type Camera, useCanvasCamera} from "../hooks/useCanvasCamera.ts";
 import FetchButton from "../components/FetchButton.tsx";
 import {Activity, Hand, HeartPulse, ScanSearch, Target, View, Zap, ZoomIn, ZoomOut} from "lucide-react";
 import {useAgentInspector} from "../hooks/useAgentInspector.ts";
+import Spinner from "../components/Spinner.tsx";
 
 interface Props {
     config: WorldConfig | null;
@@ -31,6 +32,8 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
     const [settings, setSettings] = useState<SimSettings>({
         showHeat: true,
         showScent: true,
+        showTrails: true,
+        showStress: true,
         showSupply: true,
         showAgents: true,
         speed: 1,
@@ -120,13 +123,11 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
 
             const rect = canvas.getBoundingClientRect();
 
-            // 🖱️ Mausposition relativ zum Canvas
             const screenX = e.clientX - rect.left;
             const screenY = e.clientY - rect.top;
 
             const cam = cameraRef.current;
 
-            // 🌍 Screen → World transform
             const worldX = (screenX / cam.zoom) + (cam.x - canvas.width / (2 * cam.zoom));
             const worldY = (screenY / cam.zoom) + (cam.y - canvas.height / (2 * cam.zoom));
 
@@ -253,8 +254,8 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
                             <p className="text-[10px] text-zinc-500 font-bold uppercase border-b border-zinc-800 pb-2 mb-3 tracking-widest">
                                 Layer Visibility
                             </p>
-                            <div className="flex flex-col gap-2">
-                                {['showHeat', 'showSupply', 'showScent', 'showAgents'].map((key) => (
+                            <div className="grid grid-cols-2 gap-2">
+                                {['showHeat', 'showSupply', 'showScent', 'showTrails', 'showStress', 'showAgents'].map((key) => (
                                     <label key={key}
                                            className="flex items-center gap-3 text-[11px] text-zinc-300 cursor-pointer hover:text-white transition-colors">
                                         <input
@@ -277,6 +278,7 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
                             </p>
 
                             {/* Grid */}
+                            {loading ? <Spinner />  :
                             <div className="grid grid-cols-4 gap-3 w-full">
 
                                 {/* Velocity */}
@@ -318,7 +320,6 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
                                         <HeartPulse size={14} className="text-red-400"/>
                                         <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Needs</p>
                                     </div>
-
                                     <div className="space-y-1">
                                         <p className="text-[12px] text-zinc-300">
                                             {agentInfo ? `Hunger: ${agentInfo.hunger.toFixed(2)}` : "-"}
@@ -349,6 +350,7 @@ export const SimulationContainer: React.FC<Props> = ({ config }) => {
                                 </div>
 
                             </div>
+                            }
                         </div>
 
                         {/* Simulation Controls */}
