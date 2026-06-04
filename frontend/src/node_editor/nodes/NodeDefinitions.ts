@@ -56,6 +56,8 @@ export interface NodeDefinition {
 const minDimension = 64;
 const maxDimension = 256;
 
+const selectableLayers = ["Heat", "Supply", "Trail", "Stress"];
+
 export const compositingRegistry = {
     clamp: {
         label: "Clamp",
@@ -257,11 +259,7 @@ export const compositingRegistry = {
                 type: "select",
                 default: "Heat",
                 inline: false,
-                options: [
-                    "Heat",
-                    "Supply",
-                    "Scent",
-                ]
+                options: selectableLayers,
             },
             min: {
                 type: "float",
@@ -312,11 +310,7 @@ export const compositingRegistry = {
                 type: "select",
                 default: "Heat",
                 inline: false,
-                options: [
-                    "Heat",
-                    "Supply",
-                    "Scent",
-                ]
+                options: selectableLayers,
             },
 
             min: {

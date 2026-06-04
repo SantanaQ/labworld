@@ -1,8 +1,8 @@
 package com.api.session;
 
 import com.api.dto.AgentDTO;
-import com.api.service.FrameEncoder;
-import com.api.service.Gzip;
+import com.api.encoding.FrameEncoder;
+import com.api.encoding.Gzip;
 import com.api.ws.WebSocketBroadcaster;
 import com.sim.agent.Agent;
 import com.sim.config.WorldConfig;

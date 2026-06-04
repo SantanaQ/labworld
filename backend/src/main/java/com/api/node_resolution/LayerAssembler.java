@@ -1,4 +1,4 @@
-package com.api.resource;
+package com.api.node_resolution;
 
 import com.api.resource.nodes.EditorNode;
 import com.api.resource.nodes.global.AgentNode;

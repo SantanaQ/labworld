@@ -1,11 +1,10 @@
-package com.api.service;
+package com.api.encoding;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.zip.GZIPOutputStream;
 
 public class Gzip {
-
 
     public static byte[] compress(byte[] data) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

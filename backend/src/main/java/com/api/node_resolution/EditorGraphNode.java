@@ -1,4 +1,4 @@
-package com.api.resource;
+package com.api.node_resolution;
 
 import com.api.resource.nodes.EditorEdge;
 import com.api.resource.nodes.EditorNode;

@@ -1,4 +1,4 @@
-package com.api.service;
+package com.api.encoding;
 
 import com.sim.config.WorldConfig;
 import com.sim.snapshot.AgentProps;
@@ -80,8 +80,6 @@ public class FrameEncoder {
             buffer.put((byte) (agents[i + AgentProps.HEAT.ordinal()] * 255)); // heat
             buffer.put((byte) (agents[i + AgentProps.CURIOSITY.ordinal()] * 255)); // curiosity
             buffer.put((byte) (agents[i + AgentProps.FEAR.ordinal()] * 255)); // fear
-
-
         }
 
         buffer.flip();

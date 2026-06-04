@@ -8,7 +8,6 @@ import com.sim.layer.*;
 import com.sim.layer.step.LayerReferenceStep;
 import com.sim.agent.Agent;
 import com.sim.agent.Position;
-import com.sim.utils.MathHelpers;
 
 import java.util.*;
 

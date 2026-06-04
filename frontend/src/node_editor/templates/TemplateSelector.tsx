@@ -16,7 +16,7 @@ const templates: TemplateOption[] = [
         loader: createEmptyCanvasTemplate,
     },
     {
-        label: "Small Noise",
+        label: "Shoreline",
         value: "example",
         loader: createDefaultWorldTemplate,
     },

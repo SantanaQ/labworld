@@ -141,13 +141,17 @@ public class Agent {
                 Needs.MIN
         ).multiply(needs.interestAvoid());
 
-        Objective objective = needs.currentObjective();
+        /*Objective objective = needs.currentObjective();
         switch (objective) {
             case AVOID_DANGER -> steering.add(vAvoid.multiply(1.5f));
             case FIND_SUPPLY -> steering.add(vSupply);
             case ADJUST_TEMPERATURE -> steering.add(vHeat);
             case EXPLORE_PATH -> steering.add(vTrail.multiply(0.5f));
-        }
+        }*/
+        steering.add(vAvoid.multiply(1.5f));
+        steering.add(vSupply);
+        steering.add(vHeat);
+        steering.add(vTrail.multiply(0.5f));
 
         steering.add(wallAvoidance(world).multiply(2f));
 

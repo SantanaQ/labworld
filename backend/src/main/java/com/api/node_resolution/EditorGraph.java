@@ -1,5 +1,6 @@
-package com.api.resource;
+package com.api.node_resolution;
 
+import com.api.resource.EditorConfig;
 import com.api.resource.nodes.EditorEdge;
 import com.sim.layer.LayerID;
 import com.api.resource.nodes.EditorNode;

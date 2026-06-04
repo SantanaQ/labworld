@@ -1,11 +1,9 @@
 package com.sim.json_factories;
 
-import com.api.resource.EditorGraphNode;
 import com.api.resource.nodes.EditorNode;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.sim.layer.update.DefaultPotentialUpdater;
 import com.sim.layer.update.PotentialUpdater;
-import java.util.HashMap;
+
 import java.util.Map;
 import java.util.function.Function;
 
