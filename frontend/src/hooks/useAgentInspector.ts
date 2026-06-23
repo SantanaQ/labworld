@@ -29,7 +29,6 @@ export function useAgentInspector({
     const [agentInfo, setAgentInfo] = useState<AgentInfo | null>(null);
     const [loading, setLoading] = useState(false);
 
-    const cacheRef = useRef<Map<string, AgentInfo>>(new Map());
     const abortRef = useRef<AbortController | null>(null);
 
     useEffect(() => {
@@ -47,13 +46,6 @@ export function useAgentInspector({
         if (!agent) return;
 
         const agentId = agent.id;
-        console.log(agentId);
-
-        // cache hit?
-        /*if (cacheRef.current.has(agentId)) {
-            setAgentInfo(cacheRef.current.get(agentId)!);
-            return;
-        }*/
 
         // abort old request
         abortRef.current?.abort();
@@ -73,9 +65,6 @@ export function useAgentInspector({
             }
 
             const data: AgentInfo = await response.json();
-
-            // save in cache
-            cacheRef.current.set(agentId, data);
 
             setAgentInfo(data);
 

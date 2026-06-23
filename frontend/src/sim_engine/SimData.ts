@@ -33,7 +33,6 @@ export class SimData {
             };
             this.dimensions.width = width;
             this.dimensions.height = height;
-            console.log("SET LAYER", name, width, height);
         }
     }
 

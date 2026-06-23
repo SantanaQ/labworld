@@ -1,12 +1,10 @@
 import {SimData, type LayerName} from "./SimData.ts";
 import { CanvasRenderer } from "./CanvasRenderer.ts";
-import {SimWebSocket} from "./SimWebsocket.ts";
+import {type ConnectionStatus, SimWebSocket} from "./SimWebsocket.ts";
 import type {WorldConfig} from "../pages/Dashboard.tsx";
 import type {Camera} from "../hooks/useCanvasCamera.ts";
 import React from "react";
 import {handleBinaryFrame} from "./decoding/FrameDecoder.ts";
-
-export type ConnectionStatus = 'connected' | 'reconnecting' | 'disconnected';
 
 export interface SimSettings {
     showHeat: boolean;
@@ -49,7 +47,11 @@ export class SimEngine {
 
     public connect(sessionId: string) {
         if (this.ws?.isOpen()) return;
-        this.ws = new SimWebSocket(sessionId, (frame) => handleBinaryFrame(frame, this.layers), (status) => this.logStatus(status));
+        this.ws = new SimWebSocket(
+            sessionId,
+            (frame) => handleBinaryFrame(frame, this.layers),
+            (status) => this.logStatus(status)
+        );
 
         this.ws.connect();
     }
