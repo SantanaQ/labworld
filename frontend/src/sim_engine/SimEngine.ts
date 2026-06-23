@@ -1,10 +1,10 @@
-import {LayerContainer, type LayerName} from "./LayerContainer.ts";
+import {SimData, type LayerName} from "./SimData.ts";
 import { CanvasRenderer } from "./CanvasRenderer.ts";
 import {SimWebSocket} from "./SimWebsocket.ts";
 import type {WorldConfig} from "../pages/Dashboard.tsx";
 import type {Camera} from "../hooks/useCanvasCamera.ts";
 import React from "react";
-import {handleBinaryFrame} from "./FrameDecoder.ts";
+import {handleBinaryFrame} from "./decoding/FrameDecoder.ts";
 
 export type ConnectionStatus = 'connected' | 'reconnecting' | 'disconnected';
 
@@ -20,7 +20,7 @@ export interface SimSettings {
 
 
 export class SimEngine {
-    private layers = new LayerContainer();
+    private layers = new SimData();
     private renderer: CanvasRenderer;
     private ws: SimWebSocket | null = null;
     private animationFrameId = 0;
@@ -108,12 +108,12 @@ export class SimEngine {
 
     public findAgentByCoordinate(posX: number, posY: number) {
         const tolerance = 0.5;
-        const agents = this.layers.getAgents();
+        const agents = this.layers.getAgents().values();
 
         for (const agent of agents) {
             if (
-                Math.abs(posX - agent.posX) <= tolerance &&
-                Math.abs(posY - agent.posY) <= tolerance
+                Math.abs(posX - agent.agentData.posX) <= tolerance &&
+                Math.abs(posY - agent.agentData.posY) <= tolerance
             ) {
                 return agent;
             }

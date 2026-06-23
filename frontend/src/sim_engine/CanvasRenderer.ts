@@ -1,7 +1,7 @@
-import type {LayerData} from "./LayerContainer.ts";
+import type {LayerData} from "./SimData.ts";
 import type {Camera} from "../hooks/useCanvasCamera.ts";
 import React from "react";
-import type {AgentData} from "./FrameDecoder.ts";
+import type { Agent } from "./SimData.ts";
 
 export class CanvasRenderer {
     private canvas: HTMLCanvasElement;
@@ -116,7 +116,7 @@ export class CanvasRenderer {
 
 
 
-    public drawAgents(agents: AgentData[]) {
+    public drawAgents(agents: Map<number, Agent>) {
         const ctx = this.ctx;
 
         const cam = this.cameraRef.current;
@@ -132,17 +132,17 @@ export class CanvasRenderer {
         ctx.save();
         this.applyCamera();
 
-        for (const a of agents) {
-            const x = a.posX;
-            const y = a.posY;
+        for (const a of agents.values()) {
+            const x = a.agentData.posX;
+            const y = a.agentData.posY;
 
             if (x < x0 || x > x1 || y < y0 || y > y1) continue;
 
-            const speed = a.speed / 255;
+            const speed = a.agentData.speed / 255;
 
             // movement angle
-            const dx = a.vX ?? 0;
-            const dy = a.vY ?? 0;
+            const dx = a.agentData.vX ?? 0;
+            const dy = a.agentData.vY ?? 0;
             const targetAngle = Math.atan2(dy, dx);
 
             // smooth rotate

@@ -1,113 +1,211 @@
 package com.api.encoding;
 
 import com.sim.config.WorldConfig;
-import com.sim.snapshot.AgentProps;
-import com.sim.snapshot.LayerDelta;
+import com.sim.layer.LayerID;
 import com.sim.snapshot.WorldSnapshot;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.UUID;
 
-/*TODO: refactor to chunk system
-    HEADER: id, width, height,
-    CHUNK: type, size, stride, payload
+/**
+ * Binary frame encoder for simulation snapshots.
+ *
+ * <h2>Protocol Specification — Version 1.0</h2>
+ *
+ * <p>All values are encoded in <b>little-endian</b> byte order.</p>
+ *
+ * <h3>Frame Layout</h3>
+ *
+ * <pre>
+ * +-------------------+
+ * | Frame Header      |
+ * +-------------------+
+ * | Chunk 1           |
+ * +-------------------+
+ * | Chunk 2           |
+ * +-------------------+
+ * | ...               |
+ * +-------------------+
+ * | Chunk N           |
+ * +-------------------+
+ * </pre>
+ *
+ * <p>
+ * A frame consists of one frame header followed by a variable number of chunks.
+ * Chunks contain either layer data or agent data.
+ * </p>
+ *
+ * <h3>Frame Header (27 bytes)</h3>
+ *
+ * <pre>
+ * Offset | Size | Type   | Description
+ * -------+------+--------+-----------------------------
+ * 0      | 1    | uint8  | Protocol version
+ * 1      | 16   | UUID   | World ID
+ * 17     | 4    | int32  | World width
+ * 21     | 4    | int32  | World height
+ * 25     | 1    | uint8  | Encoding type
+ * 26     | 1    | uint8  | Chunk count
+ * </pre>
+ *
+ * <h4>Protocol Version</h4>
+ * <ul>
+ *   <li>1 = Protocol version 1.0</li>
+ * </ul>
+ *
+ * <h4>Encoding Type</h4>
+ * <ul>
+ *   <li>0 = Delta frame</li>
+ *   <li>1 = Full frame</li>
+ * </ul>
+ *
+ * <h3>Chunk Header (6 bytes)</h3>
+ *
+ * <pre>
+ * Offset | Size | Type   | Description
+ * -------+------+--------+-----------------------------
+ * 0      | 1    | uint8  | Chunk ID
+ * 1      | 4    | int32  | Chunk payload size in bytes
+ * 5      | 1    | uint8  | Entry stride in bytes
+ * </pre>
+ *
+ * <h3>Chunk Types</h3>
+ *
+ * <p>Chunk IDs are defined in {@link ChunkID}.</p>
+ *
+ * <h4>Full Layer Chunk</h4>
+ *
+ * <p>
+ * Contains a complete simulation layer.
+ * Each cell is quantized to one byte.
+ * </p>
+ *
+ * <pre>
+ * Entry:
+ * +--------+
+ * | value  |
+ * +--------+
+ * | uint8  |
+ * </pre>
+ *
+ * <ul>
+ *   <li>Stride = 1 byte</li>
+ *   <li>Payload size = width × height</li>
+ * </ul>
+ *
+ * <h4>Delta Layer Chunk</h4>
+ *
+ * <p>
+ * Contains only changed cells of a simulation layer.
+ * </p>
+ *
+ * <pre>
+ * Entry:
+ * +------------+--------+
+ * | index      | value  |
+ * +------------+--------+
+ * | int32      | uint8  |
+ * </pre>
+ *
+ * <ul>
+ *   <li>Stride = 5 bytes</li>
+ * </ul>
+ *
+ * <h4>Agent Chunk</h4>
+ *
+ * <p>
+ * Contains a full snapshot of all agents.
+ * </p>
+ *
+ * <pre>
+ * Entry:
+ * +------+--------+--------+--------+--------+--------+
+ * | id   | posX   | posY   | velX   | velY   | speed  |
+ * +------+--------+--------+--------+--------+--------+
+ * | u16  | float  | float  | float  | float  | uint8  |
+ * </pre>
+ *
+ * <ul>
+ *   <li>Stride = 19 bytes</li>
+ * </ul>
+ *
+ * <h3>Notes</h3>
+ *
+ * <ul>
+ *   <li>All layer values are quantized from float to uint8.</li>
+ *   <li>Agents are always transmitted as full snapshots.</li>
+ *   <li>Delta chunk indexes use flattened row-major indexing.</li>
+ * </ul>
  */
 public class FrameEncoder {
+
+    private final FrameHeader frameHeader;
+    private final FullLayerChunk fullLayerChunk;
+    private final DeltaLayerChunk deltaLayerChunk;
+    private final AgentChunk agentChunk;
 
     private final ByteBuffer buffer;
 
     public FrameEncoder(WorldConfig config) {
-        int layerSize = config.width() * config.height();
-        int agentSize = config.agentCount() * AgentProps.totalBytes();
-        //int totalSize = 16 + 8 + (3 * layerSize) + agentSize;
+        this.frameHeader = new FrameHeader();
+        this.fullLayerChunk = new FullLayerChunk();
+        this.deltaLayerChunk = new DeltaLayerChunk();
+        this.agentChunk = new AgentChunk();
 
-        int worstLayer = 5 * layerSize;
-        int totalSize = 25 + (5 * worstLayer) + agentSize;
+        int headerBytes = frameHeader.totalBytes();
+        int agentBytes = agentChunk.totalBytes(config.agentCount());
 
+        int worldWidth = config.width();
+        int worldHeight = config.height();
+        int layerCount = config.layerCount();
+        int worstCaseBytesFull = fullLayerChunk.maxBytes(worldWidth, worldHeight);
+        int worstCaseBytesDelta = deltaLayerChunk.maxBytes(worldWidth, worldHeight);
+        int layerBytes = layerCount * Math.max(worstCaseBytesFull, worstCaseBytesDelta);
+
+        int totalBytes = headerBytes + agentBytes + layerBytes;
         this.buffer = ByteBuffer
-                .allocateDirect(totalSize)
+                .allocateDirect(totalBytes)
                 .order(ByteOrder.LITTLE_ENDIAN);
     }
 
-    public ByteBuffer encode(WorldSnapshot snap, boolean fullFrame) {
+    public ByteBuffer encodeFull(WorldSnapshot snap) {
         buffer.clear();
 
         // Header
-        UUID uuid = snap.worldId();
-        buffer.putLong(uuid.getMostSignificantBits());
-        buffer.putLong(uuid.getLeastSignificantBits());
-        buffer.putInt(snap.width());
-        buffer.putInt(snap.height());
-        buffer.put((byte) (fullFrame ? 1 : 0));
+        frameHeader.encode(buffer, snap, true);
 
-        // Layers (0.0 - 1.0 float -> unsigned byte)
-        if(fullFrame) {
-            encodeLayer(snap.heat());
-            encodeLayer(snap.food());
-            encodeLayer(snap.scent());
-            encodeLayer(snap.trail());
-            encodeLayer(snap.stress());
-        } else {
-            encodeLayerDelta(snap.heatDelta());
-            encodeLayerDelta(snap.foodDelta());
-            encodeLayerDelta(snap.scentDelta());
-            encodeLayerDelta(snap.trailDelta());
-            encodeLayerDelta(snap.stressDelta());
-        }
-
-        // Agent Stride
-        buffer.put((byte) AgentProps.totalBytes());
+        // Layers
+        fullLayerChunk.encode(LayerID.HEAT, ChunkID.HEAT_CHUNK, buffer, snap);
+        fullLayerChunk.encode(LayerID.SUPPLY, ChunkID.SUPPLY_CHUNK, buffer, snap);
+        fullLayerChunk.encode(LayerID.SCENT, ChunkID.SCENT_CHUNK, buffer, snap);
+        fullLayerChunk.encode(LayerID.TRAIL, ChunkID.TRAILS_CHUNK, buffer, snap);
+        fullLayerChunk.encode(LayerID.STRESS, ChunkID.STRESS_CHUNK, buffer, snap);
 
         // Agents
-        float[] agents = snap.agents();
-        for (int i = 0; i < agents.length; i += WorldSnapshot.AGENT_PROPS) {
-            // ID
-            buffer.putShort((short) agents[i + AgentProps.ID.ordinal()]);
-
-            // Position (pX, py)
-            buffer.putFloat(agents[i + AgentProps.X.ordinal()]);    // posX
-            buffer.putFloat(agents[i + AgentProps.Y.ordinal()]);    // posY
-
-            // Velocity (vX, vY)
-            buffer.putFloat(agents[i + AgentProps.VX.ordinal()]);
-            buffer.putFloat(agents[i + AgentProps.VY.ordinal()]);
-
-            // Werte 0.0 - 1.0 als Byte
-            buffer.put((byte) (agents[i + AgentProps.SPEED.ordinal()] * 255)); // speed
-            buffer.put((byte) (agents[i + AgentProps.ENERGY.ordinal()] * 255)); // energy
-            buffer.put((byte) (agents[i + AgentProps.HUNGER.ordinal()] * 255)); // hunger
-            buffer.put((byte) (agents[i + AgentProps.HEAT.ordinal()] * 255)); // heat
-            buffer.put((byte) (agents[i + AgentProps.CURIOSITY.ordinal()] * 255)); // curiosity
-            buffer.put((byte) (agents[i + AgentProps.FEAR.ordinal()] * 255)); // fear
-        }
+        agentChunk.encode(ChunkID.AGENTS_CHUNK, buffer, snap);
 
         buffer.flip();
         return buffer;
     }
 
-    private void encodeLayer(float[] data) {
-        for (float f : data) {
-            encodeAsByte(f);
-        }
-    }
+    public ByteBuffer encodeDelta(WorldSnapshot snap) {
+        buffer.clear();
 
-    private void encodeLayerDelta(LayerDelta layerDelta) {
-        int size = layerDelta.size();
-        int[] indexes = layerDelta.indexes();
-        float[] values = layerDelta.values();
-        buffer.putInt(size);
-        for(int i = 0; i < size; i++) {
-            buffer.putInt(indexes[i]);
-            encodeAsByte(values[i]);
-        }
-    }
+        // Header
+        frameHeader.encode(buffer, snap, false);
 
-    private void encodeAsByte(float value) {
-        value = (int) (value * 255.0f);
-        if (value < 0) value = 0;
-        if (value > 255) value = 255;
-        buffer.put((byte) value);
+        // Layers
+        deltaLayerChunk.encode(LayerID.HEAT, ChunkID.HEAT_DELTA_CHUNK, buffer, snap);
+        deltaLayerChunk.encode(LayerID.SUPPLY, ChunkID.SUPPLY_DELTA_CHUNK, buffer, snap);
+        deltaLayerChunk.encode(LayerID.SCENT, ChunkID.SCENT_DELTA_CHUNK, buffer, snap);
+        deltaLayerChunk.encode(LayerID.TRAIL, ChunkID.TRAILS_DELTA_CHUNK, buffer, snap);
+        deltaLayerChunk.encode(LayerID.STRESS, ChunkID.STRESS_DELTA_CHUNK, buffer, snap);
+
+        // Agents
+        agentChunk.encode(ChunkID.AGENTS_CHUNK, buffer, snap);
+
+        buffer.flip();
+        return buffer;
     }
 
 }

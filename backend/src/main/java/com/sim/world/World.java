@@ -138,6 +138,10 @@ public class World {
         return rand;
     }
 
+    public int layerCount() {
+        return config.layerCount();
+    }
+
 
     private void spawnAgents(int agentCount, Needs agentNeeds) {
         short id =  1;

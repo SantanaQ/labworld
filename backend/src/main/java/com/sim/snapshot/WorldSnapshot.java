@@ -15,72 +15,51 @@ public class WorldSnapshot {
     private final UUID worldId;
     private final int width;
     private final int height;
+    private final int layerCount;
 
     private final int[] indexBuffer;
     private final float[] deltaBuffer;
 
-    private final float[] lastHeat;
-    private final float[] lastFood;
-    private final float[] lastScent;
-    private final float[] lastTrail;
-    private final float[] lastStress;
-
-    private final LayerDelta heatDelta;
-    private final LayerDelta foodDelta;
-    private final LayerDelta scentDelta;
-    private final LayerDelta trailDelta;
-    private final LayerDelta stressDelta;
+    private final HashMap<LayerID, float[]> layerValues;
+    private final HashMap<LayerID, LayerDelta> layerDeltas;
 
     private final List<float[]> agentSnaps;
 
     private final float[] agentBuffer;
+    private final int agentCount;
 
     public WorldSnapshot(World world) {
 
         this.worldId = world.id();
         this.width = world.width();
         this.height = world.height();
+        this.layerCount = world.layerCount();
+        this.agentCount = world.agentCount();
 
         this.indexBuffer = new int[width * height];
         this.deltaBuffer = new float[width * height];
 
-        this.heatDelta = new LayerDelta();
-        this.foodDelta = new LayerDelta();
-        this.scentDelta = new LayerDelta();
-        this.trailDelta = new LayerDelta();
-        this.stressDelta = new LayerDelta();
-
-        this.lastHeat = new float[width * height];
-        this.lastFood = new float[width * height];
-        this.lastScent = new float[width * height];
-        this.lastTrail = new float[width * height];
-        this.lastStress = new float[width * height];
+        this.layerValues = new HashMap<>();
+        this.layerDeltas = new HashMap<>();
+        for(LayerID id : LayerID.values()) {
+            layerValues.put(id, new float[width * height]);
+            layerDeltas.put(id, new LayerDelta());
+        }
 
         this.agentBuffer = new float[world.agentCount() *  AGENT_PROPS];
-
         this.agentSnaps = new ArrayList<>();
     }
 
     public void refresh(World world) {
         agentSnaps.clear();
 
-        float[] currentFood = world.layer(LayerID.SUPPLY).values();
-        float[] currentScent = world.layer(LayerID.SCENT).values();
-        float[] currentHeat = world.layer(LayerID.HEAT).values();
-        float[] currentTrail = world.layer(LayerID.TRAIL).values();
-        float[] currentStress = world.layer(LayerID.STRESS).values();
-
-        computeDelta(foodDelta, lastFood, currentFood);
-        computeDelta(scentDelta, lastScent, currentScent);
-        computeDelta(heatDelta, lastHeat, currentHeat);
-        computeDelta(trailDelta, lastTrail, currentTrail);
-        computeDelta(stressDelta, lastStress, currentStress);
-
-        copyLayer(currentFood, lastFood);
-        copyLayer(currentScent, lastScent);
-        copyLayer(currentHeat, lastHeat);
-        copyLayer(currentTrail, lastTrail);
-        copyLayer(currentStress, lastStress);
+        for (LayerID id : LayerID.values()) {
+            float[] currentValues = world.layer(id).values();
+            // first record values change
+            computeDelta(id, currentValues);
+            // then update full frame buffer
+            copyLayer(id, currentValues);
+        }
 
         int base = 0;
         for(Agent agent : world.agents()) {
@@ -90,20 +69,23 @@ public class WorldSnapshot {
             agentBuffer[base + AgentProps.VX.ordinal()] = agent.velocity().vx();
             agentBuffer[base + AgentProps.VY.ordinal()] = agent.velocity().vy();
             agentBuffer[base + AgentProps.SPEED.ordinal()] = agent.speed();
-            agentBuffer[base + AgentProps.ENERGY.ordinal()] = agent.needs().energy();
+            /*agentBuffer[base + AgentProps.ENERGY.ordinal()] = agent.needs().energy();
             agentBuffer[base + AgentProps.HUNGER.ordinal()] = agent.needs().hunger();
             agentBuffer[base + AgentProps.HEAT.ordinal()] = agent.needs().heat();
             agentBuffer[base + AgentProps.CURIOSITY.ordinal()] = agent.needs().curiosity();
-            agentBuffer[base + AgentProps.FEAR.ordinal()] = agent.needs().fear();
+            agentBuffer[base + AgentProps.FEAR.ordinal()] = agent.needs().fear();*/
             base += AGENT_PROPS;
         }
     }
 
-    private void copyLayer(float[] values,  float[] buffer) {
+    private void copyLayer(LayerID id,  float[] values) {
+        float[] buffer = layerValues.get(id);
         System.arraycopy(values, 0, buffer, 0, values.length);
     }
 
-    private void computeDelta(LayerDelta delta, float[] lastValues, float[] currentValues) {
+    private void computeDelta(LayerID id, float[] currentValues) {
+        LayerDelta delta = layerDeltas.get(id);
+        float[] lastValues = layerValues.get(id);
         int count = 0;
         for(int i = 0; i < currentValues.length; i++) {
 
@@ -123,7 +105,7 @@ public class WorldSnapshot {
     }
 
     public int agentCount() {
-        return agentSnaps.size();
+        return agentCount;
     }
 
     public int width() {
@@ -134,44 +116,16 @@ public class WorldSnapshot {
         return height;
     }
 
-    public float[] heat() {
-        return lastHeat;
+    public float[] valuesOf(LayerID id) {
+        return layerValues.get(id);
     }
 
-    public float[] food() {
-        return lastFood;
+    public LayerDelta deltaOf(LayerID id) {
+        return layerDeltas.get(id);
     }
 
-    public float[] scent() {
-        return lastScent;
-    }
-
-    public float[] trail() {
-        return lastTrail;
-    }
-
-    public float[] stress() {
-        return lastStress;
-    }
-
-    public LayerDelta heatDelta() {
-        return heatDelta;
-    }
-
-    public LayerDelta foodDelta() {
-        return foodDelta;
-    }
-
-    public LayerDelta scentDelta() {
-        return scentDelta;
-    }
-
-    public LayerDelta trailDelta() {
-        return trailDelta;
-    }
-
-    public LayerDelta stressDelta() {
-        return stressDelta;
+    public int layerCount() {
+        return layerCount;
     }
 
     public float[] agents() {

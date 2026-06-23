@@ -189,7 +189,11 @@ public class SessionContext {
         byte[] data;
 
         synchronized (bufferLock) {
-            ByteBuffer buffer = encoder.encode(frontBuffer, fullFrame);
+            ByteBuffer buffer;
+            if(fullFrame) {
+                buffer = encoder.encodeFull(frontBuffer);
+            } else
+                buffer = encoder.encodeDelta(frontBuffer);
 
             ByteBuffer copy = buffer.asReadOnlyBuffer();
             data = new byte[copy.remaining()];

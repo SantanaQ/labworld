@@ -6,12 +6,12 @@ public enum AgentProps {
     Y(Float.BYTES),
     VX(Float.BYTES),
     VY(Float.BYTES),
-    SPEED(Byte.BYTES),
-    ENERGY(Byte.BYTES),
+    SPEED(Byte.BYTES),;
+    /*ENERGY(Byte.BYTES),
     HUNGER(Byte.BYTES),
     HEAT(Byte.BYTES),
     CURIOSITY(Byte.BYTES),
-    FEAR(Byte.BYTES);
+    FEAR(Byte.BYTES);*/
 
     private int byteSize;
 

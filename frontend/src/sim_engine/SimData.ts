@@ -1,4 +1,4 @@
-import type {AgentData} from "./FrameDecoder.ts";
+import type {AgentData} from "./decoding/FrameDecoder.ts";
 
 export type LayerName = 'heat' | 'scent' | 'supply' | 'trail' | 'stress';
 
@@ -13,9 +13,15 @@ export interface WorldDimensions {
     height: number;
 }
 
-export class LayerContainer {
+export interface Agent {
+    agentData: AgentData;
+    angle: number;
+    stretch: number;
+}
+
+export class SimData {
     private layers: Record<LayerName, LayerData> = {} as Record<LayerName, LayerData>;
-    private agents: Array<AgentData> = []
+    private agents: Map<number, Agent> = new Map<number, Agent>();
     private dimensions: WorldDimensions = {} as WorldDimensions;
 
     public setLayer(name: LayerName, width: number, height: number, data?: Uint8Array) {
@@ -31,15 +37,28 @@ export class LayerContainer {
         }
     }
 
-    public setAgents(agents: Array<AgentData>) {
-        this.agents = agents;
+    public setAgents(agentData: Array<AgentData>) {
+        for (const data of agentData) {
+            let agent = this.agents.get(data.id);
+
+            if (!agent) {
+                agent = {
+                    agentData: data,
+                    angle: 0,
+                    stretch: 1
+                };
+                this.agents.set(data.id, agent);
+            } else {
+                agent.agentData = data;
+            }
+        }
     }
 
     public getLayer(name: LayerName) {
         return this.layers[name];
     }
 
-    public getAgents(): Array<AgentData> {
+    public getAgents(): Map<number, Agent> {
         return this.agents;
     }
 
