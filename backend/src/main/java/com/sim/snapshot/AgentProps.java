@@ -7,13 +7,8 @@ public enum AgentProps {
     VX(Float.BYTES),
     VY(Float.BYTES),
     SPEED(Byte.BYTES),;
-    /*ENERGY(Byte.BYTES),
-    HUNGER(Byte.BYTES),
-    HEAT(Byte.BYTES),
-    CURIOSITY(Byte.BYTES),
-    FEAR(Byte.BYTES);*/
 
-    private int byteSize;
+    private final int byteSize;
 
     AgentProps(int byteSize) {
         this.byteSize = byteSize;

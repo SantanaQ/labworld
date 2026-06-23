@@ -23,8 +23,6 @@ public class WorldSnapshot {
     private final HashMap<LayerID, float[]> layerValues;
     private final HashMap<LayerID, LayerDelta> layerDeltas;
 
-    private final List<float[]> agentSnaps;
-
     private final float[] agentBuffer;
     private final int agentCount;
 
@@ -47,12 +45,9 @@ public class WorldSnapshot {
         }
 
         this.agentBuffer = new float[world.agentCount() *  AGENT_PROPS];
-        this.agentSnaps = new ArrayList<>();
     }
 
     public void refresh(World world) {
-        agentSnaps.clear();
-
         for (LayerID id : LayerID.values()) {
             float[] currentValues = world.layer(id).values();
             // first record values change
@@ -69,11 +64,6 @@ public class WorldSnapshot {
             agentBuffer[base + AgentProps.VX.ordinal()] = agent.velocity().vx();
             agentBuffer[base + AgentProps.VY.ordinal()] = agent.velocity().vy();
             agentBuffer[base + AgentProps.SPEED.ordinal()] = agent.speed();
-            /*agentBuffer[base + AgentProps.ENERGY.ordinal()] = agent.needs().energy();
-            agentBuffer[base + AgentProps.HUNGER.ordinal()] = agent.needs().hunger();
-            agentBuffer[base + AgentProps.HEAT.ordinal()] = agent.needs().heat();
-            agentBuffer[base + AgentProps.CURIOSITY.ordinal()] = agent.needs().curiosity();
-            agentBuffer[base + AgentProps.FEAR.ordinal()] = agent.needs().fear();*/
             base += AGENT_PROPS;
         }
     }
