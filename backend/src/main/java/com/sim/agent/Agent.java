@@ -18,8 +18,8 @@ public class Agent {
     private final float BASE_SPEED = 0.5f;
     private final float MAX_INTERACTION_MOVEMENT = 0.1f;
     private final int DECISION_TICK_INTERVAL = 3;
-    private final int STRESS_WINDOW = 10;
-    private final int STRESS_THRESH = 4;
+    private final int STRESS_WINDOW = 10; // radius of cells that in impacts stress
+    private final int STRESS_THRESH = 4; // minimum number of agents in vicinity to affect stress
 
     public Agent(short id, Position pos, Needs needs) {
         this.pos = pos;
@@ -151,7 +151,8 @@ public class Agent {
         steering.add(vAvoid.multiply(1.5f));
         steering.add(vSupply);
         steering.add(vHeat);
-        steering.add(vTrail.multiply(0.5f));
+        if(needs.interestExplore() > 0.7f)
+            steering.add(vTrail.multiply(0.5f));
 
         steering.add(wallAvoidance(world).multiply(2f));
 

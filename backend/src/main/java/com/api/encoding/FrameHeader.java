@@ -16,8 +16,6 @@ public class FrameHeader {
 
     private static final int NON_LAYER_CHUNKS = 1; // agents
 
-    private static final byte PROTOCOL_VERSION = 1;
-
     public int totalBytes() {
         return VERSION_SIZE
                 + UUID_SIZE
@@ -27,9 +25,9 @@ public class FrameHeader {
                 + CHUNK_COUNT_SIZE;
     }
 
-    public void encode(ByteBuffer buffer, WorldSnapshot snapshot, boolean fullFrame) {
+    public void encode(ByteBuffer buffer, WorldSnapshot snapshot, byte protocolVersion, boolean fullFrame) {
         // version
-        buffer.put(PROTOCOL_VERSION);
+        buffer.put(protocolVersion);
 
         // id
         UUID uuid = snapshot.worldId();

@@ -10,7 +10,7 @@ import java.nio.ByteOrder;
 /**
  * Binary frame encoder for simulation snapshots.
  *
- * <h2>Protocol Specification — Version 1.0</h2>
+ * <h2>Protocol Specification — Version {@value #PROTOCOL_VERSION}</h2>
  *
  * <p>All values are encoded in <b>little-endian</b> byte order.</p>
  *
@@ -139,6 +139,8 @@ import java.nio.ByteOrder;
  */
 public class FrameEncoder {
 
+    private static final byte PROTOCOL_VERSION = 1;
+
     private final FrameHeader frameHeader;
     private final FullLayerChunk fullLayerChunk;
     private final DeltaLayerChunk deltaLayerChunk;
@@ -172,7 +174,7 @@ public class FrameEncoder {
         buffer.clear();
 
         // Header
-        frameHeader.encode(buffer, snap, true);
+        frameHeader.encode(buffer, snap, PROTOCOL_VERSION, true);
 
         // Layers
         fullLayerChunk.encode(LayerID.HEAT, ChunkID.HEAT_CHUNK, buffer, snap);
@@ -192,7 +194,7 @@ public class FrameEncoder {
         buffer.clear();
 
         // Header
-        frameHeader.encode(buffer, snap, false);
+        frameHeader.encode(buffer, snap, PROTOCOL_VERSION, false);
 
         // Layers
         deltaLayerChunk.encode(LayerID.HEAT, ChunkID.HEAT_DELTA_CHUNK, buffer, snap);
